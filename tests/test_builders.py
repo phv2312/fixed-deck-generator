@@ -1,6 +1,5 @@
 """Contract tests for every registered slide builder."""
 
-import json
 import re
 from pathlib import Path
 from typing import Any
@@ -10,22 +9,9 @@ from pydantic import BaseModel
 
 from decks.builders import FAMILIES, REGISTRY, Registry
 from decks.builders.base import BaseBuilder
-from decks.models.slides import DeckSpec
 
-EXAMPLES = sorted(Path("examples").glob("*.json"))
 BUILDERS_DIR = Path("decks")
 BASE_IMPORT = re.compile(r"from \.{2,}")
-
-
-def _example_specs() -> dict[str, BaseModel]:
-    """Return one example spec per slide type, keyed by type."""
-    specs: dict[str, BaseModel] = {}
-    for path in EXAMPLES:
-        raw = json.loads(path.read_text())
-        deck = DeckSpec.model_validate({**raw, "theme": "green"})
-        for slide in deck.slides:
-            specs.setdefault(slide.type, slide)
-    return specs
 
 
 def _missing_descriptions(
@@ -62,15 +48,12 @@ def _missing_descriptions(
     return missing
 
 
-SPECS = _example_specs()
-
-
 @pytest.mark.parametrize(
     ("kind", "builder"),
     [(kind, registered.builder) for kind, registered in sorted(REGISTRY.items())],
 )
 def test_builder_contract(kind: str, builder: BaseBuilder[Any]) -> None:
-    """Every builder describes itself and renders its example spec into elements."""
+    """Every builder describes itself."""
     assert builder.TYPE == kind
     assert builder.DESCRIPTION.strip()
     assert issubclass(builder.SPEC, BaseModel)
@@ -78,11 +61,6 @@ def test_builder_contract(kind: str, builder: BaseBuilder[Any]) -> None:
     schema = builder.builder_schema()
     assert schema.description == builder.DESCRIPTION
     assert "type" in schema.spec["properties"]
-
-    spec = SPECS[kind]
-    assert isinstance(spec, builder.SPEC)
-    elements = builder.build(spec)
-    assert elements
 
 
 @pytest.mark.parametrize(

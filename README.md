@@ -1,7 +1,7 @@
 # Slide Decks
 
-[![pre-commit](https://github.com/OWNER/REPO/actions/workflows/pre-commit.yml/badge.svg?branch=main)](https://github.com/OWNER/REPO/actions/workflows/pre-commit.yml)
-[![pytest](https://github.com/OWNER/REPO/actions/workflows/pytest.yml/badge.svg?branch=main)](https://github.com/OWNER/REPO/actions/workflows/pytest.yml)
+[![pre-commit](https://github.com/phv2312/fixed-deck-generator/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/phv2312/fixed-deck-generator/actions/workflows/pre-commit.yml)
+[![pytest](https://github.com/phv2312/fixed-deck-generator/actions/workflows/pytest.yml/badge.svg)](https://github.com/phv2312/fixed-deck-generator/actions/workflows/pytest.yml)
 
 Slide Decks makes a slide deck from a chat. An LLM interview agent asks questions and writes a
 plan. A deck generator fills one fixed template for each slide. A deterministic engine places
