@@ -3,9 +3,25 @@
 [![pre-commit](https://github.com/phv2312/fixed-deck-generator/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/phv2312/fixed-deck-generator/actions/workflows/pre-commit.yml)
 [![pytest](https://github.com/phv2312/fixed-deck-generator/actions/workflows/pytest.yml/badge.svg)](https://github.com/phv2312/fixed-deck-generator/actions/workflows/pytest.yml)
 
+
 Slide Decks makes a slide deck from a chat. An LLM interview agent asks questions and writes a
 plan. A deck generator fills one fixed template for each slide. A deterministic engine places
 every element and renders one self-contained HTML file.
+
+```mermaid
+flowchart LR
+    Chat[Chat] --> Interview[Interview agent]
+    Interview --> Plan[Plan]
+    Interview -.-> Visual[Visual agent<br/>SVG to PNG]
+    Visual -.-> Gen
+    Plan --> Gen[DeckGenerator]
+    Gen --> Specs[Slide specs]
+    Specs --> Builders[Builders]
+    Builders --> Deck[Deck]
+    Deck --> HTML[HTML]
+    Deck -.-> Check[DeckChecker]
+    Check -.-> Gen
+```
 
 ## Why this project exists
 
@@ -38,27 +54,6 @@ open gallery.html
 ```
 
 Use `uv run python -m scripts.chat` to start a chat and make a deck.
-
-## Architecture
-
-```mermaid
-flowchart LR
-    Chat[Chat] --> Interview[Interview agent]
-    Interview --> Plan[Plan]
-    Interview -.-> Visual[Visual agent<br/>SVG to PNG]
-    Visual -.-> Gen
-    Plan --> Gen[DeckGenerator]
-    Gen --> Specs[Slide specs]
-    Specs --> Builders[Builders]
-    Builders --> Deck[Deck]
-    Deck --> HTML[HTML]
-    Deck -.-> Check[DeckChecker]
-    Check -.-> Gen
-```
-
-- **Agent layer** (`decks/agents/`, `decks/visuals/`): chat, plan, and deck generation.
-- **Deck engine** (`decks/models/`, `decks/builders/`, `decks/render/`): spec to positioned
-  elements to HTML. It uses no LLM.
 
 ## Documentation
 
