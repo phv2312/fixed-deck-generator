@@ -7,8 +7,26 @@ Slide Decks makes a slide deck from a chat. An LLM interview agent asks question
 plan. A deck generator fills one fixed template for each slide. A deterministic engine places
 every element and renders one self-contained HTML file.
 
-The LLM fills parameters. It does not draw or position anything. Thus a slide looks the same
-each time.
+## Why this project exists
+
+Most LLM slide generators let the model invent the slide. The model picks the elements, their
+sizes, and their positions. Each run gives a different result. The same content can look
+different each time. The slides often break slide conventions: titles move, spacing changes, and
+elements overlap or do not align. The user cannot trust the output, and the deck does not look
+like one deck.
+
+This project removes that freedom. It defines a fixed set of slide **families** and **kinds**:
+
+- A **family** is a group of slides for one purpose. Examples are `analytics`, `body`, `diagram`,
+  and `layout`.
+- A **kind** is one exact slide template in a family. A kind has a fixed structure and a fixed
+  list of parameters. A deterministic builder owns its layout.
+
+The LLM only does two things. It chooses a kind that fits the content. Then it fills the
+parameters of that kind. It does not draw or position anything. Thus a slide follows the same
+conventions each time, and a deck looks consistent from the first slide to the last.
+
+See the [slide catalog](docs/slide-catalog/README.md) for every family and kind.
 
 ## Quick start
 
