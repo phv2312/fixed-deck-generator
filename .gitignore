@@ -1,0 +1,16 @@
+__pycache__/
+.venv/
+.env
+.DS_Store
+.pytest_cache/
+.ruff_cache/
+# generated files
+out/
+output.html
+gallery.html
+args.json
+
+# local only
+scripts/
+examples/
+projects/
