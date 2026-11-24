@@ -1,7 +1,5 @@
 """Stage-0 input: per-slide-type parameters, and stage-1 output: the Deck."""
 
-from __future__ import annotations
-
 from collections.abc import Iterator
 from typing import Annotated, Literal
 
@@ -132,12 +130,12 @@ class Slide(BaseModel):
         """Every element in reading order, with group children expanded."""
         return _flatten(self.elements)
 
-    def numbered(self, index: int) -> Slide:
+    def numbered(self, index: int) -> "Slide":
         """Return a copy whose elements have ids ``s{index}e{n}``."""
         counter = iter(range(1, 100_000))
         return self.model_copy(update={"elements": _numbered(self.elements, index, counter)})
 
-    def updated(self, element_id: str, changes: dict[str, object]) -> Slide:
+    def updated(self, element_id: str, changes: dict[str, object]) -> "Slide":
         """Return a copy where element ``element_id`` has ``changes`` applied."""
         return self.model_copy(update={"elements": _updated(self.elements, element_id, changes)})
 

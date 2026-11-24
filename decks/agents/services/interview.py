@@ -11,7 +11,14 @@ from decks.agents.exceptions import (
     SlideNotFoundError,
     UnsupportedKindError,
 )
-from decks.agents.models import CheckIssue, PlanCheck, PlanUpdated, PlanView, VarietyViolation
+from decks.agents.models import (
+    CheckIssue,
+    PlanCheck,
+    PlanSlideChange,
+    PlanUpdated,
+    PlanView,
+    VarietyViolation,
+)
 from decks.agents.repos import Repos
 from decks.agents.services.events import EventSink
 from decks.agents.services.variety import VarietyPolicy
@@ -146,7 +153,7 @@ class InterviewService:
         title: str,
         kind: str | None,
         content: ContentBlock,
-    ) -> tuple[Plan, SlideDraft]:
+    ) -> PlanSlideChange:
         """Insert a slide after ``after_id``, or at the end. Return the plan and the new slide."""
         plan = self.read()
         self._check_kind(kind)
@@ -159,7 +166,8 @@ class InterviewService:
         if after_id is not None:
             position = self._index(plan, after_id) + 1
         slides.insert(position, draft)
-        return await self._commit(plan.model_copy(update={"slides": slides})), draft
+        saved = await self._commit(plan.model_copy(update={"slides": slides}))
+        return PlanSlideChange(plan=saved, draft=draft)
 
     async def add_slides(self, slides: list[SlideInput], *, after_id: str | None) -> Plan:
         """Insert ``slides`` in order after ``after_id``, or at the end, in one commit."""
@@ -193,7 +201,7 @@ class InterviewService:
         rest.insert(position, moved)
         return await self._commit(plan.model_copy(update={"slides": rest}))
 
-    async def update_slide(self, slide_id: str, patch: SlideDraftPatch) -> tuple[Plan, SlideDraft]:
+    async def update_slide(self, slide_id: str, patch: SlideDraftPatch) -> PlanSlideChange:
         """Apply ``patch`` to a slide. Return the plan and the changed slide."""
         plan = self.read()
         self._check_kind(patch.kind)
@@ -203,7 +211,8 @@ class InterviewService:
             changes["content"] = patch.content
         changed = draft.model_copy(update=changes)
         slides = [changed if s.id == slide_id else s for s in plan.slides]
-        return await self._commit(plan.model_copy(update={"slides": slides})), changed
+        saved = await self._commit(plan.model_copy(update={"slides": slides}))
+        return PlanSlideChange(plan=saved, draft=changed)
 
     async def remove_slide(self, slide_id: str) -> Plan:
         """Remove a slide."""

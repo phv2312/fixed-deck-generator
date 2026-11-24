@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
@@ -5,6 +6,7 @@ from pydantic import BaseModel, Field
 from decks.models.build import Phase
 from decks.models.elements import Chart, Element, Image, Shape, Table, Text
 from decks.models.plan import Plan, SlideDraft
+from decks.models.slides import Deck, Slide
 
 
 class LayoutIssue(BaseModel):
@@ -340,3 +342,28 @@ type StreamEvent = Annotated[
     | Done,
     Field(discriminator="type"),
 ]
+
+
+@dataclass(frozen=True)
+class PlanSlideChange:
+    """A plan after one slide change, with the slide that changed."""
+
+    plan: Plan
+    draft: SlideDraft
+
+
+@dataclass(frozen=True)
+class SlideLocation:
+    """A slide of the deck, with its position in the deck."""
+
+    deck: Deck
+    slide: Slide
+    index: int
+
+
+@dataclass(frozen=True)
+class FallbackResult:
+    """A plain fallback slide, or ``None``, with the warnings of the fallback."""
+
+    slide: Slide | None
+    warnings: list[str]

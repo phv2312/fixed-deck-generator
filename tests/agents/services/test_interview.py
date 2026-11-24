@@ -69,17 +69,25 @@ async def test_slide_crud(ctx: ProjectContext) -> None:
     """Add, insert after, update and remove keep ids stable."""
     svc = ctx.interview
     await svc.set_meta("audience", "board")
-    _, first = await svc.add_slide(
-        after_id=None, purpose="a", title="A", kind=None, content=ContentBlock()
-    )
-    _, third = await svc.add_slide(
-        after_id=None, purpose="c", title="C", kind=None, content=ContentBlock()
-    )
-    _, second = await svc.add_slide(
-        after_id=first.id, purpose="b", title="B", kind=None, content=ContentBlock()
-    )
+    first = (
+        await svc.add_slide(
+            after_id=None, purpose="a", title="A", kind=None, content=ContentBlock()
+        )
+    ).draft
+    third = (
+        await svc.add_slide(
+            after_id=None, purpose="c", title="C", kind=None, content=ContentBlock()
+        )
+    ).draft
+    second = (
+        await svc.add_slide(
+            after_id=first.id, purpose="b", title="B", kind=None, content=ContentBlock()
+        )
+    ).draft
     assert [s.id for s in svc.read().slides] == [first.id, second.id, third.id]
-    _, changed = await svc.update_slide(second.id, SlideDraftPatch(title="B2", kind="statement"))
+    changed = (
+        await svc.update_slide(second.id, SlideDraftPatch(title="B2", kind="statement"))
+    ).draft
     assert (changed.title, changed.kind) == ("B2", "statement")
     plan = await svc.remove_slide(first.id)
     assert [s.id for s in plan.slides] == [second.id, third.id]

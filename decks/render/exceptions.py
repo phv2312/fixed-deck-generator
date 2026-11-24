@@ -18,3 +18,12 @@ class UnsupportedElementError(RenderError):
 
     TEMPLATE = "unsupported element type: {element_type}"
     element_type: str
+
+
+@dataclass
+class GalleryTemplateError(RenderError):
+    """Raised when the gallery template cannot be rendered."""
+
+    TEMPLATE = "gallery template {name} failed: {detail}"
+    name: str
+    detail: str

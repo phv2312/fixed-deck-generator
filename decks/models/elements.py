@@ -1,8 +1,6 @@
 """Positioned elements. All coordinates are absolute slide pixels (top-left origin).
 Colors are theme tokens (e.g. "primary") or hex strings ("#RRGGBB")."""
 
-from __future__ import annotations
-
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
@@ -94,7 +92,7 @@ class Group(BaseModel):
     type: Literal["group"] = "group"
     id: str = ""
     name: str = ""
-    children: list[Element] = Field(default_factory=list)
+    children: list["Element"] = Field(default_factory=list)
 
 
 Element = Annotated[

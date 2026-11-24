@@ -7,6 +7,7 @@ from decks.agents.exceptions import (
 from decks.agents.models import (
     ElementChange,
     ElementView,
+    SlideLocation,
     SlideView,
     StylePatch,
     TextFitResult,
@@ -34,14 +35,15 @@ class DeckEditor:
 
     def read_slide(self, slide_id: str) -> SlideView:
         """Return a short view of every element of a slide."""
-        _, slide, _ = self._locate(slide_id)
+        slide = self._locate(slide_id).slide
         return SlideView(
             id=slide.id, kind=slide.kind, elements=[ElementView.of(e) for e in slide.flat]
         )
 
     def update_element(self, slide_id: str, element_id: str, patch: StylePatch) -> ElementChange:
         """Apply the style fields that are set. Raise when the element cannot take one."""
-        deck, slide, index = self._locate(slide_id)
+        location = self._locate(slide_id)
+        deck, slide, index = location.deck, location.slide, location.index
         element = slide.element(element_id)
         if element is None:
             raise ElementNotFoundError(slide_id, element_id)
@@ -62,7 +64,8 @@ class DeckEditor:
         self, slide_id: str, element_id: str, text: str, *, autofit: bool = True
     ) -> TextFitResult:
         """Replace the text of an element. With ``autofit`` shrink the font until it fits."""
-        deck, slide, index = self._locate(slide_id)
+        location = self._locate(slide_id)
+        deck, slide, index = location.deck, location.slide, location.index
         element = slide.element(element_id)
         if not isinstance(element, Text):
             raise ElementNotFoundError(slide_id, element_id)
@@ -84,13 +87,13 @@ class DeckEditor:
             issues=change.issues,
         )
 
-    def _locate(self, slide_id: str) -> tuple[Deck, Slide, int]:
+    def _locate(self, slide_id: str) -> SlideLocation:
         deck = self._repos.deck.load()
         if deck is None:
             raise DeckMissingError
         for index, slide in enumerate(deck.slides):
             if slide.id == slide_id:
-                return deck, slide, index
+                return SlideLocation(deck=deck, slide=slide, index=index)
         raise SlideNotFoundError(slide_id)
 
     def _save(

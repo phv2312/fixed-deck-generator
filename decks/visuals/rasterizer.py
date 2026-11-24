@@ -10,6 +10,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from markupsafe import Markup
+
 from decks.models.theme import ThemeName
 from decks.visuals.exceptions import (
     ChromeFailedError,
@@ -17,6 +19,7 @@ from decks.visuals.exceptions import (
     ChromeTimeoutError,
 )
 from decks.visuals.models import Measurement
+from decks.visuals.pages import PageTemplates
 from decks.visuals.theme import ThemeInjector
 
 CHROME_CANDIDATES = (
@@ -61,11 +64,13 @@ class Rasterizer:
         timeout: float = 30.0,
         concurrency: int = 2,
         injector: ThemeInjector | None = None,
+        pages: PageTemplates | None = None,
     ) -> None:
         self._chrome = chrome if chrome is not None else self.find_chrome()
         self._timeout = timeout
         self._gate = asyncio.Semaphore(concurrency)
         self._injector = injector or ThemeInjector()
+        self._pages = pages or PageTemplates()
 
     @staticmethod
     def find_chrome() -> str | None:
@@ -96,15 +101,14 @@ class Rasterizer:
 
     def _page(self, svg: str, size: tuple[int, int], theme: ThemeName, script: str) -> str:
         width, height = size
-        body = self._injector.inject(svg, theme)
-        background = self._injector.background(theme)
-        return (
-            "<!doctype html><html><head><meta charset='utf-8'><style>"
-            f"html,body{{margin:0;background:{background}}}"
-            f"#frame{{width:{width}px;height:{height}px;overflow:hidden}}"
-            "#frame>svg{width:100%;height:100%;display:block}"
-            f"</style></head><body><div id='frame'>{body}</div>"
-            f"<script>{script}</script></body></html>"
+        return self._pages.render(
+            "page.html.j2",
+            width=width,
+            height=height,
+            background=self._injector.background(theme),
+            # The SVG and the script are trusted code, so they are not escaped.
+            body=Markup(self._injector.inject(svg, theme)),
+            script=Markup(script),
         )
 
     def _measure(self, svg: str, size: tuple[int, int], theme: ThemeName) -> Measurement:

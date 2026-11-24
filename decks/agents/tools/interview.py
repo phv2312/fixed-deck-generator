@@ -19,6 +19,7 @@ async def ask_user_question(
     ctx: RunContextWrapper[ProjectContext],
     question: str,
     options: list[str] | None = None,
+    *,
     allow_multiple: bool = False,
     free_text: bool = True,
 ) -> Question:
@@ -62,11 +63,12 @@ async def add_plan_slide(
 ) -> SlideRef:
     """Add one slide after `after_id`, or at the end. Prefer add_plan_slides for a draft."""
     service = ctx.context.interview
-    plan, draft = await service.add_slide(
+    change = await service.add_slide(
         after_id=after_id, purpose=purpose, title=title, kind=kind, content=content
     )
+    plan = change.plan
     return SlideRef.of(
-        plan, draft, ctx.context.phase, service.variety(plan), service.next_action(plan)
+        plan, change.draft, ctx.context.phase, service.variety(plan), service.next_action(plan)
     )
 
 
@@ -89,9 +91,10 @@ async def update_plan_slide(
 ) -> SlideRef:
     """Change fields of a plan slide. Fields left empty stay as they are."""
     service = ctx.context.interview
-    plan, draft = await service.update_slide(slide_id, patch)
+    change = await service.update_slide(slide_id, patch)
+    plan = change.plan
     return SlideRef.of(
-        plan, draft, ctx.context.phase, service.variety(plan), service.next_action(plan)
+        plan, change.draft, ctx.context.phase, service.variety(plan), service.next_action(plan)
     )
 
 

@@ -326,5 +326,5 @@ class DeckGenerator:
         return "\n\n".join(parts)
 
     def _fallback(self, draft: SlideDraft, cause: str = "") -> FilledSlide:
-        slide, warnings = self._fallbacks.build(draft, cause=cause)
-        return FilledSlide(draft, slide, warnings)
+        result = self._fallbacks.build(draft, cause=cause)
+        return FilledSlide(draft, result.slide, result.warnings)

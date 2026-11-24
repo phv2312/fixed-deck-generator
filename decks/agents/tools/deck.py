@@ -67,6 +67,7 @@ def set_text(
     slide_id: str,
     element_id: str,
     text: str,
+    *,
     autofit: bool = True,
 ) -> TextFitResult:
     """Replace the text of one element. With autofit the font shrinks until the text fits."""
