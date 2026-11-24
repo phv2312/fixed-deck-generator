@@ -1,7 +1,8 @@
 """From/to slides: two aligned columns."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_TOP, MARGIN, RADIUS, TYPE, icon_badge, mid_text, title_el
+from decks.builders.common import icon_badge, mid_text, title_el
+from decks.design import CONTENT_TOP, MARGIN, RADIUS, RULE, TYPE
 from decks.models.body import FromToSlide
 from decks.models.elements import Element, Line, Polygon, Shape
 
@@ -35,7 +36,7 @@ class FromToBuilder(BaseBuilder[FromToSlide]):
                     color="primary",
                 )
             )
-            els.append(Line(x1=x, y1=180, x2=x + w, y2=180, color=col, width=4))
+            els.append(Line(x1=x, y1=180, x2=x + w, y2=180, color=col, width=RULE["thick"]))
         row_h = min(110, 420 / n)
         for i in range(n):
             y = 206 + row_h * i
@@ -45,7 +46,14 @@ class FromToBuilder(BaseBuilder[FromToSlide]):
                     els.append(Shape(x=x, y=y, w=w, h=h, fill=fill, radius=RADIUS["md"]))
                 else:
                     els.append(
-                        Line(x1=x, y1=y + h + 8, x2=x + w, y2=y + h + 8, color="grid", width=1)
+                        Line(
+                            x1=x,
+                            y1=y + h + 8,
+                            x2=x + w,
+                            y2=y + h + 8,
+                            color="grid",
+                            width=RULE["hair"],
+                        )
                     )
                 off = 16
                 if side.icon:

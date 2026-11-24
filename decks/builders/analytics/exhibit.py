@@ -2,17 +2,8 @@
 
 from decks.builders.base import BaseBuilder
 from decks.builders.charts import ChartRenderer
-from decks.builders.common import (
-    CONTENT_W,
-    MARGIN,
-    RADIUS,
-    TYPE,
-    W,
-    bullets,
-    mid_text,
-    snap_down,
-    title_el,
-)
+from decks.builders.common import bullets, mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, RADIUS, TYPE, W, snap_down
 from decks.models.analytics import ExhibitSlide
 from decks.models.elements import Element, Line, Shape, Text
 

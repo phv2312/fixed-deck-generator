@@ -1,18 +1,8 @@
 """Terminal slides: a mocked terminal with commands and output."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import (
-    AMBER,
-    CONTENT_W,
-    GREEN,
-    GREY,
-    MARGIN,
-    RADIUS,
-    RED,
-    TYPE,
-    mid_text,
-    title_el,
-)
+from decks.builders.common import mid_text, title_el
+from decks.design import AMBER, CONTENT_TOP, CONTENT_W, GREEN, GREY, MARGIN, RADIUS, RED, TYPE
 from decks.models.body import TerminalSlide
 from decks.models.elements import Element, Line, Shape
 
@@ -29,7 +19,7 @@ class TerminalBuilder(BaseBuilder[TerminalSlide]):
 
     def build(self, spec: TerminalSlide) -> list[Element]:
         els: list[Element] = [title_el(spec.title)]
-        x, y, w, h = MARGIN, 140, CONTENT_W, 480
+        x, y, w, h = MARGIN, CONTENT_TOP, CONTENT_W, 480
         els.append(Shape(x=x, y=y, w=w, h=h, fill="ink", radius=RADIUS["md"]))
         for k, color in enumerate((RED, AMBER, GREEN)):
             els.append(Shape(x=x + 18 + 24 * k, y=y + 14, w=14, h=14, shape="ellipse", fill=color))

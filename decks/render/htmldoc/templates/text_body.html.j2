@@ -1,0 +1,13 @@
+{% if not has_bullets -%}
+{{ text|esc }}
+{%- else -%}
+<div>
+{%- for line in text.split('\n') -%}
+{%- if line.startswith(bullet) -%}
+<div style="padding-left:1em;text-indent:-1em"><span style="display:inline-block;width:1em;text-indent:0">&bull;</span>{{ line[bullet|length:]|esc }}</div>
+{%- else -%}
+<div>{{ line|esc }}</div>
+{%- endif -%}
+{%- endfor -%}
+</div>
+{%- endif %}

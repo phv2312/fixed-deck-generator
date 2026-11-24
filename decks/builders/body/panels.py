@@ -3,23 +3,22 @@
 import math
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import (
+from decks.builders.common import banner, bullets, icon_badge, mid_text, title_el
+from decks.design import (
+    BANNER_Y,
+    BODY_TOP,
     CONTENT_W,
+    GUTTER,
     MARGIN,
     RADIUS,
+    RULE,
     TYPE,
-    banner,
-    bullets,
-    icon_badge,
-    mid_text,
     snap_down,
-    title_el,
 )
 from decks.models.body import PanelsSlide
 from decks.models.elements import Element, Line, Shape, Text
 
-GAP = 24
-TOP, BOTTOM = 150, 590
+TOP, BOTTOM = BODY_TOP, BANNER_Y
 
 
 class PanelsBuilder(BaseBuilder[PanelsSlide]):
@@ -40,10 +39,10 @@ class PanelsBuilder(BaseBuilder[PanelsSlide]):
 
     def _columns(self, spec: PanelsSlide) -> list[Element]:
         m = len(spec.panels)
-        w = (CONTENT_W - GAP * (m - 1)) / m
+        w = (CONTENT_W - GUTTER * (m - 1)) / m
         els: list[Element] = [title_el(spec.title)]
         for i, panel in enumerate(spec.panels):
-            x = MARGIN + (w + GAP) * i
+            x = MARGIN + (w + GUTTER) * i
             hi = spec.highlight == i
             fill = "primary" if hi else "tint"
             fg = "bg" if hi else "text"
@@ -94,15 +93,15 @@ class PanelsBuilder(BaseBuilder[PanelsSlide]):
         rows = 1 if n <= 4 else 2
         per = math.ceil(n / rows)
         bottom = 560 if spec.banner else 620
-        ch = (bottom - 150 - GAP * (rows - 1)) / rows
-        cw = (CONTENT_W - GAP * (per - 1)) / per
+        ch = (bottom - BODY_TOP - GUTTER * (rows - 1)) / rows
+        cw = (CONTENT_W - GUTTER * (per - 1)) / per
         els: list[Element] = [title_el(spec.title)]
         for i, item in enumerate(spec.panels):
             text = item.text or "\n".join(f"• {line}" for line in item.items)
             r, c = divmod(i, per)
-            x = MARGIN + (cw + GAP) * c
-            y = 150 + (ch + GAP) * r
-            els.append(Line(x1=x, y1=y, x2=x + cw, y2=y, color="grid", width=1))
+            x = MARGIN + (cw + GUTTER) * c
+            y = BODY_TOP + (ch + GUTTER) * r
+            els.append(Line(x1=x, y1=y, x2=x + cw, y2=y, color="grid", width=RULE["hair"]))
             d = min(80, ch * 0.34)
             iy = y + 24
             els.append(Shape(x=x + cw / 2 - d / 2, y=iy, w=d, h=d, shape="ellipse", fill="primary"))

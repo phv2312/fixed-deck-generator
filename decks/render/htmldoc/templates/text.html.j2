@@ -1,0 +1,16 @@
+{% import 'macros.j2' as m %}
+{% set align_items = {'top': 'flex-start', 'middle': 'center', 'bottom': 'flex-end'} %}
+{% set justify = {'left': 'flex-start', 'center': 'center', 'right': 'flex-end'} %}
+{% set css %}
+{{ m.box(e) }}
+font-size:{{ e.font_size|g }}px;color:{{ color(e.color) }};
+font-weight:{{ page.bold_weight if e.bold else page.regular_weight }};
+{% if e.mono %}font-family:{{ mono_font }};{% endif %}
+{% if e.italic %}font-style:italic;{% endif %}
+{% if e.underline %}text-decoration:underline;{% endif %}
+{% if e.font_family %}font-family:{{ e.font_family }};{% endif %}
+display:flex;white-space:pre-line;line-height:{{ line_height }};
+align-items:{{ align_items[e.valign] }};justify-content:{{ justify[e.align] }};
+text-align:{{ e.align }};
+{% endset %}
+<div class="e" style="{{ css|inline }}">{{ body }}</div>

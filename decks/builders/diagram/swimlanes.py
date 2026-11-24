@@ -1,7 +1,8 @@
 """Swimlane slides: steps placed in lanes and columns with links."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import CONTENT_TOP, CONTENT_W, MARGIN, RADIUS, RULE, TYPE, W
 from decks.models.diagram import SwimlanesSlide
 from decks.models.elements import Element, Line, Shape
 
@@ -21,14 +22,21 @@ class SwimlanesBuilder(BaseBuilder[SwimlanesSlide]):
         cols = max(step.col for step in spec.steps) + 1
         lab_w = 150
         lh = min(130, 470 / lane_count)
-        top = 140
+        top = CONTENT_TOP
         cw = (CONTENT_W - lab_w) / cols
         bw, bh = cw - 28, min(60, lh - 30)
         els: list[Element] = [title_el(spec.title)]
         for i, name in enumerate(spec.lanes):
             y = top + lh * i
             els.append(
-                Line(x1=MARGIN, y1=y + lh - 2, x2=W - MARGIN, y2=y + lh - 2, color="grid", width=1)
+                Line(
+                    x1=MARGIN,
+                    y1=y + lh - 2,
+                    x2=W - MARGIN,
+                    y2=y + lh - 2,
+                    color="grid",
+                    width=RULE["hair"],
+                )
             )
             els.append(
                 mid_text(
@@ -56,7 +64,7 @@ class SwimlanesBuilder(BaseBuilder[SwimlanesSlide]):
                     h=bh,
                     fill="bg",
                     stroke="primary",
-                    stroke_width=2,
+                    stroke_width=RULE["thin"],
                     radius=RADIUS["md"],
                 )
             )
@@ -84,7 +92,7 @@ class SwimlanesBuilder(BaseBuilder[SwimlanesSlide]):
                         x2=bx,
                         y2=by + bh2 / 2,
                         color="primary",
-                        width=2,
+                        width=RULE["thin"],
                         arrow=True,
                     )
                 )
@@ -98,7 +106,7 @@ class SwimlanesBuilder(BaseBuilder[SwimlanesSlide]):
                         x2=bx + bw2 / 2,
                         y2=ey,
                         color="primary",
-                        width=2,
+                        width=RULE["thin"],
                         arrow=True,
                     )
                 )
@@ -111,11 +119,18 @@ class SwimlanesBuilder(BaseBuilder[SwimlanesSlide]):
                         x2=mx,
                         y2=ay + ah / 2,
                         color="primary",
-                        width=2,
+                        width=RULE["thin"],
                     )
                 )
                 els.append(
-                    Line(x1=mx, y1=ay + ah / 2, x2=mx, y2=by + bh2 / 2, color="primary", width=2)
+                    Line(
+                        x1=mx,
+                        y1=ay + ah / 2,
+                        x2=mx,
+                        y2=by + bh2 / 2,
+                        color="primary",
+                        width=RULE["thin"],
+                    )
                 )
                 els.append(
                     Line(
@@ -124,7 +139,7 @@ class SwimlanesBuilder(BaseBuilder[SwimlanesSlide]):
                         x2=bx if bx > ax else bx + bw2,
                         y2=by + bh2 / 2,
                         color="primary",
-                        width=2,
+                        width=RULE["thin"],
                         arrow=True,
                     )
                 )

@@ -3,13 +3,14 @@
 import math
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import MARGIN, TYPE, W, arc_pts, mid_text, title_el
+from decks.builders.common import arc_pts, mid_text, title_el
+from decks.design import BODY_TOP, MARGIN, RULE, TYPE, W
 from decks.models.decisions import EvaluationSlide
 from decks.models.elements import Element, Line, Polygon, Shape
 
 X0, X1 = MARGIN, W - MARGIN
 CRIT_W = 300
-TOP = 150
+TOP = BODY_TOP
 
 
 def ball(cx: float, cy: float, d: float, score: int) -> list[Element]:
@@ -24,7 +25,7 @@ def ball(cx: float, cy: float, d: float, score: int) -> list[Element]:
             shape="ellipse",
             fill="primary" if score == 4 else "bg",
             stroke="primary",
-            stroke_width=2,
+            stroke_width=RULE["thin"],
         )
     ]
     if 0 < score < 4:
@@ -130,7 +131,7 @@ class EvaluationBuilder(BaseBuilder[EvaluationSlide]):
                         x2=X1,
                         y2=rows_top + row_h * (i + 1),
                         color="grid",
-                        width=1,
+                        width=RULE["hair"],
                     )
                 )
 

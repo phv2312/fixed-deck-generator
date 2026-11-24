@@ -3,7 +3,8 @@
 import math
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import TYPE, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import RULE, TYPE
 from decks.models.diagram import VennSlide
 from decks.models.elements import Element, Polygon, Shape, Text
 
@@ -54,7 +55,7 @@ class VennBuilder(BaseBuilder[VennSlide]):
                     fill="light",
                     opacity=0.45,
                     stroke="light",
-                    stroke_width=2,
+                    stroke_width=RULE["thin"],
                 )
             )
         mx = sum(c[0] for c in centers) / n

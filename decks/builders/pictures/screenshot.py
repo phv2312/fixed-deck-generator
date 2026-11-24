@@ -1,7 +1,8 @@
 """Screenshot slides: a framed image with numbered callouts."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import AMBER, GREEN, MARGIN, RADIUS, RED, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import AMBER, BODY_TOP, GREEN, MARGIN, RADIUS, RED, RULE, TYPE, W
 from decks.models.elements import Element, Shape
 from decks.models.pictures import ScreenshotSlide
 
@@ -29,7 +30,7 @@ class ScreenshotBuilder(BaseBuilder[ScreenshotSlide]):
                 h=fh,
                 fill="bg",
                 stroke="grid",
-                stroke_width=2,
+                stroke_width=RULE["thin"],
                 radius=RADIUS["md"],
             )
         )
@@ -67,7 +68,7 @@ class ScreenshotBuilder(BaseBuilder[ScreenshotSlide]):
                     align="center",
                 )
             )
-            ly = 150 + 56 * i
+            ly = BODY_TOP + 56 * i
             els.append(Shape(x=870, y=ly + 4, w=30, h=30, shape="ellipse", fill="ink"))
             els.append(
                 mid_text(

@@ -1,7 +1,8 @@
 """Steps slides: an action list with owner and date columns."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_TOP, MARGIN, RADIUS, TYPE, W, banner, mid_text, title_el
+from decks.builders.common import banner, mid_text, title_el
+from decks.design import CONTENT_TOP, MARGIN, RADIUS, RULE, TYPE, W
 from decks.models.elements import Element, Line, Shape
 from decks.models.programme import StepsSlide
 
@@ -36,7 +37,9 @@ class StepsBuilder(BaseBuilder[StepsSlide]):
                     color="muted",
                 )
             )
-        els.append(Line(x1=MARGIN, y1=178, x2=W - MARGIN, y2=178, color="primary", width=2))
+        els.append(
+            Line(x1=MARGIN, y1=178, x2=W - MARGIN, y2=178, color="primary", width=RULE["thin"])
+        )
         for i, step in enumerate(spec.steps):
             y = 186 + rh * i
             els.append(
@@ -103,7 +106,11 @@ class StepsBuilder(BaseBuilder[StepsSlide]):
                         align="center",
                     )
                 )
-            els.append(Line(x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=1))
+            els.append(
+                Line(
+                    x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=RULE["hair"]
+                )
+            )
         if spec.ask:
             els += banner(spec.ask, 584)
         return els

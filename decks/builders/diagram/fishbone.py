@@ -3,7 +3,8 @@
 import math
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import MARGIN, RADIUS, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import MARGIN, RADIUS, RULE, TYPE, W
 from decks.models.diagram import FishboneSlide
 from decks.models.elements import Element, Line, Shape
 
@@ -24,7 +25,15 @@ class FishboneBuilder(BaseBuilder[FishboneSlide]):
         x_end = 1000
         els: list[Element] = [title_el(spec.title)]
         els.append(
-            Line(x1=MARGIN, y1=spine_y, x2=x_end, y2=spine_y, color="primary", width=4, arrow=True)
+            Line(
+                x1=MARGIN,
+                y1=spine_y,
+                x2=x_end,
+                y2=spine_y,
+                color="primary",
+                width=RULE["thick"],
+                arrow=True,
+            )
         )
         els.append(
             Shape(

@@ -3,11 +3,10 @@
 import math
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, mid_text, snap_down, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import BODY_TOP, CONTENT_W, GUTTER, MARGIN, RADIUS, TYPE, snap_down
 from decks.models.body import KeyFiguresSlide
 from decks.models.elements import Element, Line, Shape, Text
-
-GAP = 24
 
 
 class KeyFiguresBuilder(BaseBuilder[KeyFiguresSlide]):
@@ -24,8 +23,8 @@ class KeyFiguresBuilder(BaseBuilder[KeyFiguresSlide]):
         n = len(spec.tiles)
         per = n if n <= 3 else math.ceil(n / 2)
         rows = math.ceil(n / per)
-        th = (470 - GAP * (rows - 1)) / rows
-        tw = (CONTENT_W - GAP * (per - 1)) / per
+        th = (470 - GUTTER * (rows - 1)) / rows
+        tw = (CONTENT_W - GUTTER * (per - 1)) / per
         els: list[Element] = [title_el(spec.title)]
         fs = snap_down(
             max(
@@ -38,7 +37,7 @@ class KeyFiguresBuilder(BaseBuilder[KeyFiguresSlide]):
         )
         for i, tile in enumerate(spec.tiles):
             r, c = divmod(i, per)
-            x, y = MARGIN + (tw + GAP) * c, 150 + (th + GAP) * r
+            x, y = MARGIN + (tw + GUTTER) * c, BODY_TOP + (th + GUTTER) * r
             hi = spec.highlight == i
             fg = "bg" if hi else "primary"
             if hi:

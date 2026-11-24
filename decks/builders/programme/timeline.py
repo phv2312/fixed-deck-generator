@@ -1,7 +1,8 @@
 """Timeline slides: milestones along a horizontal line."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, icon_badge, mid_text, title_el
+from decks.builders.common import icon_badge, mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, RADIUS, TYPE
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.programme import TimelineSlide
 

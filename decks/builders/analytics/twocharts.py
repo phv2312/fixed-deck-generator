@@ -2,7 +2,8 @@
 
 from decks.builders.base import BaseBuilder
 from decks.builders.charts import ChartRenderer
-from decks.builders.common import CONTENT_W, MARGIN, SPACE, TYPE, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, RULE, SPACE, TYPE
 from decks.models.analytics import TwoChartsSlide
 from decks.models.elements import Element, Line
 
@@ -35,7 +36,7 @@ class TwoChartsBuilder(BaseBuilder[TwoChartsSlide]):
                     color="primary",
                 )
             )
-            els.append(Line(x1=x, y1=164, x2=x + cw, y2=164, color="grid", width=1))
+            els.append(Line(x1=x, y1=164, x2=x + cw, y2=164, color="grid", width=RULE["hair"]))
             els += ChartRenderer(side.chart).draw(x, 180, cw, 390)
             if side.note:
                 els.append(

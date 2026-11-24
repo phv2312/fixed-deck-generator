@@ -3,11 +3,12 @@
 import math
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import MARGIN, TYPE, W, fmt, mid_text, nice_range, title_el
+from decks.builders.common import fmt, mid_text, nice_range, title_el
+from decks.design import BANNER_Y, MARGIN, RULE, TYPE, W
 from decks.models.analytics import Axis, BubbleSlide
 from decks.models.elements import Element, Line, Shape
 
-PL, PT, PR, PB = 130, 180, W - MARGIN, 590
+PL, PT, PR, PB = 130, 180, W - MARGIN, BANNER_Y
 R_MAX = 42
 
 
@@ -50,7 +51,7 @@ class BubbleBuilder(BaseBuilder[BubbleSlide]):
 
         t = math.ceil(y0 / ystep) * ystep
         while t <= y1 + 1e-9:
-            els.append(Line(x1=PL, y1=py(t), x2=PR, y2=py(t), color="grid", width=1))
+            els.append(Line(x1=PL, y1=py(t), x2=PR, y2=py(t), color="grid", width=RULE["hair"]))
             els.append(
                 mid_text(
                     x=PL - 70,

@@ -1,20 +1,11 @@
 """Options slides: parallel options with pros and cons."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import (
-    CONTENT_W,
-    MARGIN,
-    RADIUS,
-    TYPE,
-    bullets,
-    icon_badge,
-    mid_text,
-    title_el,
-)
+from decks.builders.common import bullets, icon_badge, mid_text, title_el
+from decks.design import CONTENT_W, GUTTER, MARGIN, RADIUS, RULE, TYPE
 from decks.models.decisions import OptionsSlide
 from decks.models.elements import Element, Line, Shape, Text
 
-GAP = 24
 TOP, HEAD_H, BOTTOM = 160, 58, 610
 
 
@@ -30,10 +21,10 @@ class OptionsBuilder(BaseBuilder[OptionsSlide]):
 
     def build(self, spec: OptionsSlide) -> list[Element]:
         m = len(spec.options)
-        w = (CONTENT_W - GAP * (m - 1)) / m
+        w = (CONTENT_W - GUTTER * (m - 1)) / m
         els: list[Element] = [title_el(spec.title)]
         for i, option in enumerate(spec.options):
-            x = MARGIN + (w + GAP) * i
+            x = MARGIN + (w + GUTTER) * i
             recommended = spec.recommended == i
             els.append(
                 Shape(
@@ -47,7 +38,14 @@ class OptionsBuilder(BaseBuilder[OptionsSlide]):
             )
             if not recommended:
                 els.append(
-                    Line(x1=x, y1=TOP + HEAD_H, x2=x + w, y2=TOP + HEAD_H, color="primary", width=2)
+                    Line(
+                        x1=x,
+                        y1=TOP + HEAD_H,
+                        x2=x + w,
+                        y2=TOP + HEAD_H,
+                        color="primary",
+                        width=RULE["thin"],
+                    )
                 )
             off = 16
             if option.icon:

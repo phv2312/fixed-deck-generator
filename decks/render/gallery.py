@@ -4,13 +4,13 @@ import json
 import re
 from html import escape
 from pathlib import Path
-from typing import TypedDict, cast
+from typing import TypedDict
 
 from decks.builders import REGISTRY, build_deck
 from decks.models.slides import DeckSpec
 from decks.models.theme import THEMES as PALETTES
 
-from .html import render_html
+from .htmldoc.services import HtmlRenderer
 
 THEMES = tuple(PALETTES)
 
@@ -38,8 +38,9 @@ def build_gallery(examples_dir: str = "examples") -> str:
         for theme in THEMES:
             data = {**raw, "theme": theme}
             deck = build_deck(DeckSpec.model_validate(data))
-            fragments, width, height, font = render_html(deck, fragments=True)
-            per_theme[theme] = cast(list[str], fragments)
+            fragments = HtmlRenderer(deck).fragments()
+            width, height, font = fragments.width, fragments.height, fragments.font
+            per_theme[theme] = fragments.slides
         for i, spec in enumerate(raw["slides"]):
             kind = spec["type"]
             chart = spec.get("chart")

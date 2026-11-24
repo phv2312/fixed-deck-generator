@@ -1,7 +1,8 @@
 """Matrix slides: items plotted in four quadrants."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import RULE, TYPE, W
 from decks.models.diagram import MatrixSlide
 from decks.models.elements import Element, Line, Shape, Text
 
@@ -149,7 +150,7 @@ class MatrixBuilder(BaseBuilder[MatrixSlide]):
                     shape="ellipse",
                     fill="ink" if hi_item else "primary",
                     stroke="bg",
-                    stroke_width=2,
+                    stroke_width=RULE["thin"],
                 )
             )
             els.append(

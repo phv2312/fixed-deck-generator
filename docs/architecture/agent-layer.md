@@ -39,7 +39,7 @@ draft ─► interviewing ─► review ─► approved ─► generating ─►
 
 ## Agents and tools
 
-- `agents/interview.py` builds the interview agent. A question to the user ends its run. The system prompt (`INTERVIEW_SYSTEM`) holds the slide catalog and the plan state.
+- `agents/interview.py` builds the interview agent. A question to the user ends its run. The system prompt comes from `AgentPrompts.interview` in `decks/agents/prompts.py`. It renders the template `decks/agents/templates/interview.j2` with the slide catalog and the plan state.
 - `agents/deck.py` builds the deck agent.
 - `tools/interview.py` has the plan tools: `ask_user_question`, `set_meta`, `remove_meta`, `add_plan_slide`, `add_plan_slides`, `update_plan_slide`, `remove_plan_slide`, `move_plan_slide` and `final_check`. Every plan tool returns a `next_action`.
 - `tools/deck.py` has the deck tools: `generate_deck`, `check_deck`, `fix_slide`, `read_slide`, `update_element` and `set_text`. Each `fix_slide` call uses one of `MAX_REPAIRS` repairs of the project.
@@ -61,3 +61,12 @@ draft ─► interviewing ─► review ─► approved ─► generating ─►
 ## The slide catalog
 
 `SlideCatalog` reads the registry. `SlideCatalog.prompt` has one line for each kind: the description and the required fields. The interview agent reads it. The interview agent chooses the kind of every slide. The rules for this choice are in [rules/slide-variety.md](../rules/slide-variety.md).
+
+## Prompt templates
+
+Every system prompt is a Jinja2 template. Do not build a prompt with `str.format` or with string concatenation.
+
+- `PromptTemplates` in `decks/prompting/services.py` renders the templates of one directory. It does not escape text. It raises an error when a variable is missing.
+- `AgentPrompts` in `decks/agents/prompts.py` renders the prompts of the interview, deck, and fill agents. The templates are `fill.j2`, `interview.j2`, and `deck.j2` in `decks/agents/templates/`.
+- `VisualPromptBuilder.system` in `decks/visuals/prompts.py` renders `system.j2` in `decks/visuals/guidelines/`. This template includes `core.md.j2` and the section of the picture kind. `VisualPromptBuilder.request` stays in code, because it computes the JSON of the request.
+- A value that you give to a template is inserted as it is. A brace in the value is safe.

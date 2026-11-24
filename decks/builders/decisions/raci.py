@@ -1,7 +1,8 @@
 """RACI slides: responsibility assignments per activity."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_TOP, CONTENT_W, MARGIN, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import CONTENT_TOP, CONTENT_W, MARGIN, RULE, TYPE, W
 from decks.models.decisions import RaciSlide
 from decks.models.elements import Element, Line, Shape
 
@@ -43,7 +44,9 @@ class RaciBuilder(BaseBuilder[RaciSlide]):
                     align="center",
                 )
             )
-        els.append(Line(x1=MARGIN, y1=194, x2=W - MARGIN, y2=194, color="primary", width=2))
+        els.append(
+            Line(x1=MARGIN, y1=194, x2=W - MARGIN, y2=194, color="primary", width=RULE["thin"])
+        )
         for i, activity in enumerate(spec.activities):
             y = 198 + rh * i
             els.append(
@@ -80,7 +83,11 @@ class RaciBuilder(BaseBuilder[RaciSlide]):
                             align="center",
                         )
                     )
-            els.append(Line(x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=1))
+            els.append(
+                Line(
+                    x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=RULE["hair"]
+                )
+            )
         ly = 198 + rh * nr + 22
         x = MARGIN
         for code, name in (

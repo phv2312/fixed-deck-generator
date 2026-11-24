@@ -1,17 +1,8 @@
 """Pillar slides: supporting pillars under a roof."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import (
-    CONTENT_TOP,
-    CONTENT_W,
-    MARGIN,
-    SPACE,
-    TYPE,
-    W,
-    bullets,
-    mid_text,
-    title_el,
-)
+from decks.builders.common import bullets, mid_text, title_el
+from decks.design import CONTENT_TOP, CONTENT_W, MARGIN, RULE, SPACE, TYPE, W
 from decks.models.diagram import PillarsSlide
 from decks.models.elements import Element, Line, Polygon, Shape, Text
 
@@ -35,8 +26,8 @@ class PillarsBuilder(BaseBuilder[PillarsSlide]):
             Polygon(
                 points=[
                     (MARGIN, 215),
-                    (MARGIN + 60, 140),
-                    (W - MARGIN - 60, 140),
+                    (MARGIN + 60, CONTENT_TOP),
+                    (W - MARGIN - 60, CONTENT_TOP),
                     (W - MARGIN, 215),
                 ],
                 fill="primary",
@@ -70,8 +61,8 @@ class PillarsBuilder(BaseBuilder[PillarsSlide]):
                     color="primary",
                 )
             )
-            els.append(Line(x1=x, y1=280, x2=x + pw, y2=280, color="primary", width=2))
-            els.append(Line(x1=x, y1=280, x2=x, y2=bottom, color="grid", width=1))
+            els.append(Line(x1=x, y1=280, x2=x + pw, y2=280, color="primary", width=RULE["thin"]))
+            els.append(Line(x1=x, y1=280, x2=x, y2=bottom, color="grid", width=RULE["hair"]))
             els.append(
                 Text(
                     x=x + 12,

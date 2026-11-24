@@ -1,7 +1,8 @@
 """Discussion slides: a question with prompts and a timebox."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, W, bullets, mid_text, title_el
+from decks.builders.common import bullets, mid_text, title_el
+from decks.design import BODY_TOP, CONTENT_W, MARGIN, RADIUS, TYPE, W
 from decks.models.elements import Element, Shape, Text
 from decks.models.programme import DiscussionSlide
 
@@ -18,11 +19,13 @@ class DiscussionBuilder(BaseBuilder[DiscussionSlide]):
 
     def build(self, spec: DiscussionSlide) -> list[Element]:
         els: list[Element] = [title_el(spec.title)]
-        els.append(Shape(x=MARGIN, y=150, w=CONTENT_W, h=250, fill="primary", radius=RADIUS["md"]))
+        els.append(
+            Shape(x=MARGIN, y=BODY_TOP, w=CONTENT_W, h=250, fill="primary", radius=RADIUS["md"])
+        )
         els.append(
             mid_text(
                 x=MARGIN + 40,
-                y=150,
+                y=BODY_TOP,
                 w=CONTENT_W - 80,
                 h=250,
                 text=spec.question,

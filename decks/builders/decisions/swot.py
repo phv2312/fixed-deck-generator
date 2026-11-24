@@ -1,7 +1,8 @@
 """SWOT slides: strengths, weaknesses, opportunities, threats."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, bullets, mid_text, title_el
+from decks.builders.common import bullets, mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, RADIUS, RULE, TYPE
 from decks.models.decisions import SwotSlide
 from decks.models.elements import Element, Line, Shape, Text
 
@@ -33,7 +34,7 @@ class SwotBuilder(BaseBuilder[SwotSlide]):
             if hi:
                 els.append(Shape(x=x, y=y, w=qw, h=qh, fill="primary", radius=RADIUS["md"]))
             else:
-                els.append(Line(x1=x, y1=y, x2=x + qw, y2=y, color="grid", width=1))
+                els.append(Line(x1=x, y1=y, x2=x + qw, y2=y, color="grid", width=RULE["hair"]))
             px = x + (16 if hi else 0)
             els.append(
                 mid_text(

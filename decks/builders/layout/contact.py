@@ -4,25 +4,23 @@ import math
 import os
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import (
+from decks.builders.common import background, deco_blocks, mid_text, title_el
+from decks.design import (
+    CONTENT_TOP,
     CONTENT_W,
+    LINE_HEIGHT,
     MARGIN,
+    MARGIN_WIDE,
     RADIUS,
+    RULE,
     SPACE,
     TYPE,
     W,
-    background,
-    deco_blocks,
-    mid_text,
     snap_down,
-    title_el,
 )
-from decks.design import LINE_HEIGHT
 from decks.models.elements import Element, Image, Line, Shape, Text
 from decks.models.layout import ContactSlide
 from decks.text_metrics import TextMetrics
-
-LM = 80
 
 
 class ContactBuilder(BaseBuilder[ContactSlide]):
@@ -48,7 +46,7 @@ class ContactBuilder(BaseBuilder[ContactSlide]):
             els += deco_blocks()
         els.append(
             mid_text(
-                x=LM,
+                x=MARGIN_WIDE,
                 y=60,
                 w=900,
                 h=90,
@@ -58,7 +56,16 @@ class ContactBuilder(BaseBuilder[ContactSlide]):
                 color="primary",
             )
         )
-        els.append(Line(x1=LM, y1=164, x2=LM + 90, y2=164, color="accent", width=4))
+        els.append(
+            Line(
+                x1=MARGIN_WIDE,
+                y1=164,
+                x2=MARGIN_WIDE + 90,
+                y2=164,
+                color="accent",
+                width=RULE["thick"],
+            )
+        )
         cols = n if n <= 3 else 3
         if n == 1:
             cols = 1
@@ -68,11 +75,11 @@ class ContactBuilder(BaseBuilder[ContactSlide]):
             if n == 1
             else ((TYPE["h3"], TYPE["body"], 200) if n <= 3 else (TYPE["lead"], TYPE["small"], 190))
         )
-        cw = 620 if n == 1 else (440 if n == 2 else (W - 2 * LM - gap * (cols - 1)) / cols)
+        cw = 620 if n == 1 else (440 if n == 2 else (W - 2 * MARGIN_WIDE - gap * (cols - 1)) / cols)
         metrics = TextMetrics()
         for i, person in enumerate(spec.people):
             r, c = divmod(i, cols)
-            x, y = LM + (cw + gap) * c, 210 + (card_h + gap) * r
+            x, y = MARGIN_WIDE + (cw + gap) * c, 210 + (card_h + gap) * r
             els.append(Shape(x=x, y=y, w=cw, h=card_h, fill="bg", radius=RADIUS["md"]))
             lines_count = metrics.lines(person.name, name_fs, cw - 56, bold=True)
             els.append(
@@ -106,7 +113,12 @@ class ContactBuilder(BaseBuilder[ContactSlide]):
             if contact_lines:
                 els.append(
                     Line(
-                        x1=x + 28, y1=next_y + 4, x2=x + 68, y2=next_y + 4, color="accent", width=2
+                        x1=x + 28,
+                        y1=next_y + 4,
+                        x2=x + 68,
+                        y2=next_y + 4,
+                        color="accent",
+                        width=RULE["thin"],
                     )
                 )
                 els.append(
@@ -133,8 +145,8 @@ class ContactBuilder(BaseBuilder[ContactSlide]):
         els: list[Element] = [title_el(spec.title)]
         for i, person in enumerate(spec.people):
             r, c = divmod(i, per)
-            x, y = MARGIN + (cw + gap) * c, 140 + (ch + gap) * r
-            els.append(Line(x1=x, y1=y, x2=x + cw, y2=y, color="primary", width=2))
+            x, y = MARGIN + (cw + gap) * c, CONTENT_TOP + (ch + gap) * r
+            els.append(Line(x1=x, y1=y, x2=x + cw, y2=y, color="primary", width=RULE["thin"]))
             d = min(96, ch * 0.34)
             ax, ay = x + cw / 2 - d / 2, y + 16
             if person.photo and (person.photo.startswith("http") or os.path.isfile(person.photo)):

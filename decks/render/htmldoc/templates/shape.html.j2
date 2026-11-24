@@ -1,0 +1,8 @@
+{% import 'macros.j2' as m %}
+{% set css %}
+{{ m.box(e) }}
+background:{{ color(e.fill) }};opacity:{{ e.opacity }};box-sizing:border-box;
+{% if e.stroke %}border:{{ e.stroke_width|g }}px {{ 'dashed' if e.dash else 'solid' }} {{ color(e.stroke) }};{% endif %}
+{% if e.shape == 'ellipse' %}border-radius:50%;{% elif e.radius %}border-radius:{{ e.radius|g }}px;{% endif %}
+{% endset %}
+<div class="e" style="{{ css|inline }}"></div>

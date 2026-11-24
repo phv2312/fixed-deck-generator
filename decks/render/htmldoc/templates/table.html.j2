@@ -1,0 +1,11 @@
+{% import 'macros.j2' as m %}
+<table class="e" style="{{ m.box(e) }}font-size:{{ e.font_size|g }}px;">
+{%- for row in e.rows -%}
+{%- set tag = 'th' if (e.header and loop.first) else 'td' -%}
+<tr>
+{%- for cell in row -%}
+<{{ tag }}>{{ cell|esc }}</{{ tag }}>
+{%- endfor -%}
+</tr>
+{%- endfor -%}
+</table>

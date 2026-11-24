@@ -5,7 +5,7 @@ from pathlib import Path
 from .builders import build_deck
 from .models.slides import Deck, DeckSpec
 from .models.theme import THEMES
-from .render.html import render_html
+from .render.htmldoc.services import HtmlRenderer
 
 EXAMPLES_DIR = "examples"
 OUT_DIR = Path("out")  # generated files go here, not in the repo root
@@ -48,10 +48,10 @@ def main() -> None:
                 data = json.loads(f.read_text())
                 data["theme"] = theme
                 deck = build_deck(DeckSpec.model_validate(data))
-                (out / f"{f.stem}_{theme}.html").write_text(render_html(deck))
+                (out / f"{f.stem}_{theme}.html").write_text(HtmlRenderer(deck).document())
                 all_slides += deck.slides
             deck.slides = all_slides
-            (out / f"all_{theme}.html").write_text(render_html(deck))
+            (out / f"all_{theme}.html").write_text(HtmlRenderer(deck).document())
         print(f"wrote {sorted(x.name for x in out.iterdir())}")
         return
 
@@ -65,5 +65,5 @@ def main() -> None:
     else:
         deck = Deck.model_validate_json(Path(a.deck).read_text())
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
-        Path(a.out).write_text(render_html(deck))
+        Path(a.out).write_text(HtmlRenderer(deck).document())
     print(f"wrote {a.out}")

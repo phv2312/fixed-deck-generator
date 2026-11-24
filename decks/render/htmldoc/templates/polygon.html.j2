@@ -1,0 +1,3 @@
+{% set points %}{% for x, y in e.points %}{{ x|g }},{{ y|g }}{% if not loop.last %} {% endif %}{% endfor %}{% endset %}
+{% set dash %}{% if e.dash %} stroke-dasharray="{{ page.polygon_dash }}"{% endif %}{% endset %}
+<svg class="e" width="{{ deck.width }}" height="{{ deck.height }}"><polygon points="{{ points }}" fill="{{ color(e.fill) }}" stroke="{{ color(e.stroke) }}" stroke-width="{{ e.stroke_width|g }}" opacity="{{ e.opacity }}"{{ dash }}/></svg>

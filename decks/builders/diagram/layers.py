@@ -1,12 +1,13 @@
 """Layer slides: stacked layers with an element row."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import MARGIN, RADIUS, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import BODY_TOP, MARGIN, RADIUS, RULE, SPACE, TYPE, W
 from decks.models.diagram import LayersSlide
 from decks.models.elements import Element, Shape
 
 NAME_W = 200
-GAP = 16
+GAP = SPACE["s"]
 
 
 class LayersBuilder(BaseBuilder[LayersSlide]):
@@ -29,7 +30,7 @@ class LayersBuilder(BaseBuilder[LayersSlide]):
         lh = min(96, (470 - GAP * (n - 1)) / n)
         els: list[Element] = [title_el(spec.title)]
         for i, layer in enumerate(spec.layers):
-            y = 150 + (lh + GAP) * i
+            y = BODY_TOP + (lh + GAP) * i
             active = i in highlight
             els.append(
                 Shape(
@@ -66,7 +67,7 @@ class LayersBuilder(BaseBuilder[LayersSlide]):
                         h=lh,
                         fill="bg",
                         stroke="primary" if active else "light",
-                        stroke_width=2,
+                        stroke_width=RULE["thin"],
                         radius=RADIUS["md"],
                     )
                 )
