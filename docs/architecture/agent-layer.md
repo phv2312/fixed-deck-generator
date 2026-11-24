@@ -2,7 +2,7 @@
 
 # Agent layer
 
-The agent layer uses the OpenAI Agents SDK. It connects to Azure OpenAI through `AzureOpenAISettings`.
+The agent layer uses the OpenAI Agents SDK. It connects to Azure OpenAI through `AzureOpenAISettings`. The `Container` in `decks/container.py` creates the Azure client, the `RunConfig`, the repositories, and the `ProjectRunner`. It closes the client when the app ends. Only an entry point builds the `Container`.
 
 ## Project storage
 
@@ -60,7 +60,7 @@ draft ─► interviewing ─► review ─► approved ─► generating ─►
 
 ## The slide catalog
 
-`SlideCatalog` reads the registry. `SlideCatalog.prompt` has one line for each kind: the description and the required fields. The interview agent reads it. The interview agent chooses the kind of every slide. The rules for this choice are in [rules/slide-variety.md](../rules/slide-variety.md).
+`SlideCatalog` reads the registry. `SlideCatalog.prompt` has one line for each kind: the description and the required fields. The interview agent reads it. The interview agent chooses the kind of every slide.
 
 ## Prompt templates
 

@@ -57,6 +57,27 @@ class Container:
         return ReportService(orders=self.orders, exporters=self.exporters)
 ```
 
+## Default collaborators
+
+A class may take an optional collaborator and create a default for it. Use this form:
+
+```python
+class VisualService:
+    def __init__(self, assets: AssetRepository, rasterizer: Rasterizer | None = None) -> None:
+        self._assets = assets
+        self._rasterizer = rasterizer if rasterizer is not None else Rasterizer()
+```
+
+Use a default only when all these conditions are true:
+
+- The default is cheap and has no shared state. Its state is private to the owner.
+- Creating it needs no settings, no network, and no file access.
+- It holds no resource that must be closed.
+
+Test for `is None`. Do not write `rasterizer or Rasterizer()`. The `or` form replaces any falsy argument, for example a fake with `__bool__` or `__len__`.
+
+When one condition is false, make the collaborator a required parameter. Create it in the Container.
+
 ## Where to build it
 
 - Build the Container only at an entry point: a CLI command, the server start-up, a script `main`, or a test fixture.
@@ -79,7 +100,7 @@ def export(order_id: str, fmt: ExportFormat) -> None:
 ## The Container stays at the edge
 
 - Only entry points use the Container. They get the top-level service from it and call that service.
-- Services, repositories, strategies, and models never import `Container`. They get their collaborators through the constructor.
+- Services, repositories, strategies, and models never import `Container`. They get their collaborators through the constructor, or they create a default as "Default collaborators" allows.
 - Do not add a `from_container(container)` method to a domain class. This is the service locator pattern. It hides the real dependencies and puts the selection keys into domain code.
 
 ```python
@@ -153,7 +174,8 @@ Callers then use `container.storage.orders` and `container.llm.chat_model`.
 
 Answer these questions before you mark the change as complete:
 
-- [ ] Are all dependencies created in one Container, which only entry points build?
+- [ ] Does the Container create each dependency that needs settings or a resource, and do only entry points build it?
+- [ ] Does each default collaborator meet the "Default collaborators" conditions and use an `is None` test?
 - [ ] Is the Container free of global instances, and do domain classes never import it?
 - [ ] Does each service get its collaborators through the constructor, with no `from_container` method?
 - [ ] Does the Container close each resource through its `ExitStack`?

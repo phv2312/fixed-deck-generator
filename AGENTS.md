@@ -29,7 +29,6 @@ Read these documents to learn how the system works. Do this before you change mo
 | [docs/architecture/](./docs/architecture/README.md) | You need to know how the system is built: the deck engine, the agent layer, deck generation, and the visual agent. |
 | [docs/builder-authoring.md](./docs/builder-authoring.md) | You add or change a slide kind. |
 | [docs/slide-catalog/](./docs/slide-catalog/README.md) | You need the list of slide kinds, their parameters, and their previews. Do not edit it. Run `uv run python -m scripts.gen_catalog` to update it. |
-| [docs/rules/slide-variety.md](./docs/rules/slide-variety.md) | You change how the interview agent chooses slide kinds. |
 
 Update the matching document when you change one of these areas.
 
