@@ -17,10 +17,10 @@ from decks.builders.common import (
     snap_down,
     title_el,
 )
+from decks.design import LINE_HEIGHT
 from decks.models.elements import Element, Image, Line, Shape, Text
 from decks.models.layout import ContactSlide
-
-from .textfit import LH, est_lines
+from decks.text_metrics import TextMetrics
 
 LM = 80
 
@@ -69,17 +69,18 @@ class ContactBuilder(BaseBuilder[ContactSlide]):
             else ((TYPE["h3"], TYPE["body"], 200) if n <= 3 else (TYPE["lead"], TYPE["small"], 190))
         )
         cw = 620 if n == 1 else (440 if n == 2 else (W - 2 * LM - gap * (cols - 1)) / cols)
+        metrics = TextMetrics()
         for i, person in enumerate(spec.people):
             r, c = divmod(i, cols)
             x, y = LM + (cw + gap) * c, 210 + (card_h + gap) * r
             els.append(Shape(x=x, y=y, w=cw, h=card_h, fill="bg", radius=RADIUS["md"]))
-            lines_count = est_lines(person.name, cw - 56, name_fs, bold=True)
+            lines_count = metrics.lines(person.name, name_fs, cw - 56, bold=True)
             els.append(
                 Text(
                     x=x + 28,
                     y=y + 28,
                     w=cw - 56,
-                    h=name_fs * LH * lines_count,
+                    h=name_fs * LINE_HEIGHT * lines_count,
                     text=person.name,
                     font_size=name_fs,
                     bold=True,
@@ -87,7 +88,7 @@ class ContactBuilder(BaseBuilder[ContactSlide]):
                     valign="top",
                 )
             )
-            next_y = y + 28 + name_fs * LH * lines_count + 6
+            next_y = y + 28 + name_fs * LINE_HEIGHT * lines_count + 6
             if person.role:
                 els.append(
                     mid_text(

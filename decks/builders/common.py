@@ -55,7 +55,7 @@ def on(fill: str) -> str:
 
 
 def title_el(title: str) -> Text:
-    size = TextMetrics().fit_font_size(title, TYPE["h2"], (CONTENT_W, TITLE_H), bold=True)
+    size = TextMetrics().fit_font_size(title, TYPE["h2"], (CONTENT_W, TITLE_H), bold=True).size
     return mid_text(
         x=MARGIN,
         y=TITLE_Y,

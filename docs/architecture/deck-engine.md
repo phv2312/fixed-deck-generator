@@ -36,7 +36,10 @@ A kind can have more than one look. A merged kind uses a field to choose the loo
 
 - Shared primitives (`title_el`, `bullets`, `banner`, and others) are in `decks/builders/common.py`. Do not put feature logic there.
 - Design tokens are in `decks/design.py`. Use a type role (`TYPE["body"]`), not a number.
-- `TextMetrics` estimates the height of a text. It is a heuristic, not a browser layout.
+- `TextMetrics` estimates how much room a text needs. It is the only estimator. The builders, the checker and the fitter all use it.
+- `TextMetrics.lines` counts the wrapped lines with word wrapping. `height` and `fit_font_size` use it.
+- `TextMetrics.fit_font_size` returns a `Fit` (size and line count).
+- `TextMetrics` is a heuristic, not a browser layout.
 - Colors are theme tokens (`primary`, `accent`, `tint`, and others). A builder never writes a color value.
 
 ## Render

@@ -4,8 +4,7 @@ from decks.builders.base import BaseBuilder
 from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, W, mid_text, title_el
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.layout import ContentSlide
-
-from .textfit import LH, est_lines, fit
+from decks.text_metrics import TextMetrics
 
 
 def lead_text(lead: list[str], y: float = 112) -> list[Element]:
@@ -44,8 +43,9 @@ class ContentBuilder(BaseBuilder[ContentSlide]):
         if spec.small:
             hi = 18
         lines = spec.body
+        metrics = TextMetrics()
         if len(lines) == 1:
-            fs, _ = fit(lines[0], body_w, bottom - top, hi + 4, 14)
+            fs = metrics.fit_font_size(lines[0], hi + 4, (body_w, bottom - top), 14, snap=True).size
             els.append(
                 Text(
                     x=MARGIN,
@@ -62,7 +62,7 @@ class ContentBuilder(BaseBuilder[ContentSlide]):
             rh = min(96, (bottom - top) / n)
             fs = hi
             while fs > 14 and any(
-                est_lines(line, body_w - 36, fs) * fs * LH > rh - 10 for line in lines
+                metrics.height(line, fs, body_w - 36) > rh - 10 for line in lines
             ):
                 fs -= 1
             for i, line in enumerate(lines):
@@ -102,7 +102,9 @@ class ContentBuilder(BaseBuilder[ContentSlide]):
                     x=bx, y=top, w=box_w, h=bottom - top - 20, fill="primary", radius=RADIUS["md"]
                 )
             )
-            box_fs, _ = fit(box_text, box_w - 72, bottom - top - 140, 38, 20, bold=True)
+            box_fs = metrics.fit_font_size(
+                box_text, 38, (box_w - 72, bottom - top - 140), 20, bold=True, snap=True
+            ).size
             els.append(
                 mid_text(
                     x=bx + 36,

@@ -19,7 +19,7 @@ def _slide(*elements: Text | Shape) -> Slide:
 
 def test_fit_font_size_shrinks_to_scale() -> None:
     """The fitted size is a design-scale size no larger than the request."""
-    size = TextMetrics().fit_font_size("word " * 30, 36, (300, 100))
+    size = TextMetrics().fit_font_size("word " * 30, 36, (300, 100)).size
     assert size < 36
     assert size in {12, 14, 16, 18, 22, 28}
 

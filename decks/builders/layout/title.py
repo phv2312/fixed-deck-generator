@@ -3,10 +3,10 @@
 from decks.builders.base import BaseBuilder
 from decks.builders.common import TYPE, H, W, background, deco_blocks
 from decks.builders.pictures.image import pic
+from decks.design import LINE_HEIGHT
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.layout import TitleSlide
-
-from .textfit import LH, est_lines, fit
+from decks.text_metrics import TextMetrics
 
 LM = 80
 
@@ -31,13 +31,20 @@ class TitleBuilder(BaseBuilder[TitleSlide]):
             text_w = 780
         subtitle = "\n".join(spec.subtitle) if spec.subtitle else ""
         sub_fs = TYPE["lead"]
-        sub_h = est_lines(subtitle, text_w, sub_fs) * sub_fs * LH + 8 if subtitle else 0
+        metrics = TextMetrics()
+        sub_h = metrics.height(subtitle, sub_fs, text_w) + 8 if subtitle else 0
         top, bottom = 110, 560
         available = bottom - top - (sub_h + 24 if subtitle else 0)
-        title_fs, line_count = fit(
-            spec.title, text_w, available, 64 if not spec.image else 54, 30, bold=True
+        title = metrics.fit_font_size(
+            spec.title,
+            64 if not spec.image else 54,
+            (text_w, available),
+            30,
+            bold=True,
+            snap=True,
         )
-        text_h = line_count * title_fs * LH
+        title_fs = title.size
+        text_h = title.lines * title_fs * LINE_HEIGHT
         group_h = text_h + (sub_h + 24 if subtitle else 0) + 40
         y0 = top + max(0, (bottom - top - group_h) / 2)
         els.append(Shape(x=LM, y=y0, w=90, h=6, fill="accent"))
