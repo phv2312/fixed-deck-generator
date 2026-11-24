@@ -110,7 +110,7 @@ def test_page_style_sets_title_and_backdrop() -> None:
     page = HtmlRenderer(make_deck(), style).document()
 
     assert "<title>A &amp; B</title>" in page
-    assert "background:#123456" in page
+    assert "background: #123456" in page
 
 
 @pytest.mark.parametrize(
