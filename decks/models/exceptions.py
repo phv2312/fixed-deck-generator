@@ -153,17 +153,6 @@ class RaciAccountableCountError(ModelError):
 
 
 @dataclass
-class SeriesLengthError(ModelError):
-    """Raised when a series does not have one value per category."""
-
-    TEMPLATE = "{what}: series '{series}' has {actual} values, expected {expected}"
-    what: str
-    series: str
-    actual: int
-    expected: int
-
-
-@dataclass
 class MekkoColumnLengthError(ModelError):
     """Raised when a mekko column does not have one value per part."""
 

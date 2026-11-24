@@ -32,7 +32,7 @@ chat ──► interview agent ──► Plan ──► DeckGenerator ──► 
 | Interview | Chat messages | `Plan` (`plan.json`) | `decks/agents/` |
 | Fill | `SlideDraft` of the plan | Slide spec (one pydantic model per kind) | `decks/agents/services/generator.py` |
 | Stage 1: build | `DeckSpec` | `Deck` (`deck.json`) | `decks/builders/` |
-| Stage 2: render | `Deck` | One HTML file | `decks/render/html.py` |
+| Stage 2: render | `Deck` | One HTML file | `decks/render/htmldoc/services.py` |
 
 ## Package map
 
@@ -47,17 +47,17 @@ chat ──► interview agent ──► Plan ──► DeckGenerator ──► 
 | `decks/design.py` | Design tokens: canvas size, type scale, spacing. |
 | `decks/text_metrics.py` | Text size estimate. Builders and the checker share it. |
 | `decks/settings.py` | Azure OpenAI settings. |
-| `decks/cli.py` | The `build`, `render`, `gallery` and `review` commands. |
 
 ## Entry points
 
 | Command | Use |
 |---|---|
-| `uv run python -m decks build spec.json -o out/deck.json` | Stage 1. |
-| `uv run python -m decks render out/deck.json -o out/deck.html` | Stage 2. |
-| `uv run python -m decks gallery` | Render every example in both themes. |
-| `uv run python -m decks review -o gallery.html` | One review gallery. |
+| `uv run python -m scripts.pipeline build spec.json -o out/deck.json` | Stage 1. |
+| `uv run python -m scripts.pipeline render out/deck.json -o out/deck.html` | Stage 2. |
+| `uv run python -m scripts.pipeline gallery` | Render every example in both themes. |
+| `uv run python -m scripts.pipeline review -o gallery.html` | One review gallery. |
 | `uv run python -m scripts.chat` | Chat client for the agent layer. |
+| `uv run python -m scripts.pipeline` | Build, render and gallery commands (`scripts/pipeline.py`). |
 | `uv run python -m scripts.gen_catalog` | Regenerate `docs/slide-catalog/`. |
 
 ## Design decisions

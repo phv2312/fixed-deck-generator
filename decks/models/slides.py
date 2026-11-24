@@ -128,16 +128,52 @@ class Slide(BaseModel):
     @property
     def flat(self) -> list[Element]:
         """Every element in reading order, with group children expanded."""
-        return _flatten(self.elements)
+        return self._flatten(self.elements)
 
     def numbered(self, index: int) -> "Slide":
         """Return a copy whose elements have ids ``s{index}e{n}``."""
         counter = iter(range(1, 100_000))
-        return self.model_copy(update={"elements": _numbered(self.elements, index, counter)})
+        return self.model_copy(update={"elements": self._numbered(self.elements, index, counter)})
 
     def updated(self, element_id: str, changes: dict[str, object]) -> "Slide":
         """Return a copy where element ``element_id`` has ``changes`` applied."""
-        return self.model_copy(update={"elements": _updated(self.elements, element_id, changes)})
+        return self.model_copy(
+            update={"elements": self._updated(self.elements, element_id, changes)}
+        )
+
+    @staticmethod
+    def _flatten(elements: list[Element]) -> list[Element]:
+        flat: list[Element] = []
+        for element in elements:
+            flat.append(element)
+            if isinstance(element, Group):
+                flat.extend(Slide._flatten(element.children))
+        return flat
+
+    @staticmethod
+    def _numbered(elements: list[Element], index: int, counter: Iterator[int]) -> list[Element]:
+        out: list[Element] = []
+        for element in elements:
+            update: dict[str, object] = {"id": f"s{index}e{next(counter)}"}
+            if isinstance(element, Group):
+                update["children"] = Slide._numbered(element.children, index, counter)
+            out.append(element.model_copy(update=update))
+        return out
+
+    @staticmethod
+    def _updated(
+        elements: list[Element], element_id: str, changes: dict[str, object]
+    ) -> list[Element]:
+        out: list[Element] = []
+        for element in elements:
+            if element.id == element_id:
+                element = element.model_copy(update=changes)
+            elif isinstance(element, Group):
+                element = element.model_copy(
+                    update={"children": Slide._updated(element.children, element_id, changes)}
+                )
+            out.append(element)
+        return out
 
     def element(self, element_id: str) -> Element | None:
         """Return the element with ``element_id``, or ``None``."""
@@ -155,35 +191,3 @@ class Deck(BaseModel):
     palette: dict[str, str]
     font: str
     slides: list[Slide]
-
-
-def _flatten(elements: list[Element]) -> list[Element]:
-    flat: list[Element] = []
-    for element in elements:
-        flat.append(element)
-        if isinstance(element, Group):
-            flat.extend(_flatten(element.children))
-    return flat
-
-
-def _numbered(elements: list[Element], index: int, counter: Iterator[int]) -> list[Element]:
-    out: list[Element] = []
-    for element in elements:
-        update: dict[str, object] = {"id": f"s{index}e{next(counter)}"}
-        if isinstance(element, Group):
-            update["children"] = _numbered(element.children, index, counter)
-        out.append(element.model_copy(update=update))
-    return out
-
-
-def _updated(elements: list[Element], element_id: str, changes: dict[str, object]) -> list[Element]:
-    out: list[Element] = []
-    for element in elements:
-        if element.id == element_id:
-            element = element.model_copy(update=changes)
-        elif isinstance(element, Group):
-            element = element.model_copy(
-                update={"children": _updated(element.children, element_id, changes)}
-            )
-        out.append(element)
-    return out

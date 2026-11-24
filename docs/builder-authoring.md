@@ -74,7 +74,7 @@ uv run ruff check
 uv run ruff format --check
 uv run ty check
 uv run pytest
-uv run python -m decks review -o gallery.html
+uv run python -m scripts.pipeline review -o gallery.html
 ```
 
 `gallery.html` is the surface for visual review. It renders each example slide in both themes.
