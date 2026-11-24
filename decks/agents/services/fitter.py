@@ -28,5 +28,5 @@ class LayoutFitter:
         indent = text.font_size if BULLET in text.text else 0  # the checker counts it too
         size = self._metrics.fit_font_size(
             text.text, text.font_size, (text.w - indent, text.h), bold=text.bold
-        )
+        ).size
         return text if size >= text.font_size else text.model_copy(update={"font_size": size})

@@ -3,10 +3,10 @@
 from decks.builders.base import BaseBuilder
 from decks.builders.common import RADIUS, TYPE, H, W, background, mid_text
 from decks.builders.pictures.image import pic
+from decks.design import LINE_HEIGHT
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.layout import StatementSlide
-
-from .textfit import LH, est_lines, fit
+from decks.text_metrics import TextMetrics
 
 LM = 80
 
@@ -36,10 +36,17 @@ class StatementBuilder(BaseBuilder[StatementSlide]):
         z0, z1 = (80, 430) if n else (80, 640)
         lead = " ".join(spec.lead) if spec.lead else None
         lead_h = 44 if lead else 0
-        title_fs, line_count = fit(
-            spec.title, text_w, z1 - z0 - lead_h - 20, 76 if not figure else 56, 30, bold=True
+        metrics = TextMetrics()
+        title = metrics.fit_font_size(
+            spec.title,
+            76 if not figure else 56,
+            (text_w, z1 - z0 - lead_h - 20),
+            30,
+            bold=True,
+            snap=True,
         )
-        text_h = line_count * title_fs * LH
+        title_fs = title.size
+        text_h = title.lines * title_fs * LINE_HEIGHT
         author_h = 48 if spec.author else 0
         group_h = lead_h + text_h + author_h
         y0 = z0 + (z1 - z0 - group_h) / 2
@@ -96,7 +103,8 @@ class StatementBuilder(BaseBuilder[StatementSlide]):
             )
             figure_fs = max(40, min(120, 420 / (0.62 * len(figure_text))))
             label = " ".join(spec.label) if spec.label else ""
-            label_h = est_lines(label, 420, TYPE["lead"]) * TYPE["lead"] * LH + 12 if label else 0
+            label_lines = metrics.lines(label, TYPE["lead"], 420)
+            label_h = label_lines * TYPE["lead"] * LINE_HEIGHT + 12 if label else 0
             figure_h = figure_fs * 1.3
             group_y = z0 + (z1 - z0 - figure_h - label_h) / 2
             els.append(
@@ -127,7 +135,9 @@ class StatementBuilder(BaseBuilder[StatementSlide]):
             point_w = (W - 2 * LM - 24 * (n - 1)) / n
             x = LM + (point_w + 24) * i
             els.append(Shape(x=x, y=470, w=point_w, h=130, fill="bg", radius=RADIUS["md"]))
-            point_fs, _ = fit(point, point_w - 56, 100, 26, 14, bold=True)
+            point_fs = metrics.fit_font_size(
+                point, 26, (point_w - 56, 100), 14, bold=True, snap=True
+            ).size
             els.append(
                 mid_text(
                     x=x + 28,

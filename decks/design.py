@@ -57,8 +57,7 @@ GREEN, AMBER, RED, GREY = "#2E9E5B", "#F5A623", "#D64545", "#9CA3AF"
 # Text measurement shared by the fitter, the checker and the HTML renderer.
 LINE_HEIGHT = 1.3
 CHAR_WIDTH = 0.55  # average glyph width as a fraction of the font size
-BOLD_CHAR_WIDTH = 0.5  # bold headlines measure narrower in the browser than the estimate
-BOLD_CHAR_WIDTH_SAFE = 0.58  # conservative bold width used when wrapping must not under-count
+BOLD_CHAR_WIDTH = 0.58  # conservative bold width: wrapping must not under-count
 MONO_FONT = "Menlo,Consolas,monospace"
 
 _SIZES = sorted(TYPE.values())

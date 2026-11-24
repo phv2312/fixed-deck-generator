@@ -30,10 +30,17 @@ def test_deco_blocks_do_not_overlap() -> None:
 
 
 def test_title_el_keeps_a_one_line_title_at_h2() -> None:
-    """A 64-character title fits one line of the full-width box, so it keeps the h2 size."""
-    title = "Scaled dot-product attention turns scores into weighted averages"
+    """A title of up to 55 characters fits one line of the full-width box, so it keeps h2."""
+    title = "Scaled dot-product attention turns scores into averages"
 
     assert title_el(title).font_size == TYPE["h2"]
+
+
+def test_title_el_steps_a_64_character_title_down_to_h3() -> None:
+    """The bold width is conservative: a 64-character title wraps at h2 and drops to h3."""
+    title = "Scaled dot-product attention turns scores into weighted averages"
+
+    assert title_el(title).font_size == TYPE["h3"]
 
 
 def test_title_el_shrinks_a_title_that_would_wrap() -> None:

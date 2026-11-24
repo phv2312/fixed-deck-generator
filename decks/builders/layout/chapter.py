@@ -4,8 +4,7 @@ from decks.builders.base import BaseBuilder
 from decks.builders.common import TYPE, W, background, mid_text, title_el  # noqa: F401
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.layout import ChapterSlide
-
-from .textfit import fit
+from decks.text_metrics import TextMetrics
 
 LM = 80
 
@@ -27,7 +26,10 @@ class ChapterBuilder(BaseBuilder[ChapterSlide]):
             Shape(x=1000, y=560, w=280, h=160, fill="bg", opacity=0.08),
             Shape(x=1100, y=470, w=110, h=160, fill="bg", opacity=0.12),
         ]
-        number_fs, _ = fit(number, W - 2 * LM, 230, 220, 100, bold=True, snap=False)
+        metrics = TextMetrics()
+        number_fs = metrics.fit_font_size(
+            number, 220, (W - 2 * LM, 230), 100, bold=True, step=2
+        ).size
         els.append(
             mid_text(
                 x=LM,
@@ -41,7 +43,7 @@ class ChapterBuilder(BaseBuilder[ChapterSlide]):
             )
         )
         els.append(Line(x1=LM, y1=390, x2=LM + 120, y2=390, color="bg", width=4))
-        title_fs, _ = fit(spec.title, 840, 220, 60, 32, bold=True)
+        title_fs = metrics.fit_font_size(spec.title, 60, (840, 220), 32, bold=True, snap=True).size
         els.append(
             Text(
                 x=LM,

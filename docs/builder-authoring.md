@@ -48,7 +48,7 @@ class CycleBuilder(BaseBuilder[CycleSlide]):
 
 - The shared primitives (`title_el`, `bullets`, `banner`, ...) are in `decks/builders/common.py`. Do not put feature logic in this module.
 - Chart drawing is in `decks/builders/charts/renderer.py` (`ChartRenderer`). Use `render()` for the standard layout. Use `draw(x, y, w, h)` to scale the chart into a box.
-- Text fitting for full-bleed layouts is in `decks/builders/layout/textfit.py`.
+- Text fitting for full-bleed layouts uses `TextMetrics.fit_font_size` in `decks/text_metrics.py`. Pass `snap=True` to get a size on the type scale.
 
 ## Verification
 

@@ -67,7 +67,9 @@ class DeckEditor:
         if not isinstance(element, Text):
             raise ElementNotFoundError(slide_id, element_id)
         size = element.font_size
-        fitted = self._metrics.fit_font_size(text, size, (element.w, element.h), bold=element.bold)
+        fitted = self._metrics.fit_font_size(
+            text, size, (element.w, element.h), bold=element.bold
+        ).size
         overflow = fitted < size
         changes: dict[str, object] = {"text": text}
         if autofit and overflow:
