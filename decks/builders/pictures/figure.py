@@ -1,7 +1,8 @@
 """Figure slides: one picture across the slide, with a caption and a source."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, TYPE, H, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, TYPE, H, W
 from decks.models.elements import Element, Shape
 from decks.models.pictures import FigureSlide
 

@@ -1,7 +1,8 @@
 """Agenda slides: numbered items with a current marker."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, W, mid_text, snap_down, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, RADIUS, RULE, TYPE, W, snap_down
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.layout import AgendaSlide
 
@@ -102,7 +103,7 @@ class AgendaBuilder(BaseBuilder[AgendaSlide]):
                         x2=W - MARGIN,
                         y2=y + rh,
                         color="grid",
-                        width=1,
+                        width=RULE["hair"],
                     )
                 )
         return els
@@ -195,6 +196,13 @@ class AgendaBuilder(BaseBuilder[AgendaSlide]):
                 )
             if i < n - 1 and not current and spec.current != i + 1:
                 els.append(
-                    Line(x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=1)
+                    Line(
+                        x1=MARGIN,
+                        y1=y + rh,
+                        x2=W - MARGIN,
+                        y2=y + rh,
+                        color="grid",
+                        width=RULE["hair"],
+                    )
                 )
         return els

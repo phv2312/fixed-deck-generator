@@ -3,7 +3,8 @@
 import math
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import TYPE, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import RULE, TYPE
 from decks.models.diagram import CycleSlide
 from decks.models.elements import Element, Shape, Text
 
@@ -61,7 +62,7 @@ class CycleBuilder(BaseBuilder[CycleSlide]):
                     shape="ellipse",
                     fill="primary" if hi else "bg",
                     stroke="light",
-                    stroke_width=4,
+                    stroke_width=RULE["thick"],
                 )
             )
             glyph = item.icon or str(i + 1)

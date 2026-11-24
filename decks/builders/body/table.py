@@ -4,7 +4,8 @@ import re
 from typing import Literal
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import BODY_TOP, CONTENT_W, MARGIN, RULE, TYPE, W
 from decks.models.body import TableSlide
 from decks.models.elements import Element, Line, Shape
 
@@ -36,7 +37,7 @@ class TableBuilder(BaseBuilder[TableSlide]):
         align: list[Align] = spec.align or [
             "right" if all(NUM.match(row[j]) for row in spec.rows) else "left" for j in range(cols)
         ]
-        top = 150
+        top = BODY_TOP
         els: list[Element] = [title_el(spec.title)]
         if spec.highlight_col is not None:
             j = spec.highlight_col
@@ -79,7 +80,11 @@ class TableBuilder(BaseBuilder[TableSlide]):
                         align=align[j],
                     )
                 )
-            els.append(Line(x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=1))
+            els.append(
+                Line(
+                    x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=RULE["hair"]
+                )
+            )
         if spec.note:
             els.append(
                 mid_text(

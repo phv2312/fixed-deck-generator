@@ -3,7 +3,8 @@
 import math
 from typing import ClassVar, Literal
 
-from decks.builders.common import MARGIN, TYPE, arc_pts, fmt, on
+from decks.builders.common import arc_pts, fmt, on
+from decks.design import MARGIN, RULE, TYPE
 from decks.models.analytics import Chart
 from decks.models.elements import Element, Line, Polygon, Shape, Text
 
@@ -352,7 +353,7 @@ class ChartRenderer:
                     points=points,
                     fill=self.CATEGORY_COLORS[i % len(self.CATEGORY_COLORS)],
                     stroke="bg",
-                    stroke_width=2,
+                    stroke_width=RULE["thin"],
                     opacity=self._opacity(i),
                 )
             )

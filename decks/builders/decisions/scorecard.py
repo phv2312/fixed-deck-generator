@@ -3,11 +3,10 @@
 from typing import Literal
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_TOP, MARGIN, TYPE, W, colour, mid_text, title_el
+from decks.builders.common import colour, mid_text, title_el
+from decks.design import CONTENT_TOP, MARGIN, RULE, TREND_ARROWS, TYPE, W
 from decks.models.decisions import ScorecardSlide
 from decks.models.elements import Element, Line, Shape
-
-TREND = {"up": ("▲", "#2E9E5B"), "flat": ("▶", "#9CA3AF"), "down": ("▼", "#D64545")}
 
 
 class ScorecardBuilder(BaseBuilder[ScorecardSlide]):
@@ -45,7 +44,9 @@ class ScorecardBuilder(BaseBuilder[ScorecardSlide]):
                     align=align,
                 )
             )
-        els.append(Line(x1=MARGIN, y1=180, x2=W - MARGIN, y2=180, color="primary", width=2))
+        els.append(
+            Line(x1=MARGIN, y1=180, x2=W - MARGIN, y2=180, color="primary", width=RULE["thin"])
+        )
         for i, kpi in enumerate(spec.kpis):
             y = 186 + rh * i
             unit = f" {kpi.unit}" if kpi.unit else ""
@@ -87,7 +88,7 @@ class ScorecardBuilder(BaseBuilder[ScorecardSlide]):
                     )
                 )
             if kpi.trend:
-                glyph, color = TREND[kpi.trend]
+                glyph, color = TREND_ARROWS[kpi.trend]
                 els.append(
                     mid_text(
                         x=830,
@@ -126,5 +127,9 @@ class ScorecardBuilder(BaseBuilder[ScorecardSlide]):
                         font_size=TYPE["body"],
                     )
                 )
-            els.append(Line(x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=1))
+            els.append(
+                Line(
+                    x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=RULE["hair"]
+                )
+            )
         return els

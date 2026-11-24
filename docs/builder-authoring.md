@@ -44,6 +44,23 @@ class CycleBuilder(BaseBuilder[CycleSlide]):
 5. Regenerate the catalog with `uv run python -m scripts.gen_catalog`.
 6. Run the verification commands below. Regenerate the gallery.
 
+## Design tokens
+
+Import design values from `decks.design`. Do not write bare numbers for these values in a builder.
+
+| Value | Token |
+|---|---|
+| Font size | `TYPE["body"]`, `TYPE["h3"]`, and the other roles |
+| Corner radius | `RADIUS["md"]`, `RADIUS["pill"]` |
+| Spacing between items | `GUTTER` for column and card gaps. `SPACE[...]` for other gaps. |
+| Slide margin | `MARGIN`. Cover layouts use `MARGIN_WIDE`. |
+| First y of the title area / body content | `CONTENT_TOP` / `BODY_TOP` |
+| Foot banner y | `BANNER_Y` |
+| Line width | `RULE["hair"]`, `RULE["thin"]`, `RULE["thick"]` |
+| Status colours | `GREEN`, `AMBER`, `RED`, `GREY`, `TREND_ARROWS` |
+
+A number that belongs to one slide kind can stay in the builder. Examples are the Venn circle centres, the cycle radius, and the matrix plot box. Add a token to `decks/design.py` when two builders need the same value.
+
 ## Story and layout helpers
 
 - The shared primitives (`title_el`, `bullets`, `banner`, ...) are in `decks/builders/common.py`. Do not put feature logic in this module.

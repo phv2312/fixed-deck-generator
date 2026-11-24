@@ -1,11 +1,12 @@
 """Pyramid slides: ranked levels with notes."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import MARGIN, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import BODY_TOP, MARGIN, RULE, TYPE, W
 from decks.models.diagram import PyramidSlide
 from decks.models.elements import Element, Line, Polygon, Shape, Text
 
-XC, TOP, H, BASE = 330, 150, 440, 520
+XC, TOP, H, BASE = 330, BODY_TOP, 440, 520
 TX = 660
 COLORS = ["primary", "muted", "light", "tint", "tint", "tint"]
 
@@ -67,7 +68,7 @@ class PyramidBuilder(BaseBuilder[PyramidSlide]):
                     x2=TX - 12,
                     y2=cy,
                     color="grid",
-                    width=1,
+                    width=RULE["hair"],
                     dash=True,
                 )
             )

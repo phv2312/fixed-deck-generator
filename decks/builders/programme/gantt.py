@@ -1,7 +1,8 @@
 """Gantt slides: a plan over time."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_TOP, MARGIN, RADIUS, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import CONTENT_TOP, MARGIN, RADIUS, RULE, TYPE, W
 from decks.models.elements import Element, Line, Polygon, Shape
 from decks.models.programme import GanttRow, GanttSlide
 
@@ -50,10 +51,24 @@ class GanttBuilder(BaseBuilder[GanttSlide]):
                 )
             )
             els.append(
-                Line(x1=px(j), y1=176, x2=px(j), y2=top + rh * len(lines), color="grid", width=1)
+                Line(
+                    x1=px(j),
+                    y1=176,
+                    x2=px(j),
+                    y2=top + rh * len(lines),
+                    color="grid",
+                    width=RULE["hair"],
+                )
             )
         els.append(
-            Line(x1=px(n), y1=176, x2=px(n), y2=top + rh * len(lines), color="grid", width=1)
+            Line(
+                x1=px(n),
+                y1=176,
+                x2=px(n),
+                y2=top + rh * len(lines),
+                color="grid",
+                width=RULE["hair"],
+            )
         )
         els.append(Line(x1=MARGIN, y1=178, x2=gx1, y2=178, color="primary", width=2.5))
         if spec.milestones:
@@ -152,7 +167,15 @@ class GanttBuilder(BaseBuilder[GanttSlide]):
         if spec.today is not None:
             x = px(spec.today)
             els.append(
-                Line(x1=x, y1=178, x2=x, y2=top + rh * len(lines), color="ink", width=2, dash=True)
+                Line(
+                    x1=x,
+                    y1=178,
+                    x2=x,
+                    y2=top + rh * len(lines),
+                    color="ink",
+                    width=RULE["thin"],
+                    dash=True,
+                )
             )
             els.append(
                 Shape(

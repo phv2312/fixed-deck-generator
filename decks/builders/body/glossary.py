@@ -1,7 +1,8 @@
 """Glossary slides: term and definition pairs in two columns."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, TYPE, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import BODY_TOP, CONTENT_W, MARGIN, RULE, TYPE
 from decks.models.body import GlossarySlide
 from decks.models.elements import Element, Line, Text
 
@@ -25,7 +26,7 @@ class GlossaryBuilder(BaseBuilder[GlossarySlide]):
         els: list[Element] = [title_el(spec.title)]
         for i, term in enumerate(spec.terms):
             c, r = divmod(i, per)
-            x, y = MARGIN + (cw + gap) * c, 150 + rh * r
+            x, y = MARGIN + (cw + gap) * c, BODY_TOP + rh * r
             els.append(
                 mid_text(
                     x=x,
@@ -48,5 +49,9 @@ class GlossaryBuilder(BaseBuilder[GlossarySlide]):
                     font_size=TYPE["body"] if rh >= 72 else TYPE["small"],
                 )
             )
-            els.append(Line(x1=x, y1=y + rh - 4, x2=x + cw, y2=y + rh - 4, color="grid", width=1))
+            els.append(
+                Line(
+                    x1=x, y1=y + rh - 4, x2=x + cw, y2=y + rh - 4, color="grid", width=RULE["hair"]
+                )
+            )
         return els

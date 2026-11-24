@@ -1,7 +1,8 @@
 """For/against slides: two opposing lists and a verdict."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, TYPE, banner, mid_text, title_el
+from decks.builders.common import banner, mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, RULE, TYPE
 from decks.models.decisions import ForAgainstSlide
 from decks.models.elements import Element, Line, Shape
 
@@ -69,7 +70,11 @@ class ForAgainstBuilder(BaseBuilder[ForAgainstSlide]):
                         font_size=TYPE["body_l"],
                     )
                 )
-                els.append(Line(x1=x + 52, y1=y + rh, x2=x + cw, y2=y + rh, color="grid", width=1))
+                els.append(
+                    Line(
+                        x1=x + 52, y1=y + rh, x2=x + cw, y2=y + rh, color="grid", width=RULE["hair"]
+                    )
+                )
         if spec.verdict:
             els += banner(spec.verdict, 552)
         return els

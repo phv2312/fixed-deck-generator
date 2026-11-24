@@ -1,6 +1,7 @@
 import itertools
 
-from decks.builders.common import MARGIN, TYPE, H, W, deco_blocks, title_el
+from decks.builders.common import deco_blocks, title_el
+from decks.design import MARGIN, TYPE, H, W
 from decks.models.elements import Shape
 
 

@@ -1,12 +1,13 @@
 """Mekko slides: variable-width stacked columns."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import TYPE, fmt, mid_text, on, title_el
+from decks.builders.common import fmt, mid_text, on, title_el
+from decks.design import BODY_TOP, TYPE
 from decks.models.analytics import MekkoSlide
 from decks.models.elements import Element, Shape
 
 X0, X1 = 64, 1020
-TOP, BOTTOM = 150, 560
+TOP, BOTTOM = BODY_TOP, 560
 GAP = 4
 COLORS = ["light", "primary", "accent", "tint"]
 

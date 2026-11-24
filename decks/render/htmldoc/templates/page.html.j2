@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><title>{{ page.title|esc }}</title><style>
+body{margin:0;background:{{ page.backdrop }};font-family:{{ deck.font }}}
+.wrap{display:flex;flex-direction:column;align-items:center;gap:{{ page.gap }}px;padding:{{ page.gap }}px 0}
+.frame{position:relative}
+.slide{position:absolute;left:0;top:0;width:{{ deck.width }}px;height:{{ deck.height }}px;
+background:{{ color('bg') }};overflow:hidden;transform-origin:0 0}
+.e{position:absolute;margin:0} .g{position:absolute;left:0;top:0}
+table.e{border-collapse:collapse} th,td{border:1px solid {{ color('grid') }};padding:{{ page.cell_padding }}}
+@media print{body{background:none}.wrap{padding:0;gap:0}.frame{width:{{ deck.width }}px!important;height:{{ deck.height }}px!important}
+.slide{transform:none!important}@page{size:{{ deck.width }}px {{ deck.height }}px;margin:0}}
+</style></head><body><div class="wrap">{{ slides }}</div><script>
+const W={{ deck.width }},H={{ deck.height }};
+function fit(){const s=Math.min(1,(innerWidth-{{ page.margin }})/W);
+document.querySelectorAll('.slide').forEach(el=>{
+if(!el.parentElement.classList.contains('frame')){const f=document.createElement('div');
+f.className='frame';el.replaceWith(f);f.appendChild(el);}
+el.style.transform='scale('+s+')';el.parentElement.style.width=W*s+'px';el.parentElement.style.height=H*s+'px';});}
+addEventListener('resize',fit);fit();
+</script></body></html>

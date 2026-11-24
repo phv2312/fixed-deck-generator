@@ -17,6 +17,9 @@ Corner radius: none (0) for rules and full-bleed blocks, sm (4) for small marker
 md (8) for every card or panel, pill (999) for pills and badges. Nothing else.
 
 Spacing is an 8 px grid: xs 8, s 16, m 24, l 32, xl 48. Slide margin 64, gutter 24.
+Cover layouts (title, chapter, statement, contact) use the wider margin MARGIN_WIDE (80).
+Body content starts at BODY_TOP (10 px under CONTENT_TOP). Line widths: RULE hair 1, thin 2,
+thick 4.
 
 Design rules every slide follows:
 - One emphasis per slide: a single element carries the colour, size or fill; everything else stays
@@ -45,14 +48,19 @@ RADIUS = {"none": 0, "sm": 4, "md": 8, "pill": 999}
 SPACE = {"xs": 8, "s": 16, "m": 24, "l": 32, "xl": 48}
 W, H = 1280, 720  # slide canvas in px
 MARGIN = 64
+MARGIN_WIDE = 80  # left and right margin of the cover layouts
 GUTTER = 24
 CONTENT_W = W - 2 * MARGIN  # width between the slide margins
 CONTENT_TOP = 140  # first y below the title
+BODY_TOP = CONTENT_TOP + 10  # first y of body content: a little air under the title
 TITLE_Y, TITLE_H = 40, 60  # the title box
 BANNER_Y, BANNER_H = 590, 56  # the takeaway banner at the foot of a slide
 
+RULE = {"hair": 1, "thin": 2, "thick": 4}  # line widths in px
+
 # Traffic-light status colours; the single source for trackers, scorecards and window chrome.
 GREEN, AMBER, RED, GREY = "#2E9E5B", "#F5A623", "#D64545", "#9CA3AF"
+TREND_ARROWS = {"up": ("▲", GREEN), "flat": ("▶", GREY), "down": ("▼", RED)}
 
 # Text measurement shared by the fitter, the checker and the HTML renderer.
 LINE_HEIGHT = 1.3

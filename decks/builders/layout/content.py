@@ -1,7 +1,8 @@
 """Content slides: title, lead, body and optional callout box."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, W, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, RADIUS, RULE, TYPE, W
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.layout import ContentSlide
 from decks.text_metrics import TextMetrics
@@ -90,7 +91,7 @@ class ContentBuilder(BaseBuilder[ContentSlide]):
                             x2=MARGIN + body_w,
                             y2=y + rh,
                             color="grid",
-                            width=1,
+                            width=RULE["hair"],
                         )
                     )
         if spec.box:

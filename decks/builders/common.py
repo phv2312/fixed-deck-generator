@@ -1,15 +1,13 @@
 import math
 from functools import partial
 
-from decks.design import (  # noqa: F401  (re-exported for builders)
+from decks.design import (
     AMBER,
     BANNER_H,
     BANNER_Y,
-    CONTENT_TOP,
     CONTENT_W,
     GREEN,
     GREY,
-    GUTTER,
     MARGIN,
     RADIUS,
     RED,

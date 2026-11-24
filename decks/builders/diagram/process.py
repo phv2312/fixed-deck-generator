@@ -1,15 +1,8 @@
 """Process slides: a process in a few steps."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import (
-    CONTENT_W,
-    MARGIN,
-    TYPE,
-    bullets,
-    icon_badge,
-    mid_text,
-    title_el,
-)
+from decks.builders.common import bullets, icon_badge, mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, TYPE
 from decks.models.diagram import ProcessSlide
 from decks.models.elements import Element, Line, Polygon, Text
 

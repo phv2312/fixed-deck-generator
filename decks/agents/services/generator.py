@@ -17,7 +17,7 @@ from decks.agents.exceptions import (
     SlideNotFoundError,
 )
 from decks.agents.models import DeckProgress, DeckReady, DeckReport, FixResult, LayoutIssue
-from decks.agents.prompts import FILL_SYSTEM
+from decks.agents.prompts import AgentPrompts
 from decks.agents.repos import Repos
 from decks.agents.repos.assets import ASSET_DIR
 from decks.agents.services.checker import DeckChecker
@@ -290,7 +290,7 @@ class DeckGenerator:
         builder = self._catalog.builder(kind)
         agent = Agent(
             name=f"fill-{kind}",
-            instructions=FILL_SYSTEM,
+            instructions=AgentPrompts().fill,
             output_type=AgentOutputSchema(
                 builder.SPEC, strict_json_schema=self._catalog.strict(kind)
             ),

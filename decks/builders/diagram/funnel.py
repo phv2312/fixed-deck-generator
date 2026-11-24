@@ -1,11 +1,12 @@
 """Funnel slides: narrowing stages with conversion notes."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import TYPE, mid_text, snap_down, title_el, trapezoid
+from decks.builders.common import mid_text, title_el, trapezoid
+from decks.design import BODY_TOP, RULE, TYPE, snap_down
 from decks.models.diagram import FunnelSlide
 from decks.models.elements import Element, Line, Polygon
 
-XC, TOP, H = 320, 150, 440
+XC, TOP, H = 320, BODY_TOP, 440
 W0, W1 = 500, 130
 TX = 640
 
@@ -66,7 +67,7 @@ class FunnelBuilder(BaseBuilder[FunnelSlide]):
                     x2=TX - 12,
                     y2=cy,
                     color="grid",
-                    width=1,
+                    width=RULE["hair"],
                     dash=True,
                 )
             )

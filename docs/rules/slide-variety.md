@@ -13,7 +13,7 @@ The check is advice. It never blocks a plan or `/approve`:
   2 times; then it tells the agent to stop.
 - `/approve` in `scripts/chat.py` prints the full list and still approves the plan.
 
-The interview prompt (`INTERVIEW_SYSTEM`) states the rules. A kind that the user asked for stays.
+The interview prompt template (`decks/agents/templates/interview.j2`) states the rules. A kind that the user asked for stays.
 
 ## Rules
 

@@ -3,7 +3,8 @@
 import os
 from typing import Literal
 
-from decks.builders.common import RADIUS, TYPE, mid_text
+from decks.builders.common import mid_text
+from decks.design import RADIUS, RULE, TYPE
 from decks.models.elements import Element, Image, Line, Shape
 
 
@@ -15,8 +16,8 @@ def pic(
         return [Image(src=src, x=x, y=y, w=w, h=h, fit=fit)]
     return [
         Shape(x=x, y=y, w=w, h=h, fill="grid", opacity=0.45),
-        Line(x1=x, y1=y, x2=x + w, y2=y + h, color="muted", width=1),
-        Line(x1=x + w, y1=y, x2=x, y2=y + h, color="muted", width=1),
+        Line(x1=x, y1=y, x2=x + w, y2=y + h, color="muted", width=RULE["hair"]),
+        Line(x1=x + w, y1=y, x2=x, y2=y + h, color="muted", width=RULE["hair"]),
         Shape(x=x + w / 2 - 150, y=y + h / 2 - 20, w=300, h=40, fill="bg", radius=RADIUS["pill"]),
         mid_text(
             x=x + w / 2 - 150,

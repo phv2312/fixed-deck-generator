@@ -1,14 +1,12 @@
 """Statement slides: one large statement, optionally with a figure."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import RADIUS, TYPE, H, W, background, mid_text
+from decks.builders.common import background, mid_text
 from decks.builders.pictures.image import pic
-from decks.design import LINE_HEIGHT
+from decks.design import LINE_HEIGHT, MARGIN_WIDE, RADIUS, RULE, TYPE, H, W
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.layout import StatementSlide
 from decks.text_metrics import TextMetrics
-
-LM = 80
 
 
 class StatementBuilder(BaseBuilder[StatementSlide]):
@@ -50,11 +48,11 @@ class StatementBuilder(BaseBuilder[StatementSlide]):
         author_h = 48 if spec.author else 0
         group_h = lead_h + text_h + author_h
         y0 = z0 + (z1 - z0 - group_h) / 2
-        els.append(Shape(x=LM, y=y0 - 4, w=6, h=group_h + 8, fill=rule))
+        els.append(Shape(x=MARGIN_WIDE, y=y0 - 4, w=6, h=group_h + 8, fill=rule))
         if lead:
             els.append(
                 mid_text(
-                    x=LM + 28,
+                    x=MARGIN_WIDE + 28,
                     y=y0,
                     w=text_w,
                     h=36,
@@ -66,7 +64,7 @@ class StatementBuilder(BaseBuilder[StatementSlide]):
             )
         els.append(
             Text(
-                x=LM + 28,
+                x=MARGIN_WIDE + 28,
                 y=y0 + lead_h,
                 w=text_w - 28,
                 h=text_h + 8,
@@ -80,7 +78,7 @@ class StatementBuilder(BaseBuilder[StatementSlide]):
         if spec.author:
             els.append(
                 mid_text(
-                    x=LM + 28,
+                    x=MARGIN_WIDE + 28,
                     y=y0 + lead_h + text_h + 12,
                     w=text_w - 28,
                     h=36,
@@ -98,7 +96,7 @@ class StatementBuilder(BaseBuilder[StatementSlide]):
                     x2=760,
                     y2=z1 - 40,
                     color=sub if spec.image else "light",
-                    width=2,
+                    width=RULE["thin"],
                 )
             )
             figure_fs = max(40, min(120, 420 / (0.62 * len(figure_text))))
@@ -132,8 +130,8 @@ class StatementBuilder(BaseBuilder[StatementSlide]):
                     )
                 )
         for i, point in enumerate(spec.points):
-            point_w = (W - 2 * LM - 24 * (n - 1)) / n
-            x = LM + (point_w + 24) * i
+            point_w = (W - 2 * MARGIN_WIDE - 24 * (n - 1)) / n
+            x = MARGIN_WIDE + (point_w + 24) * i
             els.append(Shape(x=x, y=470, w=point_w, h=130, fill="bg", radius=RADIUS["md"]))
             point_fs = metrics.fit_font_size(
                 point, 26, (point_w - 56, 100), 14, bold=True, snap=True

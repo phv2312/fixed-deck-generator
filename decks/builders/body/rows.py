@@ -1,7 +1,8 @@
 """Row slides: numbered rows of labelled content."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import MARGIN, RADIUS, TYPE, W, banner, icon_badge, mid_text, title_el
+from decks.builders.common import banner, icon_badge, mid_text, title_el
+from decks.design import BODY_TOP, MARGIN, RADIUS, RULE, TYPE, W
 from decks.models.body import RowsSlide
 from decks.models.elements import Element, Line, Polygon, Shape
 
@@ -25,7 +26,7 @@ class RowsBuilder(BaseBuilder[RowsSlide]):
         h = row_h - 22
         els: list[Element] = [title_el(spec.title)]
         for i, row in enumerate(spec.rows):
-            y = 150 + row_h * i
+            y = BODY_TOP + row_h * i
             hi = spec.highlight == i
             els.append(
                 Shape(
@@ -105,7 +106,7 @@ class RowsBuilder(BaseBuilder[RowsSlide]):
                         x2=W - MARGIN,
                         y2=y + row_h - 11,
                         color="grid",
-                        width=1,
+                        width=RULE["hair"],
                     )
                 )
         if spec.conclusion:

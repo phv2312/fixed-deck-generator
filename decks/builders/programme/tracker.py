@@ -1,7 +1,8 @@
 """Tracker slides: streams with status, progress and next milestone."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_TOP, MARGIN, RADIUS, TYPE, W, colour, mid_text, title_el
+from decks.builders.common import colour, mid_text, title_el
+from decks.design import CONTENT_TOP, MARGIN, RADIUS, RULE, TYPE, W
 from decks.models.elements import Element, Line, Shape
 from decks.models.programme import TrackerSlide
 
@@ -142,5 +143,9 @@ class TrackerBuilder(BaseBuilder[TrackerSlide]):
                         color="primary",
                     )
                 )
-            els.append(Line(x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=1))
+            els.append(
+                Line(
+                    x1=MARGIN, y1=y + rh, x2=W - MARGIN, y2=y + rh, color="grid", width=RULE["hair"]
+                )
+            )
         return els

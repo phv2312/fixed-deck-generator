@@ -1,7 +1,8 @@
 """Driver tree slides: a root metric decomposed into drivers."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import CONTENT_W, MARGIN, RADIUS, TYPE, mid_text, title_el
+from decks.builders.common import mid_text, title_el
+from decks.design import BODY_TOP, CONTENT_W, MARGIN, RADIUS, TYPE
 from decks.models.diagram import DriverNode, DriverTreeSlide
 from decks.models.elements import Element, Line, Shape
 
@@ -27,7 +28,7 @@ class DriverTreeBuilder(BaseBuilder[DriverTreeSlide]):
         bw = min(230, (CONTENT_W - 70 * (levels - 1)) / levels)
         gap = (CONTENT_W - bw * levels) / max(1, levels - 1) if levels > 1 else 0
         unit = min(96, 450 / leaf_count)
-        top = 150 + (450 - unit * leaf_count) / 2
+        top = BODY_TOP + (450 - unit * leaf_count) / 2
         els: list[Element] = [title_el(spec.title)]
         cursor = [top]
 

@@ -1,17 +1,8 @@
 """Decision slides: recommendation, reasons and figures."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import (
-    CONTENT_W,
-    MARGIN,
-    RADIUS,
-    TYPE,
-    W,
-    bullets,
-    mid_text,
-    snap_down,
-    title_el,
-)
+from decks.builders.common import bullets, mid_text, title_el
+from decks.design import CONTENT_W, MARGIN, RADIUS, RULE, TYPE, W, snap_down
 from decks.models.decisions import DecisionSlide
 from decks.models.elements import Element, Line, Shape, Text
 
@@ -65,7 +56,7 @@ class DecisionBuilder(BaseBuilder[DecisionSlide]):
                     x2=MARGIN + 96,
                     y2=top + 128,
                     color="light",
-                    width=2,
+                    width=RULE["thin"],
                 )
             )
             els.append(
@@ -86,7 +77,7 @@ class DecisionBuilder(BaseBuilder[DecisionSlide]):
             fh = (bottom - top - 16 * (n - 1)) / n
             for i, figure in enumerate(spec.figures):
                 y = top + (fh + 16) * i
-                els.append(Line(x1=fx, y1=y, x2=fx + fw, y2=y, color="grid", width=1))
+                els.append(Line(x1=fx, y1=y, x2=fx + fw, y2=y, color="grid", width=RULE["hair"]))
                 els.append(
                     mid_text(
                         x=fx,
@@ -111,7 +102,9 @@ class DecisionBuilder(BaseBuilder[DecisionSlide]):
                     )
                 )
         if spec.otherwise:
-            els.append(Line(x1=MARGIN, y1=560, x2=W - MARGIN, y2=560, color="grid", width=1))
+            els.append(
+                Line(x1=MARGIN, y1=560, x2=W - MARGIN, y2=560, color="grid", width=RULE["hair"])
+            )
             els.append(
                 mid_text(
                     x=MARGIN,

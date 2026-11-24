@@ -1,14 +1,12 @@
 """Title slides: opening slide with optional image, subtitle and meta."""
 
 from decks.builders.base import BaseBuilder
-from decks.builders.common import TYPE, H, W, background, deco_blocks
+from decks.builders.common import background, deco_blocks
 from decks.builders.pictures.image import pic
-from decks.design import LINE_HEIGHT
+from decks.design import LINE_HEIGHT, MARGIN_WIDE, RULE, TYPE, H, W
 from decks.models.elements import Element, Line, Shape, Text
 from decks.models.layout import TitleSlide
 from decks.text_metrics import TextMetrics
-
-LM = 80
 
 
 class TitleBuilder(BaseBuilder[TitleSlide]):
@@ -25,7 +23,7 @@ class TitleBuilder(BaseBuilder[TitleSlide]):
         els = background("tint")
         if spec.image:
             els += pic(spec.image, W * 0.48, 0, W * 0.52, H)
-            text_w = W * 0.48 - LM - 40
+            text_w = W * 0.48 - MARGIN_WIDE - 40
         else:
             els += deco_blocks()
             text_w = 780
@@ -47,10 +45,10 @@ class TitleBuilder(BaseBuilder[TitleSlide]):
         text_h = title.lines * title_fs * LINE_HEIGHT
         group_h = text_h + (sub_h + 24 if subtitle else 0) + 40
         y0 = top + max(0, (bottom - top - group_h) / 2)
-        els.append(Shape(x=LM, y=y0, w=90, h=6, fill="accent"))
+        els.append(Shape(x=MARGIN_WIDE, y=y0, w=90, h=6, fill="accent"))
         els.append(
             Text(
-                x=LM,
+                x=MARGIN_WIDE,
                 y=y0 + 34,
                 w=text_w,
                 h=text_h + 6,
@@ -64,7 +62,7 @@ class TitleBuilder(BaseBuilder[TitleSlide]):
         if subtitle:
             els.append(
                 Text(
-                    x=LM,
+                    x=MARGIN_WIDE,
                     y=y0 + 34 + text_h + 24,
                     w=text_w,
                     h=sub_h,
@@ -75,10 +73,19 @@ class TitleBuilder(BaseBuilder[TitleSlide]):
             )
         if spec.meta:
             meta = "\n".join(spec.meta)
-            els.append(Line(x1=LM, y1=596, x2=LM + text_w, y2=596, color="grid", width=1))
+            els.append(
+                Line(
+                    x1=MARGIN_WIDE,
+                    y1=596,
+                    x2=MARGIN_WIDE + text_w,
+                    y2=596,
+                    color="grid",
+                    width=RULE["hair"],
+                )
+            )
             els.append(
                 Text(
-                    x=LM,
+                    x=MARGIN_WIDE,
                     y=604,
                     w=min(text_w, 760),
                     h=70,
