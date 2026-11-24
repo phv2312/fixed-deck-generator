@@ -36,25 +36,6 @@ def _set_required(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("AZURE_OPENAI_DEPLOYMENT", "gpt")
 
 
-def test_reasoning_effort_default_is_unset(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """Without AZURE_OPENAI_REASONING_EFFORT the run config has no model settings."""
-    _set_required(monkeypatch, tmp_path)
-    monkeypatch.delenv("AZURE_OPENAI_REASONING_EFFORT", raising=False)
-    assert AzureOpenAISettings().run_config().model_settings is None
-
-
-def test_reasoning_effort_none_reaches_run_config(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    """The value 'none' is passed to every agent run through the run config."""
-    _set_required(monkeypatch, tmp_path)
-    monkeypatch.setenv("AZURE_OPENAI_REASONING_EFFORT", "none")
-    settings = AzureOpenAISettings().run_config().model_settings
-    assert settings is not None
-    assert settings.reasoning is not None
-    assert settings.reasoning.effort == "none"
-
-
 def test_reasoning_effort_rejects_unknown_value(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

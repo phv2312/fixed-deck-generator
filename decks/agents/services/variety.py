@@ -11,7 +11,7 @@ VISUAL_FAMILIES = frozenset({"diagram", "analytics", "pictures"})
 
 
 class VarietyPolicy:
-    """Check the slide kinds of a plan against ``docs/rules/slide-variety.md``.
+    """Check the slide kinds of a plan for variety.
 
     A violation is advice. It never blocks the plan.
     """
