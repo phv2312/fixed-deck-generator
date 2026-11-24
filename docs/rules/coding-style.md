@@ -96,7 +96,7 @@ There are three tiers. Select the correct tier:
 
 Prefer classes and methods to standalone functions. A free function whose first parameter is an instance of a local struct is an implicit method. Make it an explicit method.
 
-See [common coding-style rule](~/.claude/rules/common/coding-style.md) for the full OOP method placement decision tree.
+See [oop.md](./oop.md) for the full OOP method placement decision tree.
 
 ## Datetime
 
