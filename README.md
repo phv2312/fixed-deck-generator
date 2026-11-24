@@ -49,11 +49,7 @@ See the [slide catalog](docs/slide-catalog/README.md) for every family and kind.
 ```bash
 uv sync
 cp .env.example .env   # fill in the Azure OpenAI values
-uv run python -m decks review -o gallery.html
-open gallery.html
 ```
-
-Use `uv run python -m scripts.chat` to start a chat and make a deck.
 
 ## Documentation
 

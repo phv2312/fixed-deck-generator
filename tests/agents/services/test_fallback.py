@@ -34,9 +34,10 @@ def test_lines_cover_every_text_field() -> None:
 
 def test_content_fallback_without_an_image() -> None:
     """A draft with no image becomes a content slide with summary first, then the lines."""
-    slide, warnings = SlideFallback(SlideCatalog()).build(
+    result = SlideFallback(SlideCatalog()).build(
         _draft(summary="sum", rows=[["k", "v"]]), cause="rows: boom"
     )
+    slide, warnings = result.slide, result.warnings
 
     assert slide is not None and slide.kind == "content"
     texts = " ".join(e.text for e in slide.elements if isinstance(e, Text))
@@ -46,9 +47,10 @@ def test_content_fallback_without_an_image() -> None:
 
 def test_picture_fallback_keeps_the_image_and_reports_dropped_lines() -> None:
     """A draft with an image becomes an image-only figure; the lines it cannot show are reported."""
-    slide, warnings = SlideFallback(SlideCatalog()).build(
+    result = SlideFallback(SlideCatalog()).build(
         _draft(summary="cap", points=["p"], image="http://x/y.png", source="src")
     )
+    slide, warnings = result.slide, result.warnings
 
     assert slide is not None and slide.kind == "figure"
     assert [e.src for e in slide.elements if isinstance(e, Image)] == ["http://x/y.png"]

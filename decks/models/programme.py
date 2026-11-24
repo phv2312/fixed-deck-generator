@@ -1,8 +1,6 @@
 """family=programme: plans, timelines and project status."""
 
-from __future__ import annotations
-
-from typing import Literal
+from typing import Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -11,6 +9,7 @@ from pydantic import (
 )
 
 from .base import Text, TextList
+from .exceptions import GanttRangeError
 
 
 class Milestone(BaseModel):
@@ -87,11 +86,11 @@ class GanttSlide(BaseModel):
     today: float | None = Field(default=None, description="Optional 'today' position in periods.")
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         n = len(self.periods)
         for r in self.rows:
             if not (0 <= r.start <= r.end < n):
-                raise ValueError(f"gantt: '{r.name}' must satisfy 0 <= start <= end < {n}")
+                raise GanttRangeError(r.name, n)
         return self
 
 

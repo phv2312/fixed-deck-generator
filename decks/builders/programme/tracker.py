@@ -68,7 +68,8 @@ class TrackerBuilder(BaseBuilder[TrackerSlide]):
                         font_size=TYPE["small"],
                     )
                 )
-            color, glyph = colour(row.state)
+            mark = colour(row.state)
+            color, glyph = mark.colour, mark.glyph
             els.append(Shape(x=440, y=y + rh / 2 - 12, w=24, h=24, shape="ellipse", fill=color))
             els.append(
                 mid_text(

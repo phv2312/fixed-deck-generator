@@ -1,8 +1,6 @@
 """family=decisions: options, assessments and decisions."""
 
-from __future__ import annotations
-
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -12,6 +10,13 @@ from pydantic import (
 )
 
 from .base import Text, TextList
+from .exceptions import (
+    EvaluationCriteriaMismatchError,
+    EvaluationOptionMismatchError,
+    RaciAccountableCountError,
+    RaciAssignmentCountError,
+    RaciInvalidAssignmentError,
+)
 
 
 class Cell(BaseModel):
@@ -19,7 +24,7 @@ class Cell(BaseModel):
     note: str | None = Field(default=None, description="Optional note shown under the rating.")
 
 
-def _cell(v):
+def _cell(v: object) -> object:
     return {"score": v} if isinstance(v, (int, float)) else v
 
 
@@ -46,11 +51,11 @@ class EvaluationSlide(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         if len(self.scores) != len(self.criteria):
-            raise ValueError("evaluation: scores needs one row per criterion")
+            raise EvaluationCriteriaMismatchError(len(self.scores), len(self.criteria))
         if any(len(r) != len(self.options) for r in self.scores):
-            raise ValueError("evaluation: every scores row needs one cell per option")
+            raise EvaluationOptionMismatchError(len(self.options))
         return self
 
 
@@ -111,15 +116,15 @@ class RaciSlide(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         for a in self.activities:
             if len(a.assignments) != len(self.roles):
-                raise ValueError(f"raci: '{a.name}' needs {len(self.roles)} assignments")
+                raise RaciAssignmentCountError(a.name, len(self.roles))
             cells = [x.strip().upper() for x in a.assignments]
             if any(c not in ("", "R", "A", "C", "I", "A/R", "R/A") for c in cells):
-                raise ValueError(f"raci: '{a.name}' has an assignment outside R/A/C/I")
+                raise RaciInvalidAssignmentError(a.name)
             if sum("A" in c for c in cells) != 1:
-                raise ValueError(f"raci: '{a.name}' needs exactly one A")
+                raise RaciAccountableCountError(a.name)
         return self
 
 

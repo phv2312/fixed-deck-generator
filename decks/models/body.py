@@ -1,8 +1,6 @@
 """family=body: parameters of text, table and key-figure slides."""
 
-from __future__ import annotations
-
-from typing import Literal
+from typing import Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -11,6 +9,13 @@ from pydantic import (
 )
 
 from .base import Text, TextList
+from .exceptions import (
+    FromToShapeError,
+    PanelsColumnsLimitError,
+    PanelsIconsMinimumError,
+    TableAlignLengthError,
+    TableRowWidthError,
+)
 
 
 class Side(BaseModel):
@@ -31,9 +36,9 @@ class FromToSlide(BaseModel):
     right: Side = Field(description="Target-state side.")
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         if len(self.left.items) != len(self.right.items) or not 1 <= len(self.left.items) <= 6:
-            raise ValueError("fromto: left and right need the same number (1-6) of items")
+            raise FromToShapeError(len(self.left.items), len(self.right.items))
         return self
 
 
@@ -71,12 +76,12 @@ class PanelsSlide(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         count = len(self.panels)
         if self.style == "columns" and count > 4:
-            raise ValueError("panels: style columns takes at most 4 panels")
+            raise PanelsColumnsLimitError(count)
         if self.style == "icons" and count < 2:
-            raise ValueError("panels: style icons needs at least 2 panels")
+            raise PanelsIconsMinimumError(count)
         return self
 
 
@@ -172,10 +177,10 @@ class TableSlide(BaseModel):
     note: Text | None = Field(default=None, description="Optional footnote.")
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         n = len(self.header)
         if any(len(r) != n for r in self.rows):
-            raise ValueError(f"table: every row needs {n} cells")
+            raise TableRowWidthError(n)
         if self.align is not None and len(self.align) != n:
-            raise ValueError(f"table: align needs {n} entries")
+            raise TableAlignLengthError(n)
         return self

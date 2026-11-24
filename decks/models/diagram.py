@@ -1,8 +1,6 @@
 """family=diagram: parameters of process and concept diagram slides."""
 
-from __future__ import annotations
-
-from typing import Literal
+from typing import Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -11,6 +9,12 @@ from pydantic import (
 )
 
 from .base import Text, TextList
+from .exceptions import (
+    OrgNeedsMembersError,
+    PyramidRingLevelsError,
+    SwimlaneLinkOutOfRangeError,
+    SwimlaneUnknownLaneError,
+)
 
 
 class DriverNode(BaseModel):
@@ -19,7 +23,7 @@ class DriverNode(BaseModel):
     op: Literal["×", "+", "-", "x", "*"] | None = Field(
         default=None, description="Operator combining the children into this node."
     )
-    children: list[DriverNode] = Field(
+    children: list["DriverNode"] = Field(
         default=[], description=("Child nodes. The list is empty for a leaf.")
     )
 
@@ -149,9 +153,9 @@ class OrgSlide(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         if not self.members and not self.groups:
-            raise ValueError("org: needs members or groups")
+            raise OrgNeedsMembersError
         return self
 
 
@@ -182,9 +186,9 @@ class PyramidSlide(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         if self.style == "rings" and not 3 <= len(self.levels) <= 5:
-            raise ValueError("pyramid: style rings needs between 3 and 5 levels")
+            raise PyramidRingLevelsError(len(self.levels))
         return self
 
 
@@ -288,14 +292,12 @@ class SwimlanesSlide(BaseModel):
     links: list[Link] = Field(default=[], description="Optional links between step indices.")
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         for s in self.steps:
             if s.lane not in self.lanes:
-                raise ValueError(f"swimlanes: step '{s.label}' uses unknown lane '{s.lane}'")
+                raise SwimlaneUnknownLaneError(s.label, s.lane)
         n = len(self.steps)
         for link in self.links:
             if not (0 <= link.from_ < n and 0 <= link.to < n):
-                raise ValueError(
-                    f"swimlanes: link {link.from_}->{link.to} outside steps 0..{n - 1}"
-                )
+                raise SwimlaneLinkOutOfRangeError(link.from_, link.to, n - 1)
         return self

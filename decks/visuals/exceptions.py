@@ -53,3 +53,12 @@ class AssetMissingError(VisualError):
 
     TEMPLATE = "asset {path} does not exist"
     path: str
+
+
+@dataclass
+class PageTemplateError(VisualError):
+    """Raised when a Chrome page template cannot be rendered."""
+
+    TEMPLATE = "page template {name} failed: {detail}"
+    name: str
+    detail: str

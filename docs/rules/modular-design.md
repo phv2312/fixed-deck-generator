@@ -11,8 +11,6 @@ Organize the code by feature or domain, not by type. `<app>` is the name of the 
 ```
 <app>/
   __init__.py
-  __main__.py        # calls cli.app()
-  cli.py             # Typer app. Entry points only.
   settings.py        # Settings (pydantic-settings)
   container.py       # Container. Creates and connects all dependencies.
   errors.py          # TemplatedError, the base of all exceptions

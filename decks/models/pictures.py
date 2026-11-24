@@ -1,8 +1,6 @@
 """family=pictures: slides built around a picture. `image` is a file path or URL; a missing file
 renders a labelled placeholder so decks work before the pictures exist."""
 
-from __future__ import annotations
-
 from typing import Literal
 
 from pydantic import (

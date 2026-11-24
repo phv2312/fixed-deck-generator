@@ -3,6 +3,7 @@
 from pydantic import BaseModel, ValidationError
 
 from decks.agents.catalog import FALLBACK_KIND, SlideCatalog
+from decks.agents.models import FallbackResult
 from decks.models.plan import SlideDraft
 from decks.models.slides import Slide
 
@@ -15,7 +16,7 @@ class SlideFallback:
     def __init__(self, catalog: SlideCatalog) -> None:
         self._catalog = catalog
 
-    def build(self, draft: SlideDraft, *, cause: str = "") -> tuple[Slide | None, list[str]]:
+    def build(self, draft: SlideDraft, *, cause: str = "") -> FallbackResult:
         """Return the slide, or ``None``, and the warnings. ``cause`` says why the fill failed."""
         for kind, spec in self._candidates(draft):
             slide = self._slide(draft, kind, spec)
@@ -28,8 +29,8 @@ class SlideFallback:
                         f"slide {draft.id}: {len(lines)} text lines are not on the slide; "
                         "the picture should carry them"
                     )
-                return slide, warnings
-        return None, [f"slide {draft.id}: could not be built"]
+                return FallbackResult(slide=slide, warnings=warnings)
+        return FallbackResult(slide=None, warnings=[f"slide {draft.id}: could not be built"])
 
     def lines(self, draft: SlideDraft) -> list[str]:
         """Return all the text of ``draft`` as lines: points, items, rows, stages and series."""

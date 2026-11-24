@@ -1,8 +1,7 @@
 """family=layout: structural slides (opening, dividers, agenda, plain text, closing)."""
 
-from __future__ import annotations
-
-from typing import Annotated, Literal
+from collections.abc import Iterable
+from typing import Annotated, Literal, Self, cast
 
 from pydantic import (
     AliasChoices,
@@ -12,13 +11,15 @@ from pydantic import (
     model_validator,
 )
 
+from .exceptions import ContactTooManyPeopleError
 
-def _lines(v):
+
+def _lines(v: object) -> list[str] | None:
     if v is None:
         return v
     if isinstance(v, (str, int, float)):
         return [str(v)]
-    return [str(x) for x in v]
+    return [str(x) for x in cast(Iterable[object], v)]
 
 
 Lines = Annotated[list[str], BeforeValidator(_lines)]  # text, number or a list of them -> list[str]
@@ -94,9 +95,9 @@ class ContactSlide(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         if len(self.people) > 6 and not any(p.photo or p.text for p in self.people):
-            raise ValueError("contact: cards take at most 6 people; add a text for a team grid")
+            raise ContactTooManyPeopleError(len(self.people))
         return self
 
 

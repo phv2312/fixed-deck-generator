@@ -1,4 +1,5 @@
 import math
+from dataclasses import dataclass
 from functools import partial
 
 from decks.design import (
@@ -26,8 +27,17 @@ from decks.text_metrics import TextMetrics
 mid_text = partial(Text, valign="middle")
 
 
-def nice_range(lo: float, hi: float, target_ticks: int = 5) -> tuple[float, float, float]:
-    """Return (min, max, step) with round tick values covering [lo, hi] plus padding."""
+@dataclass(frozen=True)
+class TickRange:
+    """Round tick range of an axis: its two ends and the step between ticks."""
+
+    lo: float
+    hi: float
+    step: float
+
+
+def nice_range(lo: float, hi: float, target_ticks: int = 5) -> TickRange:
+    """Return the round tick range that covers [lo, hi] with padding."""
     if hi == lo:  # single value: pad so the range is not degenerate
         pad = abs(lo) * 0.5 or 1
         lo, hi = lo - pad, hi + pad
@@ -37,7 +47,7 @@ def nice_range(lo: float, hi: float, target_ticks: int = 5) -> tuple[float, floa
     step = next(m * mag for m in (1, 2, 5, 10) if m * mag >= raw)
     nlo = math.floor((lo - 0.1 * span) / step) * step
     nhi = math.ceil((hi + 0.1 * span) / step) * step
-    return nlo, nhi, step
+    return TickRange(lo=nlo, hi=nhi, step=step)
 
 
 def fmt(v: float) -> str:
@@ -160,9 +170,17 @@ WORDS = {
 }
 
 
-def colour(state: str) -> tuple[str, str]:
+@dataclass(frozen=True)
+class StateMark:
+    """Colour and glyph that show a traffic-light state."""
+
+    colour: str
+    glyph: str
+
+
+def colour(state: str) -> StateMark:
     s = state.lower()
     for col, words in WORDS.items():
         if any(w in s for w in words):
-            return col, {GREEN: "✓", AMBER: "!", RED: "✕"}[col]
-    return GREY, "·"
+            return StateMark(colour=col, glyph={GREEN: "✓", AMBER: "!", RED: "✕"}[col])
+    return StateMark(colour=GREY, glyph="·")

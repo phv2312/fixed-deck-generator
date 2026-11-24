@@ -1,12 +1,21 @@
 """Chart drawing service: turns a chart spec into positioned elements."""
 
 import math
+from dataclasses import dataclass
 from typing import ClassVar, Literal
 
 from decks.builders.common import arc_pts, fmt, on
 from decks.design import MARGIN, RULE, TYPE
 from decks.models.analytics import Chart
 from decks.models.elements import Element, Line, Polygon, Shape, Text
+
+
+@dataclass(frozen=True)
+class SeriesStyle:
+    """Fill token and opacity of one series in one category."""
+
+    fill: str
+    opacity: float
 
 
 class ChartRenderer:
@@ -95,17 +104,17 @@ class ChartRenderer:
         highlight = self._chart.highlight
         return 0.4 if highlight is not None and highlight != index else 1.0
 
-    def _colour(
-        self, series_index: int, series_count: int, category_index: int
-    ) -> tuple[str, float]:
+    def _colour(self, series_index: int, series_count: int, category_index: int) -> SeriesStyle:
         """Return the fill token and opacity of a series in a category."""
         chart = self._chart
         if series_count == 1:
             if chart.highlight is None:
-                return "primary", 1.0
-            return ("primary" if chart.highlight == category_index else "light"), 1.0
-        return self.SERIES_COLORS[series_index % len(self.SERIES_COLORS)], self._opacity(
-            category_index
+                return SeriesStyle(fill="primary", opacity=1.0)
+            fill = "primary" if chart.highlight == category_index else "light"
+            return SeriesStyle(fill=fill, opacity=1.0)
+        return SeriesStyle(
+            fill=self.SERIES_COLORS[series_index % len(self.SERIES_COLORS)],
+            opacity=self._opacity(category_index),
         )
 
     def _body(self) -> list[Element]:
@@ -179,7 +188,8 @@ class ChartRenderer:
             for j in range(s):
                 v = pos[j][i]
                 h = v * k
-                col, opacity = self._colour(j, s, i)
+                style = self._colour(j, s, i)
+                col, opacity = style.fill, style.opacity
                 if stacked:
                     y -= h
                     els.append(Shape(x=cx - gw / 2, y=y, w=gw, h=h, fill=col, opacity=opacity))
@@ -230,7 +240,8 @@ class ChartRenderer:
                 if full:
                     v = v / (totals[i] or 1) * 100
                 w = v * k
-                col, opacity = self._colour(j, s, i)
+                style = self._colour(j, s, i)
+                col, opacity = style.fill, style.opacity
                 if stacked or full:
                     els.append(Shape(x=x, y=cy - bh / 2, w=w, h=bh, fill=col, opacity=opacity))
                     if chart.labels and w >= 34:

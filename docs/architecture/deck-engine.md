@@ -50,4 +50,10 @@ A renderer turns a `Deck` into one output. Each backend is a subclass of `DeckRe
 
 To add a backend, for example PPTX, make a subclass of `DeckRenderer[T]` in its own package under `decks/render/`. Do not put HTML code in the base class.
 
-`decks/render/gallery.py` builds the review gallery of every example in both themes.
+## Review gallery
+
+`decks/render/services.py` builds the review gallery of every example in both themes. It makes view models in `decks/render/models.py`. It renders `decks/render/templates/gallery.html.j2` through `GalleryTemplates`. A template error raises `GalleryTemplateError` (`decks/render/exceptions.py`).
+
+## Model errors
+
+Each model error is a dataclass in `decks/models/exceptions.py`. Each class has a `TEMPLATE` string and typed fields. `ModelError` derives from `ValueError`. Pydantic turns a `ValueError` raised in a validator into a `ValidationError`, so bad input still fails validation.

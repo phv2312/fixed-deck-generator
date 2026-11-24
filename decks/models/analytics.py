@@ -1,8 +1,6 @@
 """family=analytics: parameters of chart and data slides."""
 
-from __future__ import annotations
-
-from typing import Literal
+from typing import Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -11,6 +9,7 @@ from pydantic import (
 )
 
 from .base import Text, TextList
+from .exceptions import ChartSeriesLengthError, MekkoColumnLengthError
 
 
 class Axis(BaseModel):
@@ -90,10 +89,10 @@ class MekkoSlide(BaseModel):
     unit: str | float | None = Field(default=None, description="Unit of the column size values.")
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         for c in self.columns:
             if len(c.values) != len(self.parts):
-                raise ValueError(f"mekko: column '{c.name}' needs {len(self.parts)} values")
+                raise MekkoColumnLengthError(c.name, len(self.parts))
         return self
 
 
@@ -128,10 +127,10 @@ class Chart(BaseModel):
         return self.series if isinstance(self.series, dict) else {"": self.series}
 
     @model_validator(mode="after")
-    def _check(self):
+    def _check(self) -> Self:
         for k, v in self.named_series().items():
             if len(v) != len(self.categories):
-                raise ValueError(f"chart: series '{k}' needs {len(self.categories)} values")
+                raise ChartSeriesLengthError(k, len(self.categories))
         return self
 
 

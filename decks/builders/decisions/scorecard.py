@@ -102,7 +102,8 @@ class ScorecardBuilder(BaseBuilder[ScorecardSlide]):
                     )
                 )
             if kpi.state:
-                color, glyph = colour(kpi.state)
+                mark = colour(kpi.state)
+                color, glyph = mark.colour, mark.glyph
                 els.append(Shape(x=950, y=y + rh / 2 - 13, w=26, h=26, shape="ellipse", fill=color))
                 els.append(
                     mid_text(

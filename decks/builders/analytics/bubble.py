@@ -30,8 +30,10 @@ class BubbleBuilder(BaseBuilder[BubbleSlide]):
         xa, ya = self._axis(spec.x_axis), self._axis(spec.y_axis)
         xs = [i.x for i in spec.items]
         ys = [i.y for i in spec.items]
-        x0, x1, xstep = nice_range(min(xs), max(xs))
-        y0, y1, ystep = nice_range(min(ys), max(ys))
+        x_ticks = nice_range(min(xs), max(xs))
+        y_ticks = nice_range(min(ys), max(ys))
+        x0, x1, xstep = x_ticks.lo, x_ticks.hi, x_ticks.step
+        y0, y1, ystep = y_ticks.lo, y_ticks.hi, y_ticks.step
         x0 = xa.min if xa.min is not None else x0
         x1 = xa.max if xa.max is not None else x1
         y0 = ya.min if ya.min is not None else y0
