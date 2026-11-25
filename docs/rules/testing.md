@@ -69,6 +69,25 @@ Use `mocker.patch("<app>.<module>.<Name>", autospec=True)` only for code that yo
 
 Do not use a Container in a service test. Use a Container only in a test of an entry point. See the "Tests" section in [dependency-injection.md](./dependency-injection.md).
 
+## Factory helpers
+
+Some objects need many collaborators. For each of these objects, write one `make_<name>` helper in the `conftest.py` of the test package. Examples are `make_context` and `make_runner`.
+
+- Test files call the helper. They do not call the constructor directly.
+- Give the helper parameters only for the values that tests change, for example a model or a run config.
+- When a constructor signature changes, update only the helper.
+
+```python
+def make_runner(repositories: ProjectRepositories, run_config: RunConfig) -> ProjectRunner:
+    """Create a runner whose LLM calls use ``run_config``."""
+    return ProjectRunner(
+        repositories,
+        build_interview_agent(SlideCatalog().prompt),
+        build_deck_agent(),
+        run_config=run_config,
+    )
+```
+
 ## TYPE_CHECKING imports in tests
 
 Import only what the test file uses:

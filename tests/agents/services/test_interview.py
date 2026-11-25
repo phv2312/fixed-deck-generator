@@ -12,12 +12,13 @@ from decks.agents.exceptions import (
 )
 from decks.agents.repos import Repos
 from decks.models.plan import ContentBlock, SlideDraftPatch, SlideInput
+from tests.agents.conftest import make_context
 
 
 @pytest.fixture
 def ctx(repos: Repos) -> ProjectContext:
     """Context of a new project."""
-    return ProjectContext.create(repos)
+    return make_context(repos)
 
 
 async def test_phase_moves_from_draft_to_review(ctx: ProjectContext, repos: Repos) -> None:
