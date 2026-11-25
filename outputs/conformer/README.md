@@ -1,0 +1,17 @@
+# Conformer for automatic speech recognition
+
+![Slide 1](slides/slide-01.png)
+![Slide 2](slides/slide-02.png)
+![Slide 3](slides/slide-03.png)
+![Slide 4](slides/slide-04.png)
+![Slide 5](slides/slide-05.png)
+![Slide 6](slides/slide-06.png)
+![Slide 7](slides/slide-07.png)
+![Slide 8](slides/slide-08.png)
+![Slide 9](slides/slide-09.png)
+![Slide 10](slides/slide-10.png)
+![Slide 11](slides/slide-11.png)
+![Slide 12](slides/slide-12.png)
+![Slide 13](slides/slide-13.png)
+![Slide 14](slides/slide-14.png)
+![Slide 15](slides/slide-15.png)

@@ -54,9 +54,8 @@ def build_gallery(examples_dir: str = "examples", templates: GalleryTemplates | 
         for theme in THEMES:
             data = {**raw, "theme": theme}
             deck = build_deck(DeckSpec.model_validate(data))
-            fragments = HtmlRenderer(deck).fragments()
-            width, height, font = fragments.width, fragments.height, fragments.font
-            per_theme[theme] = fragments.slides
+            width, height, font = deck.width, deck.height, deck.font
+            per_theme[theme] = HtmlRenderer(deck).slides()
         for i, spec in enumerate(raw["slides"]):
             entries.append(_card(spec, i, per_theme))
     page = GalleryPage(

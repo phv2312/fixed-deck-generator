@@ -29,4 +29,5 @@ class Settings(BaseSettings):
 
     projects_root: Path = Path("projects")
     max_turns: int = 20
+    history_limit: int = 20  # newest chat items that a turn loads from the session
     azure: AzureOpenAISettings = Field(default_factory=AzureOpenAISettings)

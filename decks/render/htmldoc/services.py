@@ -10,7 +10,7 @@ from decks.models.elements import BULLET, Chart, Group, Image, Line, Polygon, Sh
 from decks.models.slides import Deck, Slide
 from decks.render.base import DeckRenderer
 
-from .models import HtmlFragments, HtmlPageStyle
+from .models import HtmlPageStyle
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 
@@ -37,10 +37,6 @@ class HtmlRenderer(DeckRenderer[str]):
         super().__init__(deck)
         self.style = style or HtmlPageStyle()
         self._env = self._make_environment()
-
-    def fragments(self) -> HtmlFragments:
-        """Return one ``<section>`` string per slide, plus the deck size and font."""
-        return HtmlFragments(self.slides(), self.deck.width, self.deck.height, self.deck.font)
 
     def document(self) -> str:
         """Return the full self-contained HTML page."""

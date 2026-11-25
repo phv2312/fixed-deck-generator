@@ -3,11 +3,13 @@ from functools import cached_property
 from typing import Self
 
 from agents import ModelSettings, OpenAIChatCompletionsModel, OpenAIResponsesModel, RunConfig
+from agents.memory import SessionSettings
 from openai import AsyncAzureOpenAI
 from openai.types.shared import Reasoning
 
 from decks.agents.repos import ProjectLocks, ProjectRepositories
 from decks.agents.runner import ProjectRunner
+from decks.agents.services.history import HistoryTrimmer
 from decks.settings import Settings
 
 
@@ -42,7 +44,10 @@ class Container:
 
     @cached_property
     def run_config(self) -> RunConfig:
-        """A ``RunConfig`` that sends every agent call to the Azure deployment."""
+        """A ``RunConfig`` that sends every agent call to the Azure deployment.
+
+        It limits the chat history that a turn loads, and it trims the model input.
+        """
         azure = self._settings.azure
         model = (
             OpenAIResponsesModel(model=azure.deployment, openai_client=self.azure_client)
@@ -54,7 +59,13 @@ class Container:
             if azure.reasoning_effort is not None
             else None
         )
-        return RunConfig(model=model, model_settings=model_settings, tracing_disabled=True)
+        return RunConfig(
+            model=model,
+            model_settings=model_settings,
+            tracing_disabled=True,
+            session_settings=SessionSettings(limit=self._settings.history_limit),
+            call_model_input_filter=HistoryTrimmer(),
+        )
 
     @cached_property
     def repositories(self) -> ProjectRepositories:
