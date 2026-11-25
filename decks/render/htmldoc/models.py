@@ -2,16 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class HtmlFragments:
-    """One ``<section class="slide">`` string per slide, with the deck size and font."""
-
-    slides: list[str]
-    width: int
-    height: int
-    font: str
-
-
-@dataclass(frozen=True)
 class HtmlPageStyle:
     """Look values of the HTML output. The templates read them as ``page``."""
 

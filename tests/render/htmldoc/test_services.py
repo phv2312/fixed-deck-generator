@@ -82,20 +82,17 @@ def test_document_uses_the_bullet_markup() -> None:
 )
 def test_each_element_type_has_its_markup(element: Element, expected: str) -> None:
     """Every element type renders its own markup inside the slide."""
-    fragments = HtmlRenderer(make_deck(element)).fragments()
+    slides = HtmlRenderer(make_deck(element)).slides()
 
-    assert expected in fragments.slides[0]
+    assert expected in slides[0]
 
 
-def test_fragments_return_one_section_per_slide_with_the_deck_size() -> None:
-    """``fragments`` returns the slide strings, size and font of the deck."""
-    deck = make_deck(Shape(**BOX))
+def test_slides_return_one_section_per_slide() -> None:
+    """``slides`` returns one ``<section>`` string per slide."""
+    slides = HtmlRenderer(make_deck(Shape(**BOX))).slides()
 
-    fragments = HtmlRenderer(deck).fragments()
-
-    assert len(fragments.slides) == 1
-    assert fragments.slides[0].startswith('<section class="slide" data-family="body"')
-    assert (fragments.width, fragments.height, fragments.font) == (1280, 720, FONT)
+    assert len(slides) == 1
+    assert slides[0].startswith('<section class="slide" data-family="body"')
 
 
 def test_missing_color_renders_as_none() -> None:
