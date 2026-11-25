@@ -28,7 +28,7 @@ The examples omit imports. The names come from `abc`, `collections.abc`, `enum`,
 
 ### Structure
 
-1. Define the keys as a `StrEnum`. Do not use bare strings as keys.
+1. Define the keys as a `StrEnum` when the set of keys is closed. A `ClassVar[str]` key is allowed when plugins or a framework define the keys.
 2. Define one abstract base class. Use `ABC` and `@abstractmethod`. Use PEP 695 generics when the input or output type changes between strategies.
 3. Declare the metadata of each strategy as `ClassVar` attributes, for example `KEY` and `DESCRIPTION`. Do not use a separate dictionary of metadata.
 4. Put each concrete strategy in its own class. Keep a strategy stateless between calls. Give collaborators to the constructor.

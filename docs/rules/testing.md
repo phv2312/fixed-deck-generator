@@ -44,7 +44,7 @@ def test_upper(input: str, expected: str) -> None:
 
 ## Async tests
 
-Mark async tests with `pytest.mark.asyncio`. Set `asyncio_mode = "auto"` in `pyproject.toml`. The decorator is then optional, but include it for clarity.
+Mark async tests with `pytest.mark.asyncio`. Set `asyncio_mode = "auto"` in `pyproject.toml`. The decorator is then not needed.
 
 ## Mocking
 

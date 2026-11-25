@@ -13,14 +13,13 @@ Organize the code by feature or domain, not by type. `<app>` is the name of the 
   __init__.py
   settings.py        # Settings (pydantic-settings)
   container.py       # Container. Creates and connects all dependencies.
-  errors.py          # TemplatedError, the base of all exceptions
   <feature>/
     __init__.py
     models.py        # data classes, pydantic models
     services.py      # business logic
     repositories.py  # stores and repositories
     <strategies>.py  # a strategy base class and its strategies, for example exporters.py
-    commands.py      # Typer commands (controllers)
+    commands.py      # CLI commands (controllers), for example Typer
     exceptions.py    # feature exceptions
     templates/       # Jinja2 templates of this feature
 tests/
@@ -56,7 +55,7 @@ class Settings(BaseSettings):
 
 ## Entry points
 
-An entry point is a Typer command, a server start-up function, or a script `main`. It does only these steps:
+An entry point is a CLI command (for example a Typer command), a server start-up function, or a script `main`. It does only these steps:
 
 1. Create `Settings`.
 2. Create the Container.
@@ -77,30 +76,19 @@ Use 200 to 400 lines in a typical file. The hard limit is 800 lines. Extract cod
 
 ## Exceptions
 
-### Base class
-
-Put this base class in `<app>/errors.py`. All exceptions of the app come from it.
-
-```python
-@dataclass
-class TemplatedError(Exception):
-    """Base of all app errors. The message comes from ``TEMPLATE`` and the fields."""
-
-    TEMPLATE: ClassVar[str] = "unexpected error"
-
-    def __str__(self) -> str:
-        return self.TEMPLATE.format_map(vars(self))
-```
-
-Do not make an exception dataclass `frozen`. Python sets attributes on an exception when it is raised.
-
 ### Feature hierarchy
 
-Each feature defines its own exception hierarchy in `exceptions.py`. The base class of the feature comes from `TemplatedError`:
+Each feature defines its own exception hierarchy in `exceptions.py`. The base class of the feature builds its message from `TEMPLATE` and the dataclass fields:
 
 ```python
 @dataclass
-class FeatureError(TemplatedError): ...
+class FeatureError(Exception):
+    """Base class of feature errors. Subclasses set ``TEMPLATE`` and typed fields."""
+
+    TEMPLATE: ClassVar[str] = "feature error"
+
+    def __str__(self) -> str:
+        return self.TEMPLATE.format(**{f.name: getattr(self, f.name) for f in fields(self)})
 
 
 @dataclass
@@ -108,6 +96,8 @@ class FeatureNotFoundError(FeatureError):
     TEMPLATE = "feature not found: {feature_id}"
     feature_id: str
 ```
+
+Do not make an exception dataclass `frozen`. Python sets attributes on an exception when it is raised.
 
 Never raise a bare `Exception` or `RuntimeError` from module code.
 
@@ -141,6 +131,6 @@ Then a caller can catch the exact error type in a separate `except`. The message
 - `models.py` — only data. No I/O. No side effects.
 - `services.py` — business logic and orchestration. It does I/O only through the repositories and clients that it gets in its constructor.
 - `repositories.py` — stores and repositories. All storage I/O of the feature is here.
-- `commands.py` — only Typer entry points. Delegate to services immediately.
+- `commands.py` — only CLI entry points. Delegate to services immediately.
 - `exceptions.py` — only exception classes.
 - `<app>/container.py` — only object creation and wiring. No business logic.

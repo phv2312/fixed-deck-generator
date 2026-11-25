@@ -1,5 +1,3 @@
-from typing import Any
-
 from agents import (
     Agent,
     FunctionTool,
@@ -66,7 +64,7 @@ def make_save_tool(kind: VisualKind) -> FunctionTool:
     return save_visual
 
 
-def visual_enabled(ctx: RunContextWrapper[ProjectContext], _: Any) -> bool:
+def visual_enabled(ctx: RunContextWrapper[ProjectContext], _: object) -> bool:
     """The visual tools exist only when Chrome is installed."""
     return ctx.context.visuals.available
 

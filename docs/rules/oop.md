@@ -98,7 +98,7 @@ class ExpenseService:
 ## What does NOT trigger this rule
 
 - Functions with no owned-class parameters. Examples are pure utilities, factory functions, and validators that receive only primitives.
-- Typer command callbacks. These are framework entry points, not domain logic. Delegate to a service method immediately. Keep the callback thin.
+- CLI command callbacks (for example Typer). These are framework entry points, not domain logic. Delegate to a service method immediately. Keep the callback thin.
 - `@classmethod` and `@staticmethod` factory methods. These are Case A variants and are permitted.
 
 ## Enforcement checklist

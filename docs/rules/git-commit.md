@@ -30,7 +30,7 @@ Empty `commit` and `pr` values remove the co-authorship footer from commits and 
 
 ## Message shape
 
-Follow Conventional Commits. `python-semantic-release` reads the subject line to calculate the next version (`[tool.semantic_release]` in `pyproject.toml`). Thus a malformed subject gives a wrong release without an error.
+Follow Conventional Commits. A tool that reads the subject line to calculate the next version (for example `python-semantic-release`) gives a wrong release for a malformed subject, without an error.
 
 ```
 <type>(<scope>): <subject in the imperative, lower case, no trailing period>
@@ -42,7 +42,7 @@ Types in use here: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `perf`.
 
 ## Signing
 
-`commit.gpgsign` is enabled for this repository. Commits must verify:
+Sign each commit when `commit.gpgsign` is enabled. A signed commit must verify:
 
 ```bash
 git log -1 --pretty='%G? %GS'   # expect: G <your key identity>

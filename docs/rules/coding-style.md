@@ -6,7 +6,7 @@ paths:
 
 ## Python version
 
-Target Python 3.13 or later. Use current syntax. Do not use backports or compatibility shims.
+Target Python 3.12 or later. Use current syntax. Do not use backports or compatibility shims.
 
 ## Type annotations (MANDATORY)
 
@@ -125,8 +125,6 @@ def create(repos: Repos, *, sink: EventSink | None = None) -> Context: ...
 
 ## Naming
 
-Name an intermediate dict variable `mp_<keytype>_<valuetype>` (for example, `mp_str_int`).
-
 ### Module names
 
 Never give a module the name of a standard-library module (`types.py`, `io.py`, `email.py`, ...). The name hides the standard-library module for all absolute imports in the package and causes awkward relative imports. Select a different name (`typedefs.py`, not `types.py`).
@@ -137,7 +135,7 @@ Return new objects. Do not change an object in place.
 
 ## No global variables
 
-Limit global state. Pass dependencies explicitly.
+Limit global state. Pass dependencies explicitly. Module-level constants and registries that are built once at import and never changed are allowed.
 
 ## Ruff + ty
 
