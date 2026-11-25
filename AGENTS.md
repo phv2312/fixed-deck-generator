@@ -4,21 +4,15 @@ Read this file before you change the repository. These rules apply to humans and
 
 ## Mandatory rules
 
-Read the rule file for your task before you write code. Do not rely on memory or on the summaries below. The rule files are the source of truth.
+Read the rule file for your task before you write code. The rule files are the source of truth. Every change must obey them. Run the `Checks` of each area that you changed.
 
-Every feature, fix, refactor, or test must obey these rules.
-
-| Area | Rule file | Apply it when |
+| Area | Index | Apply it when |
 |---|---|---|
-| OOP method placement (non-negotiable) | [docs/rules/oop.md](./docs/rules/oop.md) | You add a function or a method. Do not write a free function when the first parameter belongs to a class in this repository. Make it a method, or a method on a service class. |
-| Coding style | [docs/rules/coding-style.md](./docs/rules/coding-style.md) | You write any code. The rule covers type annotations, PEP 695 generics, the 100-character line limit, guard clauses, RORO, the data-class tiers, `datetime.now(tz=...)`, keyword-only booleans and optional parameters, immutability, global state, and suppression comments. |
-| Modular design | [docs/rules/modular-design.md](./docs/rules/modular-design.md) | You organize new code or start a new project. Use the project layout (`settings.py`, `container.py`) and feature modules (`models.py`, `services.py`, `repositories.py`, `commands.py`, `exceptions.py`). Keep a file between 200 and 400 lines. The hard limit is 800 lines. Give each module an exception hierarchy with a `TEMPLATE` and typed fields. |
-| Design patterns | [docs/rules/design-patterns.md](./docs/rules/design-patterns.md) | You add variants of one task, or code that reads or writes persistent data. Use a strategy base class with `StrEnum` keys, and a repository over a store. |
-| Dependency injection | [docs/rules/dependency-injection.md](./docs/rules/dependency-injection.md) | You create services, repositories, strategies, clients, or resources. Use one hand-written Container that only entry points build. Inject collaborators through the constructor. |
-| Templates | [docs/rules/templates.md](./docs/rules/templates.md) | You produce multi-line text such as prompts, HTML, or Markdown. Use Jinja2 templates through one wrapper class with `StrictUndefined`. |
-| Testing | [docs/rules/testing.md](./docs/rules/testing.md) | You write a test. Use pytest only. Mirror the source layout in `tests/`. Add full annotations and docstrings. Use tuple parametrize. Use `pytest-mock` with `autospec=True`. |
-| Documentation | [docs/rules/documentation.md](./docs/rules/documentation.md) | You add a public function, method, or class. Add a docstring. Update `README.md` when you add a command or a feature. |
-| Git commits | [docs/rules/git-commit.md](./docs/rules/git-commit.md) | You commit. Use a Conventional Commits subject. Do not add tool or assistant attribution, or `Co-Authored-By` trailers. Sign the commit when signing is enabled. |
+| Common | [docs/rules/common/](./docs/rules/common/README.md) | Always: commits, documentation, API contract, definition of done, writing rules. |
+| Python | [docs/rules/python/](./docs/rules/python/README.md) | You write Python. The OOP method placement rule is non-negotiable. |
+| Backend | [docs/rules/backend/](./docs/rules/backend/README.md) | You write an HTTP service, SQL repositories, or migrations. |
+
+The areas and the non-negotiable rules are in [docs/rules/README.md](./docs/rules/README.md).
 
 ## Project documents
 
@@ -32,17 +26,6 @@ Read these documents to learn how the system works. Do this before you change mo
 
 Update the matching document when you change one of these areas.
 
-## Documentation language
-
-Write `AGENTS.md` and each file in `docs/` in ASD-STE100 Simplified Technical English. Use short sentences, the active voice, and one instruction per sentence. Keep code, paths, and technical names as they are.
-
 ## Commands
 
-Run these commands before you mark a change as complete:
-
-```bash
-uv run ruff check
-uv run ruff format --check
-uv run ty check
-uv run pytest
-```
+Follow [docs/rules/common/definition-of-done.md](./docs/rules/common/definition-of-done.md) before you mark a change as complete.

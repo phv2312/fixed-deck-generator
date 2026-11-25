@@ -1,8 +1,3 @@
----
-paths:
-  - "**/*.py"
-  - "**/*.j2"
----
 # Templates (Jinja2)
 
 Use Jinja2 for prompts, HTML, Markdown, and other text that has a fixed shape.
@@ -18,6 +13,7 @@ Use Jinja2 for this text. Do not build it with f-strings, `str.format`, or strin
 - A one-line message.
 - A log message.
 - The `TEMPLATE` string of an exception class.
+- Static text with no variables, for example an OpenAPI description. Keep text of three lines or less in a Python constant. Keep longer text in a plain file, such as `description.md`, and read it one time at import.
 
 ## File layout
 
