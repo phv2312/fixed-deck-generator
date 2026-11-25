@@ -7,6 +7,7 @@ from agents.testing import ScriptedModel, assistant_message
 from decks.agents.models import StreamEvent
 from decks.agents.repos import ProjectLocks, ProjectRepositories
 from decks.agents.runner import ProjectRunner
+from tests.agents.conftest import make_runner, stream_turn
 
 
 @pytest.fixture
@@ -20,11 +21,11 @@ def repositories(tmp_path: Path) -> ProjectRepositories:
 
 def _runner(repositories: ProjectRepositories, steps: list) -> ProjectRunner:
     config = RunConfig(model=ScriptedModel(steps), tracing_disabled=True)
-    return ProjectRunner(repositories, run_config=config)
+    return make_runner(repositories, config)
 
 
 async def _types(runner: ProjectRunner, project_id: str) -> list[StreamEvent]:
-    return [event async for event in runner.run(project_id, "hi")]
+    return [event async for event in stream_turn(runner, project_id, "hi")]
 
 
 async def test_busy_project_gets_error_event(repositories: ProjectRepositories) -> None:
@@ -65,7 +66,7 @@ async def test_lock_released_after_error(repositories: ProjectRepositories) -> N
 async def test_lock_released_when_consumer_stops(repositories: ProjectRepositories) -> None:
     """Closing the stream early cancels the turn and frees the lock."""
     runner = _runner(repositories, [[assistant_message("one")]])
-    stream = runner.run("a", "hi")
+    stream = stream_turn(runner, "a", "hi")
     await anext(stream)
     await stream.aclose()
     assert not repositories.for_project("a").turn_lock.locked()

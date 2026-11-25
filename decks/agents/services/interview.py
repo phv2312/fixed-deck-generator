@@ -47,12 +47,12 @@ class InterviewService:
         sink: EventSink,
         catalog: SlideCatalog,
         *,
-        visuals_available: bool = True,
+        variety: VarietyPolicy,
     ) -> None:
         self._repos = repos
         self._sink = sink
         self._catalog = catalog
-        self._variety = VarietyPolicy(catalog, visuals_available=visuals_available)
+        self._variety = variety
         self._checks = 0
 
     def read(self) -> Plan:

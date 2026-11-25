@@ -55,6 +55,8 @@ class DeckGenerator:
         catalog: SlideCatalog,
         checker: DeckChecker,
         *,
+        fallbacks: SlideFallback,
+        fitter: LayoutFitter,
         run_config: RunConfig | None = None,
         concurrency: int = DEFAULT_CONCURRENCY,
         visuals: VisualService | None = None,
@@ -66,8 +68,8 @@ class DeckGenerator:
         self._run_config = run_config or RunConfig()
         self._concurrency = concurrency
         self._visuals = visuals
-        self._fallbacks = SlideFallback(catalog)
-        self._fitter = LayoutFitter()
+        self._fallbacks = fallbacks
+        self._fitter = fitter
 
     async def generate(self) -> DeckReport:
         """Build every missing or changed slide and return a small report."""

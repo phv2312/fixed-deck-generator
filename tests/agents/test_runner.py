@@ -1,21 +1,25 @@
 from pathlib import Path
 
+import pytest
 from agents import RunConfig
 from agents.testing import ScriptedModel, assistant_message, function_call
 
+from decks.agents.exceptions import ProjectNotFoundError
 from decks.agents.models import StreamEvent
 from decks.agents.repos import ProjectLocks, ProjectRepositories
 from decks.agents.runner import ProjectRunner
+from tests.agents.conftest import make_runner, stream_turn
 
 
 def _runner(tmp_path: Path, model: ScriptedModel) -> ProjectRunner:
     repositories = ProjectRepositories(tmp_path, ProjectLocks())
     repositories.create("demo", "Demo")
-    return ProjectRunner(repositories, run_config=RunConfig(model=model, tracing_disabled=True))
+    config = RunConfig(model=model, tracing_disabled=True)
+    return make_runner(repositories, config)
 
 
 async def _collect(runner: ProjectRunner, project_id: str, query: str) -> list[StreamEvent]:
-    return [event async for event in runner.run(project_id, query)]
+    return [event async for event in stream_turn(runner, project_id, query)]
 
 
 async def test_run_streams_events_and_saves_chat(tmp_path: Path) -> None:
@@ -37,11 +41,11 @@ async def test_run_streams_events_and_saves_chat(tmp_path: Path) -> None:
     assert len(await runner._repositories.for_project("demo").chat.get_items()) > 0
 
 
-async def test_unknown_project_gives_error_event(tmp_path: Path) -> None:
-    """An unknown project is an error event, not an exception, and the stream still ends."""
-    events = await _collect(_runner(tmp_path, ScriptedModel([])), "nope", "hi")
-    assert [e.type for e in events] == ["error", "done"]
-    assert events[0].code == "ProjectNotFoundError"
+def test_unknown_project_is_rejected_before_the_turn(tmp_path: Path) -> None:
+    """The caller resolves the project first, so an unknown project raises before a turn."""
+    runner = _runner(tmp_path, ScriptedModel([]))
+    with pytest.raises(ProjectNotFoundError):
+        runner._repositories.for_project("nope")
 
 
 def test_agent_is_chosen_by_phase(tmp_path: Path) -> None:

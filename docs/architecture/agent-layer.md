@@ -2,7 +2,7 @@
 
 # Agent layer
 
-The agent layer uses the OpenAI Agents SDK. It connects to Azure OpenAI through `AzureOpenAISettings`. The `Container` in `decks/container.py` creates the Azure client, the `RunConfig`, the repositories, and the `ProjectRunner`. It closes the client when the app ends. Only an entry point builds the `Container`.
+The agent layer uses the OpenAI Agents SDK. It connects to Azure OpenAI through `AzureOpenAISettings`. The `Container` in `decks/container.py` creates the Azure client, the model, the `RunConfig`, the slide catalog, the two agents, the repositories, and the `ProjectRunner`. It closes the client when the app ends. Only an entry point builds the `Container`.
 
 ## Project storage
 
@@ -31,9 +31,9 @@ draft ─► interviewing ─► review ─► approved ─► generating ─►
 
 ## One chat turn
 
-1. `ProjectRunner.run(project_id, query)` starts a task and streams events.
-2. The runner takes the turn lock of the project. A second turn at the same time gets a `TurnInProgressError` event.
-3. The runner creates a `ProjectContext` and starts the agent with `Runner.run_streamed`.
+1. The caller gets the `Repos` of the project and builds a `ProjectContext` with `ProjectContext.create`. An unknown project raises `ProjectNotFoundError` here.
+2. `ProjectRunner.run(query, context)` starts a task and streams events from `context.sink`.
+3. The runner takes the turn lock of the project. A second turn at the same time gets a `TurnInProgressError` event. Then it starts the agent with `Runner.run_streamed`.
 4. `SdkEventMapper` maps SDK events to `StreamEvent` objects (`RunStarted`, `Status`, `Token`, `ToolStarted`, `ToolFinished`, `QuestionEvent`, `PlanUpdated`, `DeckProgress`, `DeckReady`, `ErrorEvent`, `Done`).
 5. The stream always ends with `Done`. An error does not raise out of the stream. It arrives as an `ErrorEvent`.
 

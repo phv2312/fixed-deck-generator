@@ -10,6 +10,7 @@ from agents import (
     function_tool,
 )
 from agents.agent_tool_input import StructuredToolInputBuilderOptions
+from agents.models.interface import Model
 
 from decks.agents.context import ProjectContext
 from decks.agents.tools.errors import tool_error
@@ -73,7 +74,7 @@ def visual_enabled(ctx: RunContextWrapper[ProjectContext], _: Any) -> bool:
 def visual_tool(
     kind: VisualKind,
     prompts: VisualPromptBuilder,
-    model: str | None = None,
+    model: str | Model | None = None,
     max_turns: int = VISUAL_MAX_TURNS,
 ) -> FunctionTool:
     """Wrap the visual agent of ``kind`` as a tool: ``create_<kind>``."""
@@ -103,7 +104,7 @@ def visual_tool(
     )
 
 
-def visual_tools(model: str | None = None) -> list[Tool]:
+def visual_tools(model: str | Model | None = None) -> list[Tool]:
     """Return the two visual tools: diagram and mockup. A chart is a slide kind, not a picture."""
     prompts = VisualPromptBuilder()
     return [visual_tool(kind, prompts, model) for kind in ("diagram", "mockup")]

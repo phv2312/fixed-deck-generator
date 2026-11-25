@@ -108,17 +108,19 @@ from datetime import UTC, datetime
 now = datetime.now(tz=UTC)
 ```
 
-## Boolean arguments
+## Keyword-only arguments
 
-Boolean parameters must be keyword-only:
+Make each boolean parameter keyword-only. Make each parameter that has a default value keyword-only. Put `*` before the first of these parameters.
 
 ```python
 # Wrong
 def run(verbose: bool) -> None: ...
+def create(repos: Repos, sink: EventSink | None = None) -> Context: ...
 
 
 # Correct
 def run(*, verbose: bool) -> None: ...
+def create(repos: Repos, *, sink: EventSink | None = None) -> Context: ...
 ```
 
 ## Naming
