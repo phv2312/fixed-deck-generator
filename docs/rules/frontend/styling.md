@@ -14,7 +14,7 @@ MUI is the component library. One MUI theme is the only source of colors, fonts,
 
 ## Default theme
 
-Start from these values. Change a value only for a stated reason.
+Start from these values when the brief gives no direction. Change a value only for a stated reason.
 
 | Item | Default |
 |---|---|
@@ -27,14 +27,7 @@ Start from these values. Change a value only for a stated reason.
 | Radius | One value. |
 | Shadow | One level for raised surfaces. |
 
-## Preferred design practice
-
-These are guides, not hard rules.
-
-- Prefer a plain, consistent screen to a decorated screen.
-- Prefer one clear accent to many accents.
-- Use motion only to explain a change. Keep it short.
-- Keep the same pattern for the same task on each screen.
+For the process that sets these values, see [design.md](./design.md).
 
 ## Checks
 

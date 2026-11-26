@@ -7,6 +7,7 @@ These rules are for a browser app. They build on the [common rules](../common/RE
 | [structure.md](./structure.md) | You add a feature, a page, or an import between modules. |
 | [react.md](./react.md) | You write components, hooks, API calls, or configuration. |
 | [styling.md](./styling.md) | You style a component, or you change the theme. |
+| [design.md](./design.md) | You design a new screen or a new look, or you change the theme values. |
 | [ui-quality.md](./ui-quality.md) | You add a screen, a form, or user text. |
 
 Not covered yet: tests, folder and file naming, and multiple languages. Add a rule file when the first real need appears.

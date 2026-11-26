@@ -14,10 +14,11 @@
 ## User text
 
 - Put each user-facing string in one place, for example one module of texts. Do not scatter strings in components.
-- Write in plain words, in the active voice.
-- An error text says what went wrong and what the user can do.
+- Write from the point of view of the user. Name a thing by what the user understands, not by how the system works.
+- Write in plain words, in the active voice, in sentence case. Prefer a specific text to a clever text.
+- A button names its action: "Save deck", not "Submit". Keep the same name for an action in the whole flow. The button "Publish" gives the message "Published".
+- An error text says what went wrong and what the user can do. It does not apologize. It is never vague.
 - An empty state says what is missing and gives the next action.
-- A button names its action: "Save deck", not "OK".
 
 ## Checks
 
