@@ -1,6 +1,7 @@
 import { EmptyState, ErrorState, LoadingState } from "@/shared/ui";
 import { PlanReview } from "@/features/interview/components/PlanReview";
 import { QuestionPrompt } from "@/features/interview/components/QuestionPrompt";
+import { WorkingNotice } from "@/features/interview/components/WorkingNotice";
 import { useApprovePlan, usePlan } from "@/features/interview/queries";
 import { INTERVIEW_TEXTS } from "@/features/interview/texts";
 
@@ -24,6 +25,7 @@ export function InterviewPane({ projectId, busy, onSend, onApproved }: Interview
   if (data.pending_question) {
     return <QuestionPrompt key={data.pending_question.question} question={data.pending_question} disabled={busy} onAnswer={onSend} />;
   }
+  if (data.slides.length === 0 && busy) return <WorkingNotice />;
   if (data.slides.length === 0) {
     return <EmptyState title={INTERVIEW_TEXTS.start.title} hint={INTERVIEW_TEXTS.start.hint} />;
   }

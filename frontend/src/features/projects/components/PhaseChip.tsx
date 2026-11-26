@@ -24,8 +24,9 @@ const PHASE_STYLES: Record<Phase, PhaseStyle> = {
   generated: { color: "success.main", clipPath: CIRCLE },
 };
 
-export function PhaseChip({ phase }: { phase: Phase }): React.JSX.Element {
-  const style = PHASE_STYLES[phase];
+/** While the assistant works the chip says so, whatever the phase is. */
+export function PhaseChip({ phase, working = false }: { phase: Phase; working?: boolean }): React.JSX.Element {
+  const style = working ? PHASE_STYLES.generating : PHASE_STYLES[phase];
   return (
     <div className="flex items-center gap-2">
       <Box
@@ -33,7 +34,7 @@ export function PhaseChip({ phase }: { phase: Phase }): React.JSX.Element {
         sx={{ width: 8, height: 8, bgcolor: style.color, clipPath: style.clipPath, flexShrink: 0 }}
       />
       <Typography variant="caption" sx={{ color: style.color, fontWeight: 600 }}>
-        {PROJECT_TEXTS.phase[phase]}
+        {working ? PROJECT_TEXTS.working : PROJECT_TEXTS.phase[phase]}
       </Typography>
     </div>
   );

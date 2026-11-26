@@ -18,6 +18,7 @@ export const PROJECT_TEXTS = {
   noSlides: "No slides yet",
   thumbnailTitle: (name: string): string => `First slide of ${name}`,
   noThumbnail: "No preview yet",
+  working: "Assistant working",
   phase: {
     draft: "Draft",
     interviewing: "Needs your answer",

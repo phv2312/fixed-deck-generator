@@ -50,7 +50,7 @@ export function QuestionPrompt({ question, disabled, onAnswer }: QuestionPromptP
           }}
         >
           <TextField
-            label={INTERVIEW_TEXTS.question.other}
+            label={options.length > 0 ? INTERVIEW_TEXTS.question.other : INTERVIEW_TEXTS.question.answer}
             value={text}
             onChange={(event) => setText(event.target.value)}
             multiline

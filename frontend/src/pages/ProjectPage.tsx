@@ -28,7 +28,7 @@ export function ProjectPage(): React.JSX.Element {
           <Typography variant="h3" component="h1">
             {project.data?.name ?? (project.isError ? PAGE_TEXTS.unknownProject : "")}
           </Typography>
-          {project.data ? <PhaseChip phase={project.data.phase} /> : null}
+          {project.data ? <PhaseChip phase={project.data.phase} working={turn.busy} /> : null}
         </Toolbar>
       </AppBar>
       {/* The workspace comes first in the document, so Tab follows the screen order on a narrow screen. */}

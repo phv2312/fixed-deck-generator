@@ -1,8 +1,10 @@
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Markdown from "react-markdown";
 
 import { ToolGroup } from "@/features/chat/components/ToolGroup";
+import { CHAT_TEXTS } from "@/features/chat/texts";
 import type { ChatMessage, ToolCall, ToolField } from "@/features/chat/types";
 import type { LiveTurn } from "@/features/chat/turnReducer";
 
@@ -55,10 +57,13 @@ export function LiveMessage({ live, onShowAll }: LiveMessageProps): React.JSX.El
     <div className="flex max-w-full flex-col gap-2" aria-live="polite">
       {live.tools.length > 0 ? <ToolGroup id="live" calls={live.tools} live onShowAll={onShowAll} /> : null}
       {live.text ? <AssistantText text={live.text} /> : null}
-      {live.status ? (
-        <Typography variant="caption" color="text.secondary">
-          {live.status}
-        </Typography>
+      {live.text === "" ? (
+        <div role="status" className="flex items-center gap-2">
+          <CircularProgress aria-hidden size="1rem" />
+          <Typography variant="caption" color="text.secondary">
+            {live.status ?? CHAT_TEXTS.assistantWorking}
+          </Typography>
+        </div>
       ) : null}
     </div>
   );
