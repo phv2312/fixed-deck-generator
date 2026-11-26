@@ -17,7 +17,6 @@ ProjectId = Annotated[
         examples=["4f1c9a2e7b3d4c5e8a6b0d1e2f3a4b5c"],
     ),
 ]
-SlideIndex = Annotated[int, Path(ge=0, description="Slide position, counted from 0.")]
 
 
 class ProjectCreate(BaseModel):

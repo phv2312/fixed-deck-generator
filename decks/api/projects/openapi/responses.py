@@ -1,9 +1,8 @@
 from http import HTTPStatus
 from typing import ClassVar
 
-from decks.agents.exceptions import DeckMissingError, ProjectNotFoundError, TurnInProgressError
+from decks.agents.exceptions import ProjectNotFoundError, TurnInProgressError
 from decks.api.openapi import EmptyResponse, ErrorResponse, ExampleResponse, Responses
-from decks.api.projects.exceptions import SlideIndexNotFoundError
 from decks.api.projects.openapi.examples import ProjectExamples
 
 
@@ -24,13 +23,4 @@ class ProjectResponses:
         HTTPStatus.NO_CONTENT: EmptyResponse("Project deleted").to_openapi(),
         HTTPStatus.NOT_FOUND: ErrorResponse(ProjectNotFoundError).to_openapi(),
         HTTPStatus.CONFLICT: ErrorResponse(TurnInProgressError).to_openapi(),
-    }
-    SLIDE_HTML: ClassVar[Responses] = {
-        HTTPStatus.OK: {
-            "description": "HTML page of the slide",
-            "content": {"text/html": {"example": "<!doctype html><html>…</html>"}},
-        },
-        HTTPStatus.NOT_FOUND: ErrorResponse(
-            ProjectNotFoundError, DeckMissingError, SlideIndexNotFoundError
-        ).to_openapi(),
     }

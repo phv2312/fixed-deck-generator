@@ -268,3 +268,70 @@ def test_every_route_is_documented() -> None:
         assert route.description, route.path
         assert route.description != docstring, route.path
         assert route.responses, route.path
+
+
+async def test_each_slide_has_its_own_revision(client: AsyncClient, project: str) -> None:
+    """Test that the deck response gives each slide a short revision that is stable."""
+    first = (await client.get(url(project))).json()["slides"][0]["revision"]
+    again = (await client.get(url(project))).json()["slides"][0]["revision"]
+    assert first == again
+    assert len(first) == 12
+
+
+async def test_an_edit_changes_only_the_revision_of_its_slide(
+    client: AsyncClient, app: FastAPI, deck: Deck
+) -> None:
+    """Test that an edit on slide 0 leaves the revision of slide 1 alone, and undo restores it."""
+    created = (await client.post("/api/v1/projects", json={"name": "Two"})).json()["id"]
+    app.state.container.repositories.for_project(created).deck.save(deck)
+
+    def revisions(body: dict) -> list[str]:
+        return [slide["revision"] for slide in body["slides"]]
+
+    before = revisions((await client.get(url(created))).json())
+    await client.patch(url(created, "/slides/0/elements/s1e1"), json={"changes": {"x": 99}})
+    after = revisions((await client.get(url(created))).json())
+    assert after[0] != before[0]
+    assert after[1] == before[1]
+    await client.post(url(created, "/undo"))
+    assert revisions((await client.get(url(created))).json()) == before
+
+
+async def test_slide_html_has_an_etag_and_answers_304(client: AsyncClient, project: str) -> None:
+    """Test that the slide page carries its revision as ETag and an unchanged slide gives 304."""
+    revision = (await client.get(url(project))).json()["slides"][0]["revision"]
+    page = await client.get(url(project, "/slides/0/html"))
+    assert page.status_code == 200
+    assert page.headers["etag"] == f'"{revision}"'
+    assert page.headers["cache-control"] == "private, max-age=0, must-revalidate"
+    same = await client.get(
+        url(project, "/slides/0/html"), headers={"If-None-Match": f'"{revision}"'}
+    )
+    assert same.status_code == 304
+    assert same.content == b""
+    assert same.headers["etag"] == f'"{revision}"'
+
+
+async def test_slide_html_is_new_after_an_edit(client: AsyncClient, project: str) -> None:
+    """Test that a changed slide ignores the old ETag and returns a page with a new one."""
+    old = (await client.get(url(project, "/slides/0/html"))).headers["etag"]
+    await client.patch(url(project, "/slides/0/elements/t1"), json={"changes": {"text": "New"}})
+    page = await client.get(url(project, "/slides/0/html"), headers={"If-None-Match": old})
+    assert page.status_code == 200
+    assert page.headers["etag"] != old
+    assert "New" in page.text
+
+
+async def test_slide_html_without_deck_is_404(client: AsyncClient) -> None:
+    """Test that a project without a deck gives ``DeckMissingError``."""
+    created = (await client.post("/api/v1/projects", json={"name": "Empty"})).json()
+    response = await client.get(url(created["id"], "/slides/0/html"))
+    assert response.status_code == 404
+    assert response.json()["code"] == "DeckMissingError"
+
+
+async def test_slide_html_out_of_range_is_404(client: AsyncClient, project: str) -> None:
+    """Test that an index past the last slide gives ``SlideIndexNotFoundError``."""
+    response = await client.get(url(project, "/slides/5/html"))
+    assert response.status_code == 404
+    assert response.json()["code"] == "SlideIndexNotFoundError"

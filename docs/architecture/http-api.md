@@ -35,7 +35,7 @@ An error that Starlette raises outside the middlewares (an unhandled `Exception`
 | `POST /api/v1/projects` `{name}` | 201 and the new project. The server makes the id. |
 | `GET /api/v1/projects/{id}` | One project. 404 `ProjectNotFoundError`. |
 | `DELETE /api/v1/projects/{id}` | 204. 409 `TurnInProgressError` while a chat turn runs. |
-| `GET /api/v1/projects/{id}/deck/slides/{index}/html` | `text/html` of one slide, for an `iframe`. 404 for no deck or a bad index. |
+| `GET /api/v1/projects/{id}/deck/slides/{index}/html` | `text/html` of one slide, for an `iframe`, with an `ETag` and 304 for an unchanged slide. It belongs to the `deck` feature. See [Deck editing](#deck-editing). |
 | `POST /api/v1/projects/{id}/chat` `{message}` | `text/event-stream`: one frame for each `StreamEvent`, last `done`. 404, 409 `TurnInProgressError`. |
 | `GET /api/v1/projects/{id}/chat` | `{messages, running, pending_question}`: the transcript of the chat. |
 | `GET /api/v1/projects/{id}/tool-calls/{call_id}/fields/{key}?download` | The full value of one tool input or output. |
@@ -73,7 +73,8 @@ The `deck` feature (`decks/api/deck/`) reads the built deck and edits its elemen
 
 | Method and path (under `/api/v1/projects/{id}/deck`) | Result |
 |---|---|
-| `GET` | `{revision, width, height, slides, can_undo, can_redo}`. Each slide has `index`, `id`, `kind`, `title` and `elements`. Each element has `id`, `type`, `parent_id`, `z`, `x`, `y`, `w`, `h`, `props` and `editable`. |
+| `GET` | `{revision, width, height, slides, can_undo, can_redo}`. Each slide has `index`, `id`, `kind`, `title`, `revision` and `elements`. Each element has `id`, `type`, `parent_id`, `z`, `x`, `y`, `w`, `h`, `props` and `editable`. |
+| `GET /slides/{i}/html` | `text/html` of one slide. The `ETag` is the slide `revision`. With `If-None-Match` that holds it, the answer is 304 without a body. 404 for no deck or a bad index. |
 | `PATCH /slides/{i}/elements/{eid}` `{base_revision?, changes}` | Change fields that are in `editable`. Returns `{revision, element, issues, can_undo, can_redo}`. |
 | `POST /slides/{i}/elements` `{base_revision?, kind, props}` | 201. Add a `text`, `image`, `table`, `shape` or `chart` on top. An image needs `props.src`. |
 | `DELETE /slides/{i}/elements/{eid}?base_revision` | Remove an element, also from inside a group. |
@@ -83,6 +84,7 @@ The `deck` feature (`decks/api/deck/`) reads the built deck and edits its elemen
 
 - **Save at once.** Each edit writes `deck.json`, so a later `GET` and the slide HTML show it. The write goes through `DeckEditor.commit`, which also marks the slide as edited in the build state.
 - **Revision.** `Deck.revision` grows by one with each edit, undo and redo. An edit with an older `base_revision` fails with 409 `StaleDeckRevisionError`.
+- **Slide revision.** Each slide in the deck response has `revision`, a 12 character hash (`SlideDigest`) of the slide JSON and the look of the deck (size, theme, palette, font). It leaves out `Deck.revision`, so an edit changes only the hash of the slide that it touches, and undo brings the old hash back. A hash is better than a counter here: it needs no state, and an undone slide is the same page again. The slide HTML answers `ETag: "<revision>"` and `Cache-Control: private, max-age=0, must-revalidate`. A client reloads a thumbnail only when its `revision` changed; `?rev=` in the URL only gives a changed slide a new URL, and the server ignores it. `If-None-Match` is read as the first tag only.
 - **One writer.** An edit takes the write lock of the project. While a chat turn runs it fails with 409 `TurnInProgressError`.
 - **Bad edit.** A field that is not in `editable`, a bad value, an empty change, a group duplicate, or a reorder of a group child gives 422 `InvalidElementChangeError`. An image `src` must be an `http(s)` URL or a `data:image` URI, so that the renderer never reads a file from the server disk. `issues` holds the `DeckChecker` result of the edited slide (bounds, text overflow). An issue never blocks the edit.
 - **History.** `deck_history.json` (`DeckHistory`, `ModelRepository[DeckHistory]`) keeps the last 20 decks to undo and 20 to redo. A new edit clears the redo list. Undo and redo save the restored deck with the next revision.

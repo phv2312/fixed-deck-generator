@@ -10,6 +10,16 @@ class DeckApiError(AppError):
 
 
 @dataclass(eq=False)
+class SlideIndexNotFoundError(DeckApiError):
+    """Raised when a project has no slide at the given index."""
+
+    TEMPLATE = "project {project_id} has no slide at index {index}"
+    STATUS_CODE = HTTPStatus.NOT_FOUND
+    project_id: str
+    index: int
+
+
+@dataclass(eq=False)
 class ElementIdNotFoundError(DeckApiError):
     """Raised when a slide has no element with the given id."""
 

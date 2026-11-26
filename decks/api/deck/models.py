@@ -1,10 +1,12 @@
+import hashlib
+import json
 from typing import Literal, Self
 
 from pydantic import BaseModel, Field
 
 from decks.agents.models import LayoutIssue
 from decks.models.elements import Chart, Element, Group, Image, Line, Polygon, Shape, Table, Text
-from decks.models.slides import Slide
+from decks.models.slides import Deck, Slide
 
 type NewKind = Literal["text", "image", "table", "shape", "chart"]
 
@@ -81,14 +83,27 @@ class SlideInfo(BaseModel):
     id: str
     kind: str
     title: str | None
+    revision: str
     elements: list[ElementInfo]
 
     @classmethod
-    def of(cls, index: int, slide: Slide, title: str | None) -> Self:
+    def of(cls, index: int, slide: Slide, title: str | None, revision: str) -> Self:
         """Describe ``slide``. Group children come after their group."""
+        return cls(
+            index=index,
+            id=slide.id,
+            kind=slide.kind,
+            title=title,
+            revision=revision,
+            elements=cls.elements_of(slide),
+        )
+
+    @classmethod
+    def elements_of(cls, slide: Slide) -> list[ElementInfo]:
+        """Return the elements of ``slide`` in render order, group children after their group."""
         elements: list[ElementInfo] = []
         cls._collect(slide.elements, None, elements)
-        return cls(index=index, id=slide.id, kind=slide.kind, title=title, elements=elements)
+        return elements
 
     @classmethod
     def _collect(cls, source: list[Element], parent_id: str | None, out: list[ElementInfo]) -> None:
@@ -117,3 +132,30 @@ class EditResult(BaseModel):
     issues: list[LayoutIssue]
     can_undo: bool
     can_redo: bool
+
+
+class SlideDigest:
+    """Short hash of what a slide page shows: the slide and the look of its deck.
+
+    The hash ignores the deck revision, so an edit changes only the hash of the slide that it
+    touches. Undo and redo bring back the old hash with the old slide.
+    """
+
+    LENGTH = 12
+
+    def __init__(self, deck: Deck) -> None:
+        self._look = json.dumps(
+            [deck.width, deck.height, deck.theme, deck.palette, deck.font], sort_keys=True
+        )
+
+    def of(self, slide: Slide) -> str:
+        """Return the hash of ``slide``."""
+        data = self._look + slide.model_dump_json()
+        return hashlib.sha256(data.encode()).hexdigest()[: self.LENGTH]
+
+
+class SlideHtml(BaseModel):
+    """The HTML page of one slide, or only its revision when the client already has the page."""
+
+    revision: str
+    html: str | None

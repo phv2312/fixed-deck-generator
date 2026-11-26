@@ -13,6 +13,7 @@ from decks.api.deck.exceptions import (
     InvalidElementChangeError,
     NothingToRedoError,
     NothingToUndoError,
+    SlideIndexNotFoundError,
     StaleDeckRevisionError,
 )
 from decks.api.deck.models import (
@@ -23,13 +24,18 @@ from decks.api.deck.models import (
     EditResult,
     ElementInfo,
     NewKind,
+    SlideDigest,
+    SlideHtml,
     SlideInfo,
 )
-from decks.api.projects.exceptions import SlideIndexNotFoundError
 from decks.models.elements import Element, Image
 from decks.models.history import DeckHistory
 from decks.models.slides import Deck, Slide, ZMove
+from decks.render.htmldoc.models import HtmlPageStyle
+from decks.render.htmldoc.services import HtmlRenderer
 
+# A slide page that sits in an iframe: no backdrop, no gap, and it scales to the frame width.
+EMBEDDED_PAGE = HtmlPageStyle(title="Slide", backdrop="transparent", gap=0, margin=0)
 SAFE_IMAGE_PREFIXES = ("http://", "https://", "data:image/")
 
 
@@ -57,6 +63,17 @@ class DeckService:
         """Return the deck with the box and the fields of every element."""
         repos = self._repositories.for_project(project_id)
         return await asyncio.to_thread(self._info, repos)
+
+    async def slide_html(
+        self, project_id: str, index: int, known_revision: str | None
+    ) -> SlideHtml:
+        """Return the HTML page of slide ``index`` (counted from 0).
+
+        The page is left out when ``known_revision`` is the revision of the slide, because the
+        client already has that page.
+        """
+        repos = self._repositories.for_project(project_id)
+        return await asyncio.to_thread(self._slide_html, repos, index, known_revision)
 
     async def update_element(
         self,
@@ -221,10 +238,12 @@ class DeckService:
         deck = self._load(repos)
         plan = repos.plan.load()
         history = repos.history.load() or DeckHistory()
+        digest = SlideDigest(deck)
         slides = []
         for index, slide in enumerate(deck.slides):
             draft = plan.slide(slide.id) if plan else None
-            slides.append(SlideInfo.of(index, slide, draft.title if draft else None))
+            title = draft.title if draft else None
+            slides.append(SlideInfo.of(index, slide, title, digest.of(slide)))
         return DeckInfo(
             revision=deck.revision,
             width=deck.width,
@@ -233,6 +252,16 @@ class DeckService:
             can_undo=history.can_undo,
             can_redo=history.can_redo,
         )
+
+    def _slide_html(self, repos: Repos, index: int, known_revision: str | None) -> SlideHtml:
+        deck = self._load(repos)
+        if not 0 <= index < len(deck.slides):
+            raise SlideIndexNotFoundError(repos.project_id, index)
+        revision = SlideDigest(deck).of(deck.slides[index])
+        if revision == known_revision:
+            return SlideHtml(revision=revision, html=None)
+        html = HtmlRenderer(deck, EMBEDDED_PAGE).slide_document(index)
+        return SlideHtml(revision=revision, html=html)
 
     def _load(self, repos: Repos) -> Deck:
         deck = repos.deck.load()
@@ -243,9 +272,7 @@ class DeckService:
     def _element(self, index: int, slide: Slide, element_id: str | None) -> ElementInfo | None:
         if element_id is None:
             return None
-        return next(
-            (e for e in SlideInfo.of(index, slide, None).elements if e.id == element_id), None
-        )
+        return next((e for e in SlideInfo.elements_of(slide) if e.id == element_id), None)
 
     def _require(self, slide: Slide, index: int, element_id: str) -> Element:
         element = slide.element(element_id)

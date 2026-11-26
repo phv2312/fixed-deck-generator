@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Query, Response
-from fastapi.responses import HTMLResponse
 
 from decks.api.payloads import PageQuery, PageResponse
 from decks.api.projects.deps import ProjectServiceDep
@@ -11,7 +10,6 @@ from decks.api.projects.payloads import (
     ProjectCreate,
     ProjectId,
     ProjectResponse,
-    SlideIndex,
 )
 
 router = APIRouter()
@@ -68,17 +66,3 @@ async def delete_project(project_id: ProjectId, projects: ProjectServiceDep) -> 
     """Delete one project."""
     await projects.delete(project_id)
     return Response(status_code=204)
-
-
-@router.get(
-    "/{project_id}/deck/slides/{index}/html",
-    summary=ProjectDocs.SLIDE_HTML.summary,
-    description=ProjectDocs.SLIDE_HTML.description,
-    response_class=HTMLResponse,
-    responses=ProjectResponses.SLIDE_HTML,
-)
-async def read_slide_html(
-    project_id: ProjectId, index: SlideIndex, projects: ProjectServiceDep
-) -> HTMLResponse:
-    """Return one slide as an HTML page."""
-    return HTMLResponse(await projects.slide_html(project_id, index))

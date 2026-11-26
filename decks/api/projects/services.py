@@ -2,15 +2,9 @@ import asyncio
 from collections.abc import Callable
 from uuid import uuid4
 
-from decks.agents.exceptions import DeckMissingError, TurnInProgressError
+from decks.agents.exceptions import TurnInProgressError
 from decks.agents.repos import ProjectRepositories, Repos
-from decks.api.projects.exceptions import SlideIndexNotFoundError
 from decks.api.projects.models import ProjectSummary
-from decks.render.htmldoc.models import HtmlPageStyle
-from decks.render.htmldoc.services import HtmlRenderer
-
-# A slide page that sits in an iframe: no backdrop, no gap, and it scales to the frame width.
-EMBEDDED_PAGE = HtmlPageStyle(title="Slide", backdrop="transparent", gap=0, margin=0)
 
 
 def new_project_id() -> str:
@@ -19,7 +13,7 @@ def new_project_id() -> str:
 
 
 class ProjectService:
-    """List, create, read, and delete projects, and render one slide of a project."""
+    """List, create, read, and delete projects."""
 
     def __init__(
         self,
@@ -50,10 +44,6 @@ class ProjectService:
         async with repos.lock:
             await asyncio.to_thread(self._repositories.delete, project_id)
 
-    async def slide_html(self, project_id: str, index: int) -> str:
-        """Return the HTML page of slide ``index`` (counted from 0)."""
-        return await asyncio.to_thread(self._slide_html, project_id, index)
-
     def _page(self, limit: int, offset: int) -> tuple[list[ProjectSummary], int]:
         """Build every summary, sort them, and cut one page."""
         summaries = [self._get(project_id) for project_id in self._repositories.ids()]
@@ -73,12 +63,3 @@ class ProjectService:
             updated_at=self._repositories.modified_at(repos.project_id),
             slide_count=len(deck.slides) if deck is not None else 0,
         )
-
-    def _slide_html(self, project_id: str, index: int) -> str:
-        """Render one slide of the saved deck."""
-        deck = self._repositories.for_project(project_id).deck.load()
-        if deck is None:
-            raise DeckMissingError
-        if not 0 <= index < len(deck.slides):
-            raise SlideIndexNotFoundError(project_id, index)
-        return HtmlRenderer(deck, EMBEDDED_PAGE).slide_document(index)

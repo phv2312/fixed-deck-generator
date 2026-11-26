@@ -1,8 +1,10 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Header, Query, Response
+from fastapi.responses import HTMLResponse
 
 from decks.api.deck.deps import DeckServiceDep
+from decks.api.deck.etags import ETags
 from decks.api.deck.openapi.descriptions import DeckDocs
 from decks.api.deck.openapi.responses import DeckResponses
 from decks.api.deck.payloads import (
@@ -13,10 +15,14 @@ from decks.api.deck.payloads import (
     ElementId,
     ElementOrder,
     ElementUpdate,
+    SlideIndex,
 )
-from decks.api.projects.payloads import ProjectId, SlideIndex
+from decks.api.projects.payloads import ProjectId
 
 router = APIRouter()
+
+# Keep the page, but ask the server each time: an unchanged slide costs a 304, not a render.
+CACHE_CONTROL = "private, max-age=0, must-revalidate"
 
 DECK = "/{project_id}/deck"
 ELEMENTS = DECK + "/slides/{index}/elements"
@@ -33,6 +39,27 @@ ElementPath = ELEMENTS + "/{element_id}"
 async def read_deck(project_id: ProjectId, decks: DeckServiceDep) -> DeckResponse:
     """Return the deck."""
     return DeckResponse.from_info(await decks.get(project_id))
+
+
+@router.get(
+    DECK + "/slides/{index}/html",
+    summary=DeckDocs.SLIDE_HTML.summary,
+    description=DeckDocs.SLIDE_HTML.description,
+    response_class=HTMLResponse,
+    responses=DeckResponses.SLIDE_HTML,
+)
+async def read_slide_html(
+    project_id: ProjectId,
+    index: SlideIndex,
+    decks: DeckServiceDep,
+    if_none_match: Annotated[str | None, Header()] = None,
+) -> Response:
+    """Return one slide as an HTML page, or 304 when the client has this revision."""
+    page = await decks.slide_html(project_id, index, ETags.revision_of(if_none_match))
+    headers = {"ETag": ETags.header_of(page.revision), "Cache-Control": CACHE_CONTROL}
+    if page.html is None:
+        return Response(status_code=304, headers=headers)
+    return HTMLResponse(page.html, headers=headers)
 
 
 @router.post(

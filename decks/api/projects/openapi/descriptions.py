@@ -22,8 +22,3 @@ class ProjectDocs:
         "Delete a project",
         "Delete the project and all its files. A running chat turn blocks the delete.",
     )
-    SLIDE_HTML: ClassVar[RouteDoc] = RouteDoc(
-        "Read a slide as HTML",
-        "Return a self-contained HTML page that shows one slide of the built deck. "
-        "The page scales to the width of its frame, so it fits in an `iframe`.",
-    )

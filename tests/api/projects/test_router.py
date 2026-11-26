@@ -121,25 +121,6 @@ async def test_thumbnail_points_to_a_working_slide_page(
     assert "Slide 2" not in page.text
 
 
-async def test_slide_html_without_deck_is_404(client: AsyncClient) -> None:
-    """Test that a project without a deck gives ``DeckMissingError``."""
-    created = await create(client)
-    response = await client.get(f"/api/v1/projects/{created['id']}/deck/slides/0/html")
-    assert response.status_code == 404
-    assert response.json()["code"] == "DeckMissingError"
-
-
-async def test_slide_html_out_of_range_is_404(
-    client: AsyncClient, app: FastAPI, deck: Deck
-) -> None:
-    """Test that an index past the last slide gives ``SlideIndexNotFoundError``."""
-    created = await create(client)
-    save_deck(app, str(created["id"]), deck)
-    response = await client.get(f"/api/v1/projects/{created['id']}/deck/slides/2/html")
-    assert response.status_code == 404
-    assert response.json()["code"] == "SlideIndexNotFoundError"
-
-
 def test_every_route_is_documented() -> None:
     """Test that each project route has a summary, its own description, and responses."""
     for route in projects.router.routes:

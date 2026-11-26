@@ -12,6 +12,15 @@ class DeckDocs:
         "the fields, and the names of the fields that an edit may change. Draw selection boxes "
         "from the box. The slide HTML of each element has the same id in `data-element-id`.",
     )
+    SLIDE_HTML: ClassVar[RouteDoc] = RouteDoc(
+        "Read a slide as HTML",
+        "Return a self-contained HTML page that shows one slide of the built deck. The page "
+        "scales to the width of its frame, so it fits in an `iframe`. The response has an "
+        "`ETag` that is the `revision` of the slide in the deck response. Send it back in "
+        "`If-None-Match` and the server answers 304 without a body when the slide has not "
+        "changed. The `rev` query parameter only keeps the URL of a changed slide new; the "
+        "server does not read it.",
+    )
     UPDATE: ClassVar[RouteDoc] = RouteDoc(
         "Change an element",
         "Change fields of one element, such as its box, its text, or its style. The change is "

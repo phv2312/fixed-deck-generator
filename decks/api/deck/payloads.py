@@ -15,6 +15,7 @@ ElementId = Annotated[
         examples=["s3e2"],
     ),
 ]
+SlideIndex = Annotated[int, Path(ge=0, description="Slide position, counted from 0.")]
 BaseRevision = Field(
     default=None,
     description=(
@@ -70,6 +71,12 @@ class SlideResponse(BaseModel):
     id: str = Field(description="Slide id. It is the id of the plan slide.")
     kind: str = Field(description="Slide kind.")
     title: str | None = Field(description="Title of the plan slide, or null without a plan.")
+    revision: str = Field(
+        description=(
+            "Short hash of what the slide page shows. It changes only when this slide, or the "
+            "look of the deck, changes, so a client reloads only the slides whose hash changed."
+        )
+    )
     elements: list[ElementResponse] = Field(description="Elements, group children after the group.")
 
     @classmethod
@@ -80,6 +87,7 @@ class SlideResponse(BaseModel):
             id=info.id,
             kind=info.kind,
             title=info.title,
+            revision=info.revision,
             elements=[ElementResponse.from_info(e) for e in info.elements],
         )
 
