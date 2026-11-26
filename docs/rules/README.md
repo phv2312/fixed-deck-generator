@@ -7,6 +7,7 @@ Rules are in areas. A lower area applies to more projects. An area can link to a
 | `common/` | Language-independent rules for all projects. | [common/README.md](./common/README.md) |
 | `python/` | All Python projects: CLI, library, backend, script. | [python/README.md](./python/README.md) |
 | `backend/` | HTTP services. Builds on `python/`. | [backend/README.md](./backend/README.md) |
+| `frontend/` | Browser apps. Builds on `common/`. | [frontend/README.md](./frontend/README.md) |
 
 Any file can link to this README. It is not an area. Read `common/`, then the areas of your task. Read the rule file before you write code.
 
