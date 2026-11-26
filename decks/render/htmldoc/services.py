@@ -42,6 +42,13 @@ class HtmlRenderer(DeckRenderer[str]):
         """Return the full self-contained HTML page."""
         return self._render("page", slides="".join(self.slides()))
 
+    def slide_document(self, index: int) -> str:
+        """Return a full HTML page that holds only slide ``index`` (counted from 0)."""
+        slide = self.deck.slides[index]
+        return self._render(
+            "page", slides=self.slide(slide, [self.element(e) for e in slide.elements], index + 1)
+        )
+
     def text_body(self, text: str) -> str:
         """Escape ``text``. A bullet line gets a 1em marker so its wraps hang under its text."""
         return self._render("text_body", text=text, has_bullets=BULLET in text)

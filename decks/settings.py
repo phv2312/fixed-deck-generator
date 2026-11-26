@@ -31,3 +31,6 @@ class Settings(BaseSettings):
     max_turns: int = 20
     history_limit: int = 20  # newest chat items that a turn loads from the session
     azure: AzureOpenAISettings = Field(default_factory=AzureOpenAISettings)
+    title: str = "Slide decks API"
+    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    json_logs: bool = False

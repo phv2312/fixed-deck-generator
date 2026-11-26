@@ -1,15 +1,14 @@
-from dataclasses import dataclass, fields
-from typing import ClassVar
+from dataclasses import dataclass
+from http import HTTPStatus
+
+from decks.exceptions import AppError
 
 
 @dataclass
-class AgentsError(Exception):
+class AgentsError(AppError):
     """Base class of every agent-layer error. Subclasses set ``TEMPLATE`` and typed fields."""
 
-    TEMPLATE: ClassVar[str] = "agent layer error"
-
-    def __str__(self) -> str:
-        return self.TEMPLATE.format(**{f.name: getattr(self, f.name) for f in fields(self)})
+    TEMPLATE = "agent layer error"
 
 
 @dataclass
@@ -22,6 +21,7 @@ class PlanMissingError(PlanError):
     """Raised when the project has no plan yet."""
 
     TEMPLATE = "the project has no plan yet"
+    STATUS_CODE = HTTPStatus.CONFLICT
 
 
 @dataclass
@@ -29,6 +29,7 @@ class PlanIncompleteError(PlanError):
     """Raised when the plan is incomplete, missing: …."""
 
     TEMPLATE = "the plan is incomplete, missing: {missing}"
+    STATUS_CODE = HTTPStatus.CONFLICT
     missing: list[str]
 
 
@@ -66,6 +67,7 @@ class DeckMissingError(DeckError):
     """Raised when the project has no deck yet."""
 
     TEMPLATE = "the project has no deck yet"
+    STATUS_CODE = HTTPStatus.NOT_FOUND
 
 
 @dataclass
@@ -73,6 +75,7 @@ class GenerationInProgressError(DeckError):
     """Raised when a generation is already running for project …."""
 
     TEMPLATE = "a generation is already running for project {project_id}"
+    STATUS_CODE = HTTPStatus.CONFLICT
     project_id: str
 
 
@@ -89,6 +92,7 @@ class TurnInProgressError(DeckError):
     """Raised when a chat turn is already running for project {project_id}."""
 
     TEMPLATE = "a chat turn is already running for project {project_id}"
+    STATUS_CODE = HTTPStatus.CONFLICT
     project_id: str
 
 
@@ -130,6 +134,7 @@ class ProjectNotFoundError(RepositoryError):
     """Raised when project … does not exist."""
 
     TEMPLATE = "project {project_id} does not exist"
+    STATUS_CODE = HTTPStatus.NOT_FOUND
     project_id: str
 
 

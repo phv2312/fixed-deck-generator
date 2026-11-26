@@ -13,4 +13,4 @@ display:flex;white-space:pre-line;line-height:{{ line_height }};
 align-items:{{ align_items[e.valign] }};justify-content:{{ justify[e.align] }};
 text-align:{{ e.align }};
 {% endset %}
-<div class="e" style="{{ css|inline }}">{{ body }}</div>
+<div class="e" data-element-id="{{ e.id|esc }}" style="{{ css|inline }}">{{ body }}</div>
