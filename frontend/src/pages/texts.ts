@@ -1,6 +1,7 @@
 /** User-facing text of the pages layer. Each string lives here. */
 export const PAGE_TEXTS = {
   backToDecks: "All decks",
+  unknownProject: "Project not found",
   rightPane: "Deck workspace",
   buildDeckMessage: "The plan is approved. Build the deck.",
   deck: {

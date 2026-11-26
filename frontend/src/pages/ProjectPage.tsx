@@ -9,9 +9,15 @@ import { Link as RouterLink, useParams } from "react-router-dom";
 import { ChatPanel, useChatTurn, type StreamEvent } from "@/features/chat";
 import { refreshPlan } from "@/features/interview";
 import { PhaseChip, invalidateProjects, useProject } from "@/features/projects";
+import { ApiError } from "@/shared/api";
 import { ProjectPane } from "@/pages/project/ProjectPane";
 import { PAGE_TEXTS } from "@/pages/texts";
 import { ErrorState, LoadingState } from "@/shared/ui";
+
+/** A missing project cannot be fixed by a retry. */
+function isProjectNotFound(error: unknown): boolean {
+  return error instanceof ApiError && error.code === "ProjectNotFoundError";
+}
 
 const REFRESH_EVENTS: ReadonlySet<StreamEvent["type"]> = new Set(["question", "plan_updated", "deck_ready", "done"]);
 
@@ -19,6 +25,7 @@ export function ProjectPage(): React.JSX.Element {
   const { projectId = "" } = useParams();
   const client = useQueryClient();
   const project = useProject(projectId);
+  const projectNotFound = isProjectNotFound(project.error);
   const turn = useChatTurn({
     projectId,
     onEvent: (event) => {
@@ -36,18 +43,18 @@ export function ProjectPage(): React.JSX.Element {
             {PAGE_TEXTS.backToDecks}
           </Link>
           <Typography variant="h3" component="h1">
-            {project.data?.name ?? projectId}
+            {project.data?.name ?? (project.isError ? PAGE_TEXTS.unknownProject : "")}
           </Typography>
           {project.data ? <PhaseChip phase={project.data.phase} /> : null}
         </Toolbar>
       </AppBar>
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[24rem_1fr] lg:grid-rows-[minmax(0,1fr)]">
         <Box component="aside" sx={{ order: { xs: 2, lg: 1 }, borderRight: { lg: 1 }, borderTop: { xs: 1, lg: 0 }, borderColor: "divider", height: { xs: "32rem", lg: "auto" }, minHeight: 0, overflow: "hidden" }}>
-          <ChatPanel projectId={projectId} turn={turn} />
+          <ChatPanel projectId={projectId} turn={turn} unavailable={project.isError} />
         </Box>
         <main aria-label={PAGE_TEXTS.rightPane} className="order-1 min-h-0 overflow-y-auto p-6 lg:order-2 lg:p-8">
           {project.isPending ? <LoadingState /> : null}
-          {project.isError ? <ErrorState error={project.error} onRetry={() => void project.refetch()} /> : null}
+          {project.isError ? <ErrorState error={project.error} onRetry={projectNotFound ? undefined : () => void project.refetch()} /> : null}
           {project.data ? <ProjectPane project={project.data} turn={turn} /> : null}
         </main>
       </div>

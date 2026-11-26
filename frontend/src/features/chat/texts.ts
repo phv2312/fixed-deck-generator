@@ -11,6 +11,7 @@ export const CHAT_TEXTS = {
   empty: { title: "Start the conversation", hint: "Describe the deck you want. The assistant asks what it needs." },
   composer: { label: "Message", send: "Send message", hint: "Enter sends. Shift and Enter add a line." },
   assistantWorking: "The assistant is working",
+  unavailable: "This chat is not available. Go back to All decks and open a deck that exists.",
   turnFailed: "The last message failed. Send it again.",
   tools: {
     used: (count: number): string => `Used ${count} ${count === 1 ? "tool" : "tools"}`,

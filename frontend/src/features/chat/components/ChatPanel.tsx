@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { useState } from "react";
 
 import { Composer } from "@/features/chat/components/Composer";
@@ -16,10 +17,12 @@ interface Viewing {
 interface ChatPanelProps {
   projectId: string;
   turn: ChatTurn;
+  /** True when the project cannot be opened. The panel then shows a notice instead of history and composer. */
+  unavailable: boolean;
 }
 
 /** The chat of one project: messages, the running turn, the composer, and the full-value viewer. */
-export function ChatPanel({ projectId, turn }: ChatPanelProps): React.JSX.Element {
+export function ChatPanel({ projectId, turn, unavailable }: ChatPanelProps): React.JSX.Element {
   const [viewing, setViewing] = useState<Viewing | null>(null);
   const showAll = (call: ToolCall, field: ToolField): void => setViewing({ title: `${call.name} · ${field.key}`, field });
 
@@ -29,9 +32,17 @@ export function ChatPanel({ projectId, turn }: ChatPanelProps): React.JSX.Elemen
       aria-label={CHAT_TEXTS.panelLabel}
       sx={{ position: "relative", display: "flex", flexDirection: "column", height: "100%", minHeight: 0, bgcolor: "background.paper" }}
     >
-      <MessageList projectId={projectId} turn={turn} onShowAll={showAll} />
-      <Composer disabled={turn.busy} onSend={(message) => void turn.send(message)} />
-      {viewing ? <FieldViewer title={viewing.title} field={viewing.field} onClose={() => setViewing(null)} /> : null}
+      {unavailable ? (
+        <Typography variant="body2" color="text.secondary" sx={{ p: 3 }}>
+          {CHAT_TEXTS.unavailable}
+        </Typography>
+      ) : (
+        <>
+          <MessageList projectId={projectId} turn={turn} onShowAll={showAll} />
+          <Composer busy={turn.busy} onSend={(message) => void turn.send(message)} />
+        </>
+      )}
+      {viewing && !unavailable ? <FieldViewer title={viewing.title} field={viewing.field} onClose={() => setViewing(null)} /> : null}
     </Box>
   );
 }

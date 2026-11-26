@@ -16,7 +16,7 @@ export function ErrorState({ error, onRetry }: ErrorStateProps): React.JSX.Eleme
       severity="error"
       action={
         onRetry ? (
-          <Button color="inherit" onClick={onRetry}>
+          <Button color="inherit" onClick={onRetry} sx={{ whiteSpace: "nowrap" }}>
             {SHARED_TEXTS.retry}
           </Button>
         ) : undefined

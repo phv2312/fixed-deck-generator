@@ -7,18 +7,19 @@ import { useState } from "react";
 import { CHAT_TEXTS } from "@/features/chat/texts";
 
 interface ComposerProps {
-  disabled: boolean;
+  /** True while a turn runs. Only the send action stops; the field stays open for a draft. */
+  busy: boolean;
   onSend: (message: string) => void;
 }
 
 const MAX_ROWS = 5;
 
-export function Composer({ disabled, onSend }: ComposerProps): React.JSX.Element {
+export function Composer({ busy, onSend }: ComposerProps): React.JSX.Element {
   const [text, setText] = useState("");
   const message = text.trim();
 
   const submit = (): void => {
-    if (disabled || message === "") return;
+    if (busy || message === "") return;
     onSend(message);
     setText("");
   };
@@ -48,7 +49,7 @@ export function Composer({ disabled, onSend }: ComposerProps): React.JSX.Element
         size="small"
         fullWidth
       />
-      <IconButton type="submit" color="primary" aria-label={CHAT_TEXTS.composer.send} disabled={disabled || message === ""}>
+      <IconButton type="submit" color="primary" aria-label={CHAT_TEXTS.composer.send} disabled={busy || message === ""}>
         <SendIcon />
       </IconButton>
     </Box>
