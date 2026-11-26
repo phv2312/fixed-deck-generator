@@ -109,10 +109,12 @@ Use `isinstance()` or `issubclass()` to narrow a type. Do not use `hasattr()` or
 
 ```python
 # Wrong
-if hasattr(schema, "is_deleted"): ...
+if hasattr(schema, "is_deleted"):
+    ...
 
 # Correct
-if issubclass(schema, SoftDeleteMixin): ...
+if issubclass(schema, SoftDeleteMixin):
+    ...
 ```
 
 `issubclass()` raises `TypeError` on a `Protocol` with data members. Use `isinstance()` with a `@runtime_checkable` `Protocol`, or check a concrete class.

@@ -46,6 +46,7 @@ The Container closes each resource that it creates, in reverse order.
 3. Make the Container a context manager. Its `close` method closes the stack.
 
 ```python
+class Container:
     def __enter__(self) -> Self:
         return self
 

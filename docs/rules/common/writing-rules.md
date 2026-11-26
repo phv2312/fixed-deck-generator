@@ -11,6 +11,7 @@
 ## How to write a rule
 
 - Write the idea first. Add an example only when the idea is not clear.
+- Write each Python code block so that `ruff format` accepts it. Ruff formats the code blocks in Markdown. Show a method inside its class.
 - Start with a short purpose, then the rules, then a checklist when the rule has more than five items.
 - Keep a rule file under 300 lines. Split a longer file. Code files have their own limit, which the area rules give.
 - Write in ASD-STE100. See [documentation.md](./documentation.md).
