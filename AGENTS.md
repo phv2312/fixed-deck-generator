@@ -11,6 +11,7 @@ Read the rule file for your task before you write code. The rule files are the s
 | Common | [docs/rules/common/](./docs/rules/common/README.md) | Always: commits, documentation, API contract, definition of done, writing rules. |
 | Python | [docs/rules/python/](./docs/rules/python/README.md) | You write Python. The OOP method placement rule is non-negotiable. |
 | Backend | [docs/rules/backend/](./docs/rules/backend/README.md) | You write an HTTP service, SQL repositories, or migrations. |
+| Frontend | [docs/rules/frontend/](./docs/rules/frontend/README.md) | You write a browser app: components, hooks, API calls, or styles. |
 
 The areas and the non-negotiable rules are in [docs/rules/README.md](./docs/rules/README.md).
 
