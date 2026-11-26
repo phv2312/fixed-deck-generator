@@ -1,10 +1,4 @@
----
-paths:
-  - "**/*.py"
----
-# Documentation
-
-## Docstrings
+# Docstrings
 
 Add a docstring to all public functions, methods, and classes. A private helper (leading `_`) needs a docstring only when its purpose is not clear.
 
@@ -37,9 +31,4 @@ def process(items: list[str], *, reverse: bool = False) -> list[str]:
 
 ## Module docstrings
 
-Do not add a docstring at the top of a module. Put the intent in the file name, in the class
-docstrings, and in `README.md`. This rule applies to source files and to test files.
-
-## README
-
-Update `README.md` when you add a command or a feature.
+A module docstring is optional. When you add one, keep it to one line that states the purpose of the module.

@@ -27,8 +27,14 @@ line-length = 100
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "RUF", "TID"]
-ignore = ["RUF001", "RUF002", "RUF003"]
+select = ["E", "F", "I", "UP", "B", "RUF", "TID", "ANN", "DTZ", "FBT", "TRY", "EM"]
+ignore = [
+  "RUF001", "RUF002", "RUF003",
+  # Raising the typed domain error inside the guarded block is the intended flow.
+  "TRY301",
+  # Domain errors are typed dataclasses; their args are fields, not messages.
+  "EM101", "EM102",
+]
 
 [tool.ruff.lint.flake8-tidy-imports]
 # Allow local `from .base` imports, but never parent-relative (`from ..` / `from ...`).
@@ -38,6 +44,8 @@ ban-relative-imports = "parents"
 # Embedded HTML/CSS/JS template literals; splitting them would alter the output.
 "decks/render/gallery.py" = ["E501"]
 "tests/test_examples.py" = ["E501"]
+# pytest parametrize passes booleans positionally.
+"tests/**" = ["FBT001"]
 
 [tool.ty.src]
 include = ["decks", "scripts"]
