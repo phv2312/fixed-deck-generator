@@ -14,6 +14,7 @@ One folder holds one project. Each file has one repository class in `decks/agent
 | `state.json` | `ProjectRepository` | `BuildState`: phase, revisions, build record of each slide. |
 | `plan.json` | `ModelRepository[Plan]` | The plan: meta and a list of `SlideDraft`. |
 | `deck.json` | `ModelRepository[Deck]` | The built deck. |
+| `deck_history.json` | `ModelRepository[DeckHistory]` | Decks for undo and redo of the HTTP editor. At most 20 each. |
 | `chat.json` | `ChatRepository` | The chat history. It is an SDK `Session`. `chat.json` keeps all items. A turn loads only the newest items. The `history_limit` setting sets the count. The Container sets this in `run_config`. `HistoryTrimmer` then drops items before the first user message and shortens long tool outputs of earlier turns. |
 | `assets/` | `AssetRepository` | Pictures from the visual agent. |
 

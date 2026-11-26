@@ -8,6 +8,7 @@ This folder shows how the system is built. Read it before you change more than o
 | [agent-layer.md](agent-layer.md) | Project storage, phases, one chat turn, agents, tools and services. |
 | [deck-generation.md](deck-generation.md) | How `DeckGenerator` turns a plan into a deck. |
 | [visual-agent.md](visual-agent.md) | How the interview agent makes diagrams and mockups. |
+| [http-api.md](http-api.md) | The HTTP layer in `decks/api/`: layout, errors, endpoints. |
 
 ## Purpose
 
@@ -46,7 +47,9 @@ chat ──► interview agent ──► Plan ──► DeckGenerator ──► 
 | `decks/visuals/` | The visual agent: SVG check, Chrome measure, PNG render. |
 | `decks/design.py` | Design tokens: canvas size, type scale, spacing. |
 | `decks/text_metrics.py` | Text size estimate. Builders and the checker share it. |
-| `decks/settings.py` | Azure OpenAI settings. |
+| `decks/settings.py` | Azure OpenAI and HTTP settings. |
+| `decks/api/` | The HTTP API. See [http-api.md](http-api.md). |
+| `decks/exceptions.py` | `AppError`, the base class of all errors. |
 
 ## Entry points
 
@@ -57,6 +60,7 @@ chat ──► interview agent ──► Plan ──► DeckGenerator ──► 
 | `uv run python -m scripts.pipeline gallery` | Render every example in both themes. |
 | `uv run python -m scripts.pipeline review -o gallery.html` | One review gallery. |
 | `uv run python -m scripts.chat` | Chat client for the agent layer. |
+| `uv run uvicorn decks.api.main:create_app --factory` | The HTTP API. |
 | `uv run python -m scripts.pipeline` | Build, render and gallery commands (`scripts/pipeline.py`). |
 | `uv run python -m scripts.gen_catalog` | Regenerate `docs/slide-catalog/`. |
 
