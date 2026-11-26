@@ -27,7 +27,7 @@ export function Composer({ busy, onSend }: ComposerProps): React.JSX.Element {
   return (
     <Box
       component="form"
-      sx={{ display: "flex", alignItems: "flex-end", gap: 1, p: 1.5, borderTop: 1, borderColor: "divider" }}
+      sx={{ display: "flex", alignItems: "flex-start", gap: 1, p: 1.5, borderTop: 1, borderColor: "divider" }}
       onSubmit={(event) => {
         event.preventDefault();
         submit();
