@@ -3,37 +3,20 @@ import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link as RouterLink, useParams } from "react-router-dom";
 
-import { ChatPanel, useChatTurn, type StreamEvent } from "@/features/chat";
-import { refreshPlan } from "@/features/interview";
-import { PhaseChip, invalidateProjects, useProject } from "@/features/projects";
-import { ApiError } from "@/shared/api";
+import { ChatPanel } from "@/features/chat";
+import { PhaseChip, isProjectNotFound, useProject } from "@/features/projects";
 import { ProjectPane } from "@/pages/project/ProjectPane";
+import { useProjectTurn } from "@/pages/project/useProjectTurn";
 import { PAGE_TEXTS } from "@/pages/texts";
 import { ErrorState, LoadingState } from "@/shared/ui";
 
-/** A missing project cannot be fixed by a retry. */
-function isProjectNotFound(error: unknown): boolean {
-  return error instanceof ApiError && error.code === "ProjectNotFoundError";
-}
-
-const REFRESH_EVENTS: ReadonlySet<StreamEvent["type"]> = new Set(["question", "plan_updated", "deck_ready", "done"]);
-
 export function ProjectPage(): React.JSX.Element {
   const { projectId = "" } = useParams();
-  const client = useQueryClient();
   const project = useProject(projectId);
-  const projectNotFound = isProjectNotFound(project.error);
-  const turn = useChatTurn({
-    projectId,
-    onEvent: (event) => {
-      if (!REFRESH_EVENTS.has(event.type)) return;
-      void refreshPlan(client, projectId);
-      void invalidateProjects(client);
-    },
-  });
+  const turn = useProjectTurn(projectId);
+  const retry = isProjectNotFound(project.error) ? undefined : () => void project.refetch();
 
   return (
     <div className="flex min-h-dvh flex-col lg:h-dvh">
@@ -48,15 +31,20 @@ export function ProjectPage(): React.JSX.Element {
           {project.data ? <PhaseChip phase={project.data.phase} /> : null}
         </Toolbar>
       </AppBar>
+      {/* The workspace comes first in the document, so Tab follows the screen order on a narrow screen. */}
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[24rem_1fr] lg:grid-rows-[minmax(0,1fr)]">
-        <Box component="aside" sx={{ order: { xs: 2, lg: 1 }, borderRight: { lg: 1 }, borderTop: { xs: 1, lg: 0 }, borderColor: "divider", height: { xs: "32rem", lg: "auto" }, minHeight: 0, overflow: "hidden" }}>
-          <ChatPanel projectId={projectId} turn={turn} unavailable={project.isError} />
-        </Box>
-        <main aria-label={PAGE_TEXTS.rightPane} className="order-1 min-h-0 overflow-y-auto p-6 lg:order-2 lg:p-8">
+        <main aria-label={PAGE_TEXTS.rightPane} className="min-h-0 overflow-y-auto p-6 lg:col-start-2 lg:row-start-1 lg:p-8">
           {project.isPending ? <LoadingState /> : null}
-          {project.isError ? <ErrorState error={project.error} onRetry={projectNotFound ? undefined : () => void project.refetch()} /> : null}
+          {project.isError ? <ErrorState error={project.error} onRetry={retry} /> : null}
           {project.data ? <ProjectPane project={project.data} turn={turn} /> : null}
         </main>
+        <Box
+          component="aside"
+          className="lg:col-start-1 lg:row-start-1"
+          sx={{ borderStyle: "solid", borderColor: "divider", borderWidth: 0, borderTopWidth: { xs: 1, lg: 0 }, borderRightWidth: { lg: 1 }, height: { xs: "32rem", lg: "auto" }, minHeight: 0, overflow: "hidden" }}
+        >
+          <ChatPanel projectId={projectId} turn={turn} unavailable={project.isError} />
+        </Box>
       </div>
     </div>
   );

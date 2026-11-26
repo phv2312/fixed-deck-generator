@@ -20,6 +20,8 @@ export interface DeckSlide {
   id: string;
   kind: string;
   title: string | null;
+  /** Changes when this slide changes. The API may omit it; then the deck revision stands in. */
+  revision?: string;
   elements: DeckElement[];
 }
 

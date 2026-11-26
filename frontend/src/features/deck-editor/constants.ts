@@ -1,7 +1,3 @@
-/** Canvas of the deck engine, in its own units. See decks/design.py. */
-export const CANVAS_WIDTH = 1280;
-export const CANVAS_HEIGHT = 720;
-
 /** Smallest hit area of an overlay box, in screen units. A line has no height. */
 export const MIN_BOX = 16;
 export const NUDGE = 1;

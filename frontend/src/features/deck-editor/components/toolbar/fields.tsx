@@ -1,10 +1,27 @@
+import Box from "@mui/material/Box";
 import NativeSelect from "@mui/material/NativeSelect";
 import TextField from "@mui/material/TextField";
 import ToggleButton from "@mui/material/ToggleButton";
+import Typography from "@mui/material/Typography";
 import { useState } from "react";
 
 import { COLOR_TOKENS } from "@/features/deck-editor/constants";
 import { EDITOR_TEXTS } from "@/features/deck-editor/texts";
+
+interface LabeledProps {
+  label: string;
+  children: React.ReactNode;
+}
+
+/** A field with its name shown beside it. The name is also its accessible name. */
+function Labeled({ label, children }: LabeledProps): React.JSX.Element {
+  return (
+    <Box component="label" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+      <Typography variant="caption" color="text.secondary" component="span">{label}</Typography>
+      {children}
+    </Box>
+  );
+}
 
 interface IconToggleProps {
   label: string;
@@ -23,7 +40,7 @@ export function IconToggle({ label, selected, onToggle, children }: IconTogglePr
       size="small"
       selected={selected}
       onChange={onToggle}
-      sx={{ border: 0, minWidth: 40, minHeight: 40 }}
+      sx={{ border: 0 }}
     >
       {children}
     </ToggleButton>
@@ -39,18 +56,15 @@ interface ChoiceSelectProps {
 
 export function ChoiceSelect({ label, value, options, onChange }: ChoiceSelectProps): React.JSX.Element {
   return (
-    <NativeSelect
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      inputProps={{ "aria-label": label, title: label }}
-      sx={{ minHeight: 40 }}
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.text}
-        </option>
-      ))}
-    </NativeSelect>
+    <Labeled label={label}>
+      <NativeSelect value={value} onChange={(event) => onChange(event.target.value)} inputProps={{ "aria-label": label }}>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.text}
+          </option>
+        ))}
+      </NativeSelect>
+    </Labeled>
   );
 }
 
@@ -99,6 +113,7 @@ export function NumberField({ label, value, min = 0, onCommit }: NumberFieldProp
     setDraft(null);
   };
   return (
+    <Labeled label={label}>
     <TextField
       type="number"
       size="small"
@@ -108,8 +123,9 @@ export function NumberField({ label, value, min = 0, onCommit }: NumberFieldProp
       onKeyDown={(event) => {
         if (event.key === "Enter") commit();
       }}
-      slotProps={{ htmlInput: { "aria-label": label, title: label, min } }}
+      slotProps={{ htmlInput: { "aria-label": label, min } }}
       sx={{ width: (theme) => theme.spacing(10) }}
     />
+    </Labeled>
   );
 }

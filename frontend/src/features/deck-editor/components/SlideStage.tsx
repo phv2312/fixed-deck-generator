@@ -1,17 +1,18 @@
 import Box from "@mui/material/Box";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from "@mui/material/Typography";
 import { useRef, useState } from "react";
 
-import { slideHtmlUrl } from "@/features/deck-editor/api";
+import { slideUrl } from "@/features/deck-editor/api";
 import { ElementBoxes } from "@/features/deck-editor/components/ElementBoxes";
 import { SelectionMoveable } from "@/features/deck-editor/components/SelectionMoveable";
-import { SlideFrame } from "@/features/deck-editor/components/SlideFrame";
 import { TextEditor } from "@/features/deck-editor/components/TextEditor";
 import { ElementToolbar } from "@/features/deck-editor/components/toolbar/ElementToolbar";
 import type { DeckEditorState } from "@/features/deck-editor/hooks/useDeckEditor";
 import { EDITOR_TEXTS } from "@/features/deck-editor/texts";
 import type { Deck, DeckSlide } from "@/features/deck-editor/types";
 import { useElementWidth } from "@/shared/hooks";
+import { ScaledFrame } from "@/shared/ui";
 
 interface SlideStageProps {
   projectId: string;
@@ -28,8 +29,13 @@ export function SlideStage({ projectId, deck, slide, editor }: SlideStageProps):
   const [target, setTarget] = useState<HTMLElement | null>(null);
   const [gesture, setGesture] = useState(false);
   const [modal, setModal] = useState(false);
-  const { selected, editingText } = editor;
+  const docked = useMediaQuery((theme) => theme.breakpoints.down("lg"));
+  const { selected, editingText, locked } = editor;
   const ready = selected !== undefined && target !== null && width > 0;
+  const toolbar = (floating: boolean): React.JSX.Element | null =>
+    ready && floating === !docked ? (
+      <ElementToolbar element={selected} target={target} editor={editor} hidden={gesture || editingText} docked={docked} onModal={setModal} />
+    ) : null;
   return (
     <div className="flex flex-col gap-2">
       <Box
@@ -41,14 +47,14 @@ export function SlideStage({ projectId, deck, slide, editor }: SlideStageProps):
           "& .moveable-control-box": { "--moveable-color": (theme) => theme.palette.primary.main } }}
       >
         <Box sx={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-          <SlideFrame src={slideHtmlUrl(projectId, slide.index, deck.revision)}
-            title={EDITOR_TEXTS.slideLabel(slide.index + 1, slide.title)} scale={scale} />
+          <ScaledFrame src={slideUrl(projectId, deck, slide)} width={deck.width} height={deck.height}
+            title={EDITOR_TEXTS.slideLabel(slide.index + 1, slide.title)} />
         </Box>
-        <ElementBoxes elements={slide.elements} scale={scale} editor={editor} onSelectedNode={setTarget} frozen={gesture} />
+        {!locked && <ElementBoxes elements={slide.elements} scale={scale} editor={editor} onSelectedNode={setTarget} frozen={gesture} />}
         {ready && !editingText && !modal && (
           <SelectionMoveable target={target} element={selected} scale={scale} onChange={editor.patch} onGesture={setGesture} />
         )}
-        {ready && <ElementToolbar element={selected} target={target} editor={editor} hidden={gesture || editingText} onModal={setModal} />}
+        {toolbar(true)}
         {ready && editingText && (
           <TextEditor element={selected} scale={scale}
             onCommit={(text) => {
@@ -62,7 +68,8 @@ export function SlideStage({ projectId, deck, slide, editor }: SlideStageProps):
             }} />
         )}
       </Box>
-      <Typography variant="caption" color="text.secondary">{EDITOR_TEXTS.stageHint}</Typography>
+      {toolbar(false)}
+      {!locked && <Typography variant="caption" color="text.secondary">{EDITOR_TEXTS.stageHint}</Typography>}
     </div>
   );
 }

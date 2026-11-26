@@ -75,7 +75,7 @@ function TextControls(props: ControlsProps): React.JSX.Element {
       <Toggle element={element} patch={patch} field="underline" label={T.underline}><FormatUnderlined fontSize="small" /></Toggle>
       <Align element={element} patch={patch} />
       <Token element={element} patch={patch} field="color" label={T.color} />
-      <Button size="small" onClick={editText} sx={{ minHeight: 40 }}>{T.editText}</Button>
+      <Button size="small" onClick={editText}>{T.editText}</Button>
     </>
   );
 }
@@ -115,7 +115,7 @@ function ImageControls({ element, patch, openDialog }: ControlsProps): React.JSX
         <ChoiceSelect label={T.fit} value={fit} onChange={(next) => patch({ fit: next })}
           options={[{ value: "cover", text: T.cover }, { value: "contain", text: T.contain }]} />
       )}
-      {can(element, "src") && <Button size="small" onClick={() => openDialog("image")} sx={{ minHeight: 40 }}>{T.editImage}</Button>}
+      {can(element, "src") && <Button size="small" onClick={() => openDialog("image")}>{T.editImage}</Button>}
     </>
   );
 }
@@ -125,7 +125,7 @@ function TableControls({ element, patch, openDialog }: ControlsProps): React.JSX
     <>
       <Toggle element={element} patch={patch} field="header" label={T.header}><span aria-hidden="true">H</span></Toggle>
       <Num element={element} patch={patch} field="font_size" label={T.fontSize} min={1} />
-      <Button size="small" onClick={() => openDialog("cells")} sx={{ minHeight: 40 }}>{T.editCells}</Button>
+      <Button size="small" onClick={() => openDialog("cells")}>{T.editCells}</Button>
     </>
   );
 }
@@ -138,7 +138,7 @@ function ChartControls({ element, patch, openDialog }: ControlsProps): React.JSX
         <ChoiceSelect label={T.chartKind} value={kind} onChange={(next) => patch({ kind: next })}
           options={["bar", "line", "pie", "bubble"].map((v) => ({ value: v, text: v }))} />
       )}
-      <Button size="small" onClick={() => openDialog("data")} sx={{ minHeight: 40 }}>{T.editData}</Button>
+      <Button size="small" onClick={() => openDialog("data")}>{T.editData}</Button>
     </>
   );
 }

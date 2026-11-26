@@ -25,6 +25,7 @@ const PAPER = "#F6F7F9";
 const SURFACE = "#FFFFFF";
 const LINE = "#DDE1E8";
 const TEAL = "#0F5F66";
+const TOUCH_TARGET = 44;
 
 export const theme = createTheme({
   spacing: 8,
@@ -52,23 +53,22 @@ export const theme = createTheme({
     button: { textTransform: "none", fontWeight: 600 },
   },
   components: {
+    /** One focus ring for every button: Button, IconButton, ToggleButton, ListItemButton, and ButtonBase. */
+    MuiButtonBase: {
+      styleOverrides: {
+        root: ({ theme: t }) => ({
+          "&.Mui-focusVisible": { outline: `2px solid ${t.palette.primary.main}`, outlineOffset: 2 },
+        }),
+      },
+    },
+    /** Touch target: every control is at least this tall. */
     MuiButton: {
       defaultProps: { disableElevation: true },
-      styleOverrides: {
-        root: ({ theme: t }) => ({
-          minHeight: 44,
-          "&.Mui-focusVisible": { outline: `2px solid ${t.palette.primary.main}`, outlineOffset: 2 },
-        }),
-      },
+      styleOverrides: { root: { minHeight: TOUCH_TARGET } },
     },
-    MuiLink: {
-      styleOverrides: {
-        root: ({ theme: t }) => ({
-          "&.Mui-focusVisible": { outline: `2px solid ${t.palette.primary.main}`, outlineOffset: 2 },
-        }),
-      },
-    },
-    MuiIconButton: { styleOverrides: { root: { minWidth: 44, minHeight: 44 } } },
+    MuiIconButton: { styleOverrides: { root: { minWidth: TOUCH_TARGET, minHeight: TOUCH_TARGET } } },
+    MuiToggleButton: { styleOverrides: { root: { minWidth: TOUCH_TARGET, minHeight: TOUCH_TARGET } } },
+    MuiInputBase: { styleOverrides: { root: { minHeight: TOUCH_TARGET } } },
     MuiCardActionArea: {
       styleOverrides: {
         root: ({ theme: t }) => ({

@@ -23,5 +23,5 @@ export function ProjectPane({ project, turn }: ProjectPaneProps): React.JSX.Elem
       />
     );
   }
-  return <DeckPane projectId={project.id} phase={project.phase} progress={turn.live?.progress ?? null} />;
+  return <DeckPane projectId={project.id} phase={project.phase} progress={turn.live?.progress ?? null} locked={turn.busy} />;
 }

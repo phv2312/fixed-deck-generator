@@ -7,6 +7,11 @@ import { STALE_CODE } from "@/features/deck-editor/constants";
 
 const deckKey = (projectId: string): readonly unknown[] => ["deck-editor", projectId, "deck"];
 
+/** Load the deck again. Call it when something other than the editor changed the deck. */
+export function refreshDeck(client: QueryClient, projectId: string): Promise<void> {
+  return client.invalidateQueries({ queryKey: deckKey(projectId) });
+}
+
 export function useDeck(projectId: string): ReturnType<typeof useQuery<Deck>> {
   return useQuery({
     queryKey: deckKey(projectId),

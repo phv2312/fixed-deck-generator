@@ -7,6 +7,7 @@ export const EDITOR_TEXTS = {
   slideCount: (n: number, total: number): string => `Slide ${n} of ${total}`,
   stageLabel: "Slide editor",
   textEditor: "Text of the element",
+  locked: "The assistant is working on this deck. Editing is paused until it is done.",
   stageHint: "Click an element to edit it. Double-click text to change the words.",
   elementLabel: (type: string, id: string): string => `${type} ${id}`,
   types: {

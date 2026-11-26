@@ -6,8 +6,14 @@ import { EDITOR_TEXTS } from "@/features/deck-editor/texts";
 import { EmptyState, ErrorState, LoadingState } from "@/shared/ui";
 
 /** Edit the built deck: slide list, the slide with its element boxes, and a floating toolbar. */
-export function DeckEditor({ projectId }: { projectId: string }): React.JSX.Element {
-  const editor = useDeckEditor(projectId);
+interface DeckEditorProps {
+  projectId: string;
+  /** True while the assistant works on the deck. The editor shows it and takes no edit. */
+  locked: boolean;
+}
+
+export function DeckEditor({ projectId, locked }: DeckEditorProps): React.JSX.Element {
+  const editor = useDeckEditor(projectId, locked);
   const { deck, slide, query } = editor;
   if (query.isPending) return <LoadingState />;
   if (query.isError) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />;
@@ -17,7 +23,7 @@ export function DeckEditor({ projectId }: { projectId: string }): React.JSX.Elem
       <SlideList projectId={projectId} deck={deck} current={editor.slideIndex} onPick={editor.selectSlide} />
       <div className="flex min-w-0 flex-1 flex-col gap-4">
         <EditorBar editor={editor} />
-        <div className="pt-12">
+        <div className="lg:pt-12">
           <SlideStage projectId={projectId} deck={deck} slide={slide} editor={editor} />
         </div>
       </div>

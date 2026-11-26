@@ -34,7 +34,7 @@ function AddMenu({ editor }: { editor: DeckEditorState }): React.JSX.Element {
   };
   return (
     <>
-      <Button variant="outlined" aria-haspopup="menu" aria-expanded={anchor !== null}
+      <Button variant="outlined" aria-haspopup="menu" aria-expanded={anchor !== null} disabled={editor.locked}
         onClick={(event) => setAnchor(event.currentTarget)}>{B.add}</Button>
       <Menu anchorEl={anchor} open={anchor !== null} onClose={() => setAnchor(null)} aria-label={B.addMenu}>
         {KINDS.map((kind) => <MenuItem key={kind} onClick={() => pick(kind)}>{B.kinds[kind]}</MenuItem>)}
@@ -50,13 +50,13 @@ function AddMenu({ editor }: { editor: DeckEditorState }): React.JSX.Element {
 
 /** Add, undo, redo, the save state, the layout notes of the last edit, and a calm error notice. */
 export function EditorBar({ editor }: { editor: DeckEditorState }): React.JSX.Element {
-  const { deck, issues, notice, saving } = editor;
+  const { deck, issues, notice, saving, locked } = editor;
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
         <AddMenu editor={editor} />
-        <IconButton aria-label={B.undo} title={B.undo} disabled={!deck?.can_undo} onClick={editor.undo}><Undo /></IconButton>
-        <IconButton aria-label={B.redo} title={B.redo} disabled={!deck?.can_redo} onClick={editor.redo}><Redo /></IconButton>
+        <IconButton aria-label={B.undo} title={B.undo} disabled={locked || !deck?.can_undo} onClick={editor.undo}><Undo /></IconButton>
+        <IconButton aria-label={B.redo} title={B.redo} disabled={locked || !deck?.can_redo} onClick={editor.redo}><Redo /></IconButton>
         <Typography variant="caption" color="text.secondary" role="status" className="ml-auto">
           {saving ? B.saving : B.saved}
         </Typography>
@@ -65,6 +65,7 @@ export function EditorBar({ editor }: { editor: DeckEditorState }): React.JSX.El
             title={issues.map((issue) => issue.suggestion).join("\n")} />
         )}
       </div>
+      {locked && <Alert severity="info" role="status">{EDITOR_TEXTS.locked}</Alert>}
       {notice && <Alert severity="info" onClose={editor.dismissNotice}>{notice}</Alert>}
     </div>
   );

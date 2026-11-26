@@ -4,7 +4,7 @@ import { STALE_CODE } from "@/features/deck-editor/constants";
 import { moveChanges } from "@/features/deck-editor/geometry";
 import { useDeck, useEditDeck } from "@/features/deck-editor/queries";
 import { EDITOR_TEXTS } from "@/features/deck-editor/texts";
-import type { Deck, DeckElement, DeckSlide, EditOp, LayoutIssue, NewKind, OrderMove } from "@/features/deck-editor/types";
+import type { Deck, DeckElement, DeckSlide, EditOp, EditResult, LayoutIssue, NewKind, OrderMove } from "@/features/deck-editor/types";
 import { ApiError } from "@/shared/api";
 
 function noticeFor(error: unknown): string {
@@ -13,6 +13,13 @@ function noticeFor(error: unknown): string {
   if (error.code === "TurnInProgressError") return EDITOR_TEXTS.notice.busy;
   if (error.code === "InvalidElementChangeError") return EDITOR_TEXTS.notice.invalid;
   return EDITOR_TEXTS.notice.failed;
+}
+
+/** The selection after an edit: a new id, null to clear it, undefined to keep it. */
+function selectionAfter(op: EditOp, result: EditResult | undefined): string | null | undefined {
+  if (op.kind === "remove") return null;
+  if ((op.kind === "add" || op.kind === "duplicate") && result?.element) return result.element.id;
+  return undefined;
 }
 
 function isTyping(target: EventTarget | null): boolean {
@@ -29,6 +36,8 @@ export interface DeckEditorState {
   notice: string | null;
   issues: LayoutIssue[];
   saving: boolean;
+  /** True while the assistant works on the deck. Every edit is off. */
+  locked: boolean;
   selectSlide: (index: number) => void;
   select: (id: string | null) => void;
   startTextEdit: () => void;
@@ -45,7 +54,7 @@ export interface DeckEditorState {
 }
 
 /** The state and the actions of the editor. Every edit saves at once. */
-export function useDeckEditor(projectId: string): DeckEditorState {
+export function useDeckEditor(projectId: string, locked: boolean): DeckEditorState {
   const query = useDeck(projectId);
   const { edit, isPending } = useEditDeck(projectId);
   const [slideIndex, setSlideIndex] = useState(0);
@@ -56,22 +65,22 @@ export function useDeckEditor(projectId: string): DeckEditorState {
 
   const deck = query.data;
   const slide = deck?.slides[slideIndex];
-  const selected = slide?.elements.find((el) => el.id === selectedId);
+  const selected = locked ? undefined : slide?.elements.find((el) => el.id === selectedId);
 
   const run = useCallback(
     async (op: EditOp): Promise<void> => {
+      if (locked) return;
       try {
         const result = await edit(op);
         if (result) setIssues(result.issues);
         setNotice(null);
-        if (op.kind === "remove") setSelectedId(null);
-        if (op.kind === "add" && result?.element) setSelectedId(result.element.id);
-        if (op.kind === "duplicate" && result?.element) setSelectedId(result.element.id);
+        const next = selectionAfter(op, result);
+        if (next !== undefined) setSelectedId(next);
       } catch (error) {
         setNotice(noticeFor(error));
       }
     },
-    [edit],
+    [edit, locked],
   );
 
   const patch = (changes: Record<string, unknown>, elementId?: string): void => {
@@ -93,7 +102,8 @@ export function useDeckEditor(projectId: string): DeckEditorState {
   }, [run]);
 
   return {
-    deck, query, slide, slideIndex, selected, editingText, notice, issues, saving: isPending,
+    deck, query, slide, slideIndex, selected, notice, issues, locked, saving: isPending,
+    editingText: editingText && !locked,
     selectSlide: (index) => {
       setSlideIndex(index);
       setSelectedId(null);

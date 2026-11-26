@@ -9,12 +9,14 @@ interface DeckPaneProps {
   projectId: string;
   phase: Phase;
   progress: { index: number; total: number } | null;
+  /** True while the assistant works. The editor takes no edit. */
+  locked: boolean;
 }
 
-/** Placeholder for the deck editor. It shows the state of the build. */
-export function DeckPane({ projectId, phase, progress }: DeckPaneProps): React.JSX.Element {
+/** The deck editor once the deck is built; before that, the state of the build. */
+export function DeckPane({ projectId, phase, progress, locked }: DeckPaneProps): React.JSX.Element {
   const texts = PAGE_TEXTS.deck;
-  if (phase === "generated") return <DeckEditor projectId={projectId} />;
+  if (phase === "generated") return <DeckEditor projectId={projectId} locked={locked} />;
   if (phase === "approved") {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-2 py-12 text-center">

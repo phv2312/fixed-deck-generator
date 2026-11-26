@@ -1,5 +1,5 @@
 import { apiRequest } from "@/shared/api";
-import type { Deck, EditOp, EditResult } from "@/features/deck-editor/types";
+import type { Deck, DeckSlide, EditOp, EditResult } from "@/features/deck-editor/types";
 
 const base = (projectId: string): string => `/api/v1/projects/${projectId}/deck`;
 
@@ -7,9 +7,14 @@ export function getDeck(projectId: string, signal?: AbortSignal): Promise<Deck> 
   return apiRequest<Deck>(base(projectId), { signal });
 }
 
-/** URL of the HTML of one slide. The revision makes the browser load the new version. */
-export function slideHtmlUrl(projectId: string, index: number, revision: number): string {
+/** URL of the HTML of one slide. A new revision makes the browser load the new version. */
+export function slideHtmlUrl(projectId: string, index: number, revision: string | number): string {
   return `${base(projectId)}/slides/${index}/html?rev=${revision}`;
+}
+
+/** URL of one slide of a deck. It follows the revision of the slide, or of the deck when the API gives none. */
+export function slideUrl(projectId: string, deck: Deck, slide: DeckSlide): string {
+  return slideHtmlUrl(projectId, slide.index, slide.revision ?? deck.revision);
 }
 
 function elementPath(projectId: string, slide: number, elementId?: string): string {

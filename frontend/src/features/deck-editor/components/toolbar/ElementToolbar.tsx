@@ -5,7 +5,7 @@ import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
-import { autoUpdate, flip, offset, shift, useFloating } from "@floating-ui/react";
+import { autoUpdate, flip, offset, shift, size, useFloating } from "@floating-ui/react";
 import { useState } from "react";
 
 import { TypeControls } from "@/features/deck-editor/components/toolbar/controls";
@@ -22,6 +22,8 @@ interface ElementToolbarProps {
   target: HTMLElement;
   editor: DeckEditorState;
   hidden: boolean;
+  /** True on a narrow screen: the toolbar sits under the slide and does not cover it. */
+  docked: boolean;
   onModal: (open: boolean) => void;
 }
 
@@ -45,15 +47,27 @@ function CommonControls({ element, editor }: { element: DeckElement; editor: Dec
   );
 }
 
-/** The toolbar floats over the selected element. It flips below when there is no room above. */
-export function ElementToolbar({ element, target, editor, hidden, onModal }: ElementToolbarProps): React.JSX.Element {
+/** The toolbar floats over the selected element, or sits under the slide on a narrow screen. */
+export function ElementToolbar({ element, target, editor, hidden, docked, onModal }: ElementToolbarProps): React.JSX.Element {
   const [dialog, setDialog] = useState<"cells" | "data" | "image" | null>(null);
   const [floating, setFloating] = useState<HTMLElement | null>(null);
+  /** The slide stage. The toolbar stays inside it, so it does not cover the slide list. */
+  const stage = target.parentElement ?? undefined;
   const { floatingStyles } = useFloating({
     placement: "top-start",
-    middleware: [offset(GAP), flip(), shift({ padding: GAP })],
+    middleware: [
+      offset(GAP),
+      flip({ boundary: stage }),
+      size({
+        boundary: stage,
+        apply: ({ availableWidth, elements }) => {
+          elements.floating.style.maxWidth = `${availableWidth}px`;
+        },
+      }),
+      shift({ boundary: stage, padding: GAP }),
+    ],
     whileElementsMounted: autoUpdate,
-    elements: { reference: target, floating },
+    elements: { reference: docked ? null : target, floating },
   });
   const open = (name: "cells" | "data" | "image"): void => {
     setDialog(name);
@@ -75,9 +89,9 @@ export function ElementToolbar({ element, target, editor, hidden, onModal }: Ele
         role="toolbar"
         aria-label={T.label(typeName)}
         elevation={0}
-        style={{ ...floatingStyles, visibility: hidden ? "hidden" : "visible" }}
-        sx={{ zIndex: 10, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 0.5, p: 0.5,
-          maxWidth: "min(100vw - 2rem, 56rem)", border: 1, borderColor: "divider", boxShadow: 3 }}
+        style={{ ...(docked ? {} : floatingStyles), visibility: hidden ? "hidden" : "visible" }}
+        sx={{ zIndex: docked ? "auto" : 10, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 0.5, p: 0.5,
+          border: 1, borderColor: "divider", boxShadow: 3 }}
       >
         <TypeControls element={element} patch={editor.patch} editText={editor.startTextEdit} openDialog={open} />
         <Divider orientation="vertical" flexItem />
