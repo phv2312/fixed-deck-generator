@@ -6,6 +6,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import { useDeleteProject } from "@/features/projects/queries";
+import { projectTitle } from "@/features/projects/title";
 import { PROJECT_TEXTS } from "@/features/projects/texts";
 import type { Project } from "@/features/projects/types";
 import { errorText } from "@/shared/api";
@@ -27,7 +28,7 @@ export function DeleteProjectDialog({ project, onClose }: DeleteProjectDialogPro
     <Dialog open={project !== null} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle>{PROJECT_TEXTS.delete.title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{project ? PROJECT_TEXTS.delete.body(project.name) : null}</DialogContentText>
+        <DialogContentText>{project ? PROJECT_TEXTS.delete.body(projectTitle(project)) : null}</DialogContentText>
         {remove.isError ? (
           <DialogContentText color="error" role="alert">
             {errorText(remove.error)}

@@ -15,8 +15,7 @@ export const EDITOR_TEXTS = {
     polygon: "Polygon", line: "Line", group: "Group",
   } as Readonly<Record<string, string>>,
   bar: {
-    add: "Add", undo: "Undo", redo: "Redo", saving: "Saving", saved: "Saved",
-    addMenu: "Add an element",
+    askAi: "Ask AI", undo: "Undo", redo: "Redo", saving: "Saving", saved: "Saved",
     kinds: { text: "Text", image: "Image", table: "Table", shape: "Shape", chart: "Chart" },
   },
   toolbar: {
@@ -28,6 +27,8 @@ export const EDITOR_TEXTS = {
     fit: "Image fit", cover: "Cover", contain: "Contain", header: "Header row", editText: "Edit text",
     editCells: "Edit cells", editData: "Edit data", editImage: "Image address", chartKind: "Chart type",
     forward: "Bring forward", backward: "Send backward", duplicate: "Duplicate", delete: "Delete",
+    more: "More actions",
+    fontSizes: { title: "Title", heading: "Heading", subheading: "Subheading", body: "Body", caption: "Caption", custom: "Custom" },
     none: "None", valign: "Vertical align",
   },
   dialog: {

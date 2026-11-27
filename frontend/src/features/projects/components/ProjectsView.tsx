@@ -4,18 +4,19 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { DeleteProjectDialog } from "@/features/projects/components/DeleteProjectDialog";
-import { NewProjectDialog } from "@/features/projects/components/NewProjectDialog";
 import { ProjectCard } from "@/features/projects/components/ProjectCard";
 import { PAGE_SIZE } from "@/features/projects/constants";
-import { useProjects } from "@/features/projects/queries";
+import { useCreateProject, useProjects } from "@/features/projects/queries";
 import { PROJECT_TEXTS } from "@/features/projects/texts";
 import type { Project } from "@/features/projects/types";
+import { errorText } from "@/shared/api";
 import { EmptyState, ErrorState, LoadingState } from "@/shared/ui";
 
 export function ProjectsView(): React.JSX.Element {
   const navigate = useNavigate();
   const projects = useProjects({ limit: PAGE_SIZE, offset: 0 });
-  const [creating, setCreating] = useState(false);
+  const create = useCreateProject();
+  const onCreate = (): void => create.mutate({}, { onSuccess: (project) => void navigate(`/projects/${project.id}`) });
   const [deleting, setDeleting] = useState<Project | null>(null);
 
   return (
@@ -26,17 +27,13 @@ export function ProjectsView(): React.JSX.Element {
           {projects.data ? (
             <Typography color="text.secondary">{PROJECT_TEXTS.count(projects.data.total)}</Typography>
           ) : null}
-          <Button variant="contained" onClick={() => setCreating(true)}>
-            {PROJECT_TEXTS.newDeck}
+          <Button variant="contained" disabled={create.isPending} onClick={onCreate}>
+            {create.isPending ? PROJECT_TEXTS.creating : PROJECT_TEXTS.newDeck}
           </Button>
         </div>
       </div>
-      <Content onCreate={() => setCreating(true)} onDelete={setDeleting} query={projects} />
-      <NewProjectDialog
-        open={creating}
-        onClose={() => setCreating(false)}
-        onCreated={(project) => void navigate(`/projects/${project.id}`)}
-      />
+      {create.isError ? <Typography color="error" role="alert">{errorText(create.error)}</Typography> : null}
+      <Content onCreate={onCreate} onDelete={setDeleting} query={projects} />
       <DeleteProjectDialog project={deleting} onClose={() => setDeleting(null)} />
     </div>
   );

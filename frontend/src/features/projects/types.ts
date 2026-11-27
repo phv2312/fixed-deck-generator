@@ -17,5 +17,6 @@ export interface ProjectList {
 }
 
 export interface ProjectCreate {
-  name: string;
+  /** Left empty, the server names the project after its first slide. */
+  name?: string;
 }

@@ -24,8 +24,13 @@ class ProjectCreate(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)] = (
-        Field(description="Name of the project, shown in the project list.", examples=["Q3 review"])
+    name: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)] = Field(
+        default="",
+        description=(
+            "Name of the project, shown in the project list. "
+            "Left empty, the project takes the title of its first slide."
+        ),
+        examples=["Q3 review"],
     )
 
 

@@ -1,3 +1,4 @@
+export { projectTitle } from "@/features/projects/title";
 export { isProjectNotFound } from "@/features/projects/errors";
 export { PhaseChip } from "@/features/projects/components/PhaseChip";
 export { ProjectsView } from "@/features/projects/components/ProjectsView";

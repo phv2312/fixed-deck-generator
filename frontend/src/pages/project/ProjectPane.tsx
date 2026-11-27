@@ -9,10 +9,11 @@ const INTERVIEW_PHASES: ReadonlySet<Project["phase"]> = new Set(["draft", "inter
 interface ProjectPaneProps {
   project: Project;
   turn: ChatTurn;
+  onAskAi: () => void;
 }
 
 /** The right pane: the interview before the plan is approved, the deck state after it. */
-export function ProjectPane({ project, turn }: ProjectPaneProps): React.JSX.Element {
+export function ProjectPane({ project, turn, onAskAi }: ProjectPaneProps): React.JSX.Element {
   if (INTERVIEW_PHASES.has(project.phase)) {
     return (
       <InterviewPane
@@ -23,5 +24,5 @@ export function ProjectPane({ project, turn }: ProjectPaneProps): React.JSX.Elem
       />
     );
   }
-  return <DeckPane projectId={project.id} phase={project.phase} progress={turn.live?.progress ?? null} locked={turn.busy} />;
+  return <DeckPane projectId={project.id} phase={project.phase} progress={turn.live?.progress ?? null} locked={turn.busy} onAskAi={onAskAi} />;
 }

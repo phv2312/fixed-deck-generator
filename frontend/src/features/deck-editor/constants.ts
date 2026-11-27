@@ -9,6 +9,22 @@ export const PAGE_STEP = 16;
 /** Color tokens of a deck theme. See decks/models/theme.py. */
 export const COLOR_TOKENS = ["text", "muted", "primary", "accent", "light", "ink", "tint", "grid", "bg"] as const;
 
+/** Named text sizes. The names live in the texts file. */
+export const FONT_SIZES = [
+  { key: "title", size: 64 },
+  { key: "heading", size: 40 },
+  { key: "subheading", size: 28 },
+  { key: "body", size: 20 },
+  { key: "caption", size: 14 },
+] as const;
+
+/** Sizes the user picks from. A value outside the list stays selectable while an element has it. */
+export const SIZE_PRESETS = {
+  stroke_width: [1, 2, 3, 4, 6, 8, 12],
+  width: [1, 2, 3, 4, 6, 8, 12],
+  radius: [0, 4, 8, 12, 16, 24, 32],
+} as const satisfies Record<string, readonly number[]>;
+
 export const STALE_CODE = "StaleDeckRevisionError";
 
 export const NEW_ELEMENT_BOX = { x: 400, y: 280, w: 480, h: 160 } as const;

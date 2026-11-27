@@ -23,14 +23,14 @@ function Thumb({ projectId, deck, slide, current, onPick }: ThumbProps): React.J
       onClick={onPick}
       aria-label={label}
       aria-current={current ? "true" : undefined}
-      sx={{ display: "flex", alignItems: "flex-start", gap: 1, p: 0.5, flex: "none", cursor: "pointer",
-        bgcolor: "transparent", border: 2, borderRadius: 1, borderColor: current ? "primary.main" : "transparent",
-        width: { xs: "10rem", md: "100%" }, "&:hover": { borderColor: "primary.light" } }}
+      sx={{ display: "flex", alignItems: "flex-start", gap: 1, p: 0, flex: "none", cursor: "pointer",
+        bgcolor: "transparent", border: 0, width: { xs: "10rem", md: "100%" },
+        "&:hover > div": { borderColor: "primary.light" } }}
     >
       <Typography variant="caption" color="text.secondary" component="span" sx={{ minWidth: 16 }}>
         {slide.index + 1}
       </Typography>
-      <Box sx={{ flex: 1, border: 1, borderColor: "divider", bgcolor: "background.paper" }}>
+      <Box sx={{ flex: 1, borderStyle: "solid", borderWidth: current ? 2 : 1, borderColor: current ? "primary.main" : "divider", bgcolor: "background.paper" }}>
         <ScaledFrame src={slideUrl(projectId, deck, slide)} title={label} width={deck.width} height={deck.height} lazy />
       </Box>
     </Box>

@@ -22,7 +22,7 @@ Set `VITE_API_BASE_URL` (see `.env.example`) when the API runs on another origin
 src/
   app/        entry, router, providers
   pages/      one component per route
-  features/   one folder per feature (projects); import through its index.ts
+  features/   one folder per feature (projects, chat, interview, deck-editor); import through its index.ts
   shared/     theme, API client, shared UI, hooks, texts
 ```
 

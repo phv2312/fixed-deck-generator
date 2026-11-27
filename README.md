@@ -51,6 +51,32 @@ uv sync
 cp .env.example .env   # fill in the Azure OpenAI values
 ```
 
+## Run the app
+
+Start the API and the browser app in two terminals:
+
+```bash
+uv run uvicorn decks.api.main:create_app --factory   # API on http://localhost:8000, Swagger at /docs
+cd frontend && npm install && npm run dev            # app on http://localhost:5173
+```
+
+The dev server sends `/api` to the API. See [frontend/README.md](frontend/README.md) for the
+frontend commands.
+
+## The workspace
+
+- **Decks.** The start page lists your decks. **New deck** creates a deck at once. You do not
+  type a name. A deck without a name takes the title of the first slide of its plan.
+- **Project page.** The chat sits in a side column. The column shows the way back, the deck name,
+  and the state. Fold the column into a narrow rail to give the slides more room. **Ask AI** in
+  the bottom bar opens it again.
+- **Deck editor.** Click an element on a slide to edit it. A short dark toolbar floats over the
+  element. It has the text size (a named list), bold, italic, underline, align, color, and a
+  **More** menu for order, duplicate, and delete. Drag the handles to move or resize. Double-click
+  text to change the words.
+- **Bottom bar.** Add text, an image, a table, a shape, or a chart. Undo and redo. Every edit
+  saves at once. The assistant locks the editor while it works on the deck.
+
 ## Documentation
 
 | Document | Content |

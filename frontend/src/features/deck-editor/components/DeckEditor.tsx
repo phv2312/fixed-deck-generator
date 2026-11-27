@@ -10,9 +10,11 @@ interface DeckEditorProps {
   projectId: string;
   /** True while the assistant works on the deck. The editor shows it and takes no edit. */
   locked: boolean;
+  /** Opens the chat sidebar. */
+  onAskAi: () => void;
 }
 
-export function DeckEditor({ projectId, locked }: DeckEditorProps): React.JSX.Element {
+export function DeckEditor({ projectId, locked, onAskAi }: DeckEditorProps): React.JSX.Element {
   const editor = useDeckEditor(projectId, locked);
   const { deck, slide, query } = editor;
   if (query.isPending) return <LoadingState />;
@@ -22,9 +24,9 @@ export function DeckEditor({ projectId, locked }: DeckEditorProps): React.JSX.El
     <div className="flex flex-col gap-4 md:flex-row">
       <SlideList projectId={projectId} deck={deck} current={editor.slideIndex} onPick={editor.selectSlide} />
       <div className="flex min-w-0 flex-1 flex-col gap-4">
-        <EditorBar editor={editor} />
-        <div className="lg:pt-12">
-          <SlideStage projectId={projectId} deck={deck} slide={slide} editor={editor} />
+        <SlideStage projectId={projectId} deck={deck} slide={slide} editor={editor} />
+        <div className="sticky bottom-4 z-10">
+          <EditorBar editor={editor} onAskAi={onAskAi} />
         </div>
       </div>
     </div>

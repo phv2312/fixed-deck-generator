@@ -58,8 +58,8 @@ function settle(client: QueryClient, projectId: string, op: EditOp, result: Edit
       can_undo: result.can_undo,
       can_redo: result.can_redo,
     });
-    return;
   }
+  // The slide revision names the page the frame loads. Only the server knows the new one, so reload the deck.
   void client.invalidateQueries({ queryKey: key });
 }
 

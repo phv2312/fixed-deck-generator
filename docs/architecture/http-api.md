@@ -32,7 +32,7 @@ An error that Starlette raises outside the middlewares (an unhandled `Exception`
 | Method and path | Result |
 |---|---|
 | `GET /api/v1/projects?limit&offset` | `{items, total}`. The newest change comes first. `limit` is at most 100. |
-| `POST /api/v1/projects` `{name}` | 201 and the new project. The server makes the id. |
+| `POST /api/v1/projects` `{name?}` | 201 and the new project. The server makes the id. Without a name, the project takes the title of its first plan slide. |
 | `GET /api/v1/projects/{id}` | One project. 404 `ProjectNotFoundError`. |
 | `DELETE /api/v1/projects/{id}` | 204. 409 `TurnInProgressError` while a chat turn runs. |
 | `GET /api/v1/projects/{id}/deck/slides/{index}/html` | `text/html` of one slide, for an `iframe`, with an `ETag` and 304 for an unchanged slide. It belongs to the `deck` feature. See [Deck editing](#deck-editing). |

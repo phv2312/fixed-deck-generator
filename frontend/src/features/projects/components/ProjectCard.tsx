@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 
 import { PhaseChip } from "@/features/projects/components/PhaseChip";
+import { projectTitle } from "@/features/projects/title";
 import { SlideThumbnail } from "@/features/projects/components/SlideThumbnail";
 import { PROJECT_TEXTS } from "@/features/projects/texts";
 import type { Project } from "@/features/projects/types";
@@ -19,10 +20,10 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): React.JSX.
   return (
     <Card component="li" className="relative flex flex-col">
       <CardActionArea component={Link} to={`/projects/${project.id}`}>
-        <SlideThumbnail name={project.name} url={project.thumbnail_url} />
+        <SlideThumbnail name={projectTitle(project)} url={project.thumbnail_url} />
         <div className="flex flex-col gap-2 p-4">
           <Typography variant="h3" component="h2">
-            {project.name}
+            {projectTitle(project)}
           </Typography>
           <div className="flex justify-between gap-2">
             <PhaseChip phase={project.phase} />
@@ -33,7 +34,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps): React.JSX.
         </div>
       </CardActionArea>
       <IconButton
-        aria-label={PROJECT_TEXTS.delete.action(project.name)}
+        aria-label={PROJECT_TEXTS.delete.action(projectTitle(project))}
         onClick={() => onDelete(project)}
         sx={{ position: "absolute", top: 1, right: 1, bgcolor: "background.paper", "&:hover": { bgcolor: "background.paper", color: "error.main" } }}
       >

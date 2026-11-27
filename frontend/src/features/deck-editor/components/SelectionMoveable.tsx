@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import Moveable, { type OnDragEnd, type OnResizeEnd } from "react-moveable";
 
 import { MIN_ELEMENT_SIZE, SNAP_THRESHOLD } from "@/features/deck-editor/constants";
@@ -18,6 +19,9 @@ function clearStyle(target: HTMLElement | SVGElement): void {
 
 /** Handles to drag and resize the selected element. Each gesture ends in one saved edit. */
 export function SelectionMoveable({ target, element, scale, onChange, onGesture }: SelectionMoveableProps): React.JSX.Element {
+  const moveable = useRef<Moveable>(null);
+  /** The handles follow the element when the pane resizes or an edit moves the element. */
+  useEffect(() => moveable.current?.updateRect(), [scale, element.x, element.y, element.w, element.h]);
   const finishDrag = (event: OnDragEnd): void => {
     onGesture(false);
     clearStyle(event.target);
@@ -34,6 +38,7 @@ export function SelectionMoveable({ target, element, scale, onChange, onGesture 
   };
   return (
     <Moveable
+      ref={moveable}
       target={target}
       draggable={canMove(element)}
       resizable={canResize(element)}

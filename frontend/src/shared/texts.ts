@@ -1,6 +1,5 @@
 /** User-facing text of the shared layer. Each string lives here. */
 export const SHARED_TEXTS = {
-  appName: "Slide decks",
   loading: "Loading",
   retry: "Try again",
   cancel: "Cancel",

@@ -9,6 +9,7 @@ from decks.api.projects import router as projects
 from decks.api.projects.payloads import SLIDE_HTML_URL
 from decks.container import Container
 from decks.models.build import BuildState
+from decks.models.plan import Plan, SlideDraft
 from decks.models.slides import Deck
 
 
@@ -130,3 +131,20 @@ def test_every_route_is_documented() -> None:
         assert route.description, route.path
         assert route.description != docstring, route.path
         assert route.responses, route.path
+
+
+async def test_unnamed_project_takes_the_title_of_its_first_plan_slide(
+    client: AsyncClient, app: FastAPI
+) -> None:
+    """Test that a project made without a name is named after its first plan slide."""
+    response = await client.post("/api/v1/projects", json={})
+    assert response.status_code == 201
+    created = response.json()
+    assert created["name"] == ""
+    container: Container = app.state.container
+    plan = Plan(
+        slides=[SlideDraft(id="s1", purpose="Open", title="Rate Limit là gì?", kind="title")]
+    )
+    container.repositories.for_project(created["id"]).plan.save(plan)
+    body = (await client.get(f"/api/v1/projects/{created['id']}")).json()
+    assert body["name"] == "Rate Limit là gì?"

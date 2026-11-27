@@ -6,7 +6,8 @@ export const PROJECT_TEXTS = {
   count: (total: number): string => (total === 1 ? "1 deck" : `${total} decks`),
   newDeck: "New deck",
   empty: { title: "No decks yet", hint: "Create a deck and the assistant will ask what it needs." },
-  create: { title: "New deck", nameLabel: "Deck name", submit: "Create deck", submitting: "Creating deck" },
+  untitled: "Untitled deck",
+  creating: "Creating deck",
   delete: {
     action: (name: string): string => `Delete deck ${name}`,
     confirm: "Delete deck",

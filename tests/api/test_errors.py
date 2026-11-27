@@ -15,7 +15,7 @@ async def test_unknown_path_has_error_body(client: AsyncClient) -> None:
 
 async def test_validation_error_lists_details(client: AsyncClient) -> None:
     """Test that a bad body returns 422, ``ValidationError``, and ``loc`` with ``msg``."""
-    response = await client.post("/api/v1/projects", json={})
+    response = await client.post("/api/v1/projects", json={"name": "x" * 200})
     assert response.status_code == 422
     body = response.json()
     assert body["code"] == "ValidationError"

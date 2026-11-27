@@ -2,6 +2,8 @@
 export const PAGE_TEXTS = {
   backToDecks: "All decks",
   unknownProject: "Project not found",
+  openChat: "Open the chat",
+  collapseChat: "Collapse the chat",
   rightPane: "Deck workspace",
   buildDeckMessage: "The plan is approved. Build the deck.",
   deck: {

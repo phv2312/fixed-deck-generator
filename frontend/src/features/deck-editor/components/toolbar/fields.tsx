@@ -1,11 +1,14 @@
+import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import NativeSelect from "@mui/material/NativeSelect";
-import TextField from "@mui/material/TextField";
 import ToggleButton from "@mui/material/ToggleButton";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 
-import { COLOR_TOKENS } from "@/features/deck-editor/constants";
+import { COLOR_TOKENS, FONT_SIZES } from "@/features/deck-editor/constants";
 import { EDITOR_TEXTS } from "@/features/deck-editor/texts";
 
 interface LabeledProps {
@@ -13,14 +16,9 @@ interface LabeledProps {
   children: React.ReactNode;
 }
 
-/** A field with its name shown beside it. The name is also its accessible name. */
+/** A field in the compact toolbar. Its name is the hover title and the accessible name, not visible text. */
 function Labeled({ label, children }: LabeledProps): React.JSX.Element {
-  return (
-    <Box component="label" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
-      <Typography variant="caption" color="text.secondary" component="span">{label}</Typography>
-      {children}
-    </Box>
-  );
+  return <Box component="span" title={label} sx={{ display: "inline-flex", alignItems: "center" }}>{children}</Box>;
 }
 
 interface IconToggleProps {
@@ -96,36 +94,56 @@ export function TokenSelect({ label, value, onChange, allowNone }: TokenSelectPr
   );
 }
 
-interface NumberFieldProps {
-  label: string;
+interface FontSizeMenuProps {
   value: unknown;
-  min?: number;
-  onCommit: (value: number) => void;
+  onChange: (size: number) => void;
 }
 
-/** A number box. It saves when the user leaves it or presses Enter. */
-export function NumberField({ label, value, min = 0, onCommit }: NumberFieldProps): React.JSX.Element {
-  const shown = typeof value === "number" ? String(Math.round(value * 10) / 10) : "";
-  const [draft, setDraft] = useState<string | null>(null);
-  const commit = (): void => {
-    const next = Number(draft);
-    if (draft !== null && draft !== "" && Number.isFinite(next) && next >= min && next !== Number(shown)) onCommit(next);
-    setDraft(null);
-  };
+/** Choose a named text size, shown with its number. A size outside the list shows as "Custom". */
+export function FontSizeMenu({ value, onChange }: FontSizeMenuProps): React.JSX.Element {
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const names = EDITOR_TEXTS.toolbar.fontSizes;
+  const current = typeof value === "number" ? Math.round(value) : null;
+  const named = FONT_SIZES.find((item) => item.size === current);
+  const shown = named ? `${names[named.key]} · ${named.size}` : `${names.custom} · ${current ?? ""}`;
+  const label = EDITOR_TEXTS.toolbar.fontSize;
   return (
-    <Labeled label={label}>
-    <TextField
-      type="number"
-      size="small"
-      value={draft ?? shown}
-      onChange={(event) => setDraft(event.target.value)}
-      onBlur={commit}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") commit();
-      }}
-      slotProps={{ htmlInput: { "aria-label": label, min } }}
-      sx={{ width: (theme) => theme.spacing(10) }}
+    <>
+      <Button size="small" color="inherit" aria-label={label} title={label} aria-haspopup="menu" aria-expanded={anchor !== null}
+        endIcon={<KeyboardArrowDown fontSize="small" />} onClick={(event) => setAnchor(event.currentTarget)}>
+        {shown}
+      </Button>
+      <Menu anchorEl={anchor} open={anchor !== null} onClose={() => setAnchor(null)}
+        slotProps={{ paper: { sx: { bgcolor: "text.primary", color: "background.paper", minWidth: 200 } } }}>
+        {FONT_SIZES.map((item) => (
+          <MenuItem key={item.key} selected={item.size === current} sx={{ gap: 1.5, justifyContent: "space-between" }}
+            onClick={() => { setAnchor(null); onChange(item.size); }}>
+            <Box component="span" sx={{ fontWeight: 600, fontSize: `${Math.min(item.size, 32) / 16}rem` }}>{names[item.key]}</Box>
+            <Typography variant="body2" component="span" sx={{ opacity: 0.7 }}>{item.size}</Typography>
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
+  );
+}
+
+interface PresetSelectProps {
+  label: string;
+  value: unknown;
+  presets: readonly number[];
+  onChange: (value: number) => void;
+}
+
+/** Choose one value from a short list. The current value shows even when it is not in the list. */
+export function PresetSelect({ label, value, presets, onChange }: PresetSelectProps): React.JSX.Element {
+  const current = typeof value === "number" ? Math.round(value * 10) / 10 : presets[0] ?? 0;
+  const values = presets.includes(current) ? presets : [...presets, current].sort((a, b) => a - b);
+  return (
+    <ChoiceSelect
+      label={label}
+      value={String(current)}
+      options={values.map((size) => ({ value: String(size), text: String(size) }))}
+      onChange={(next) => onChange(Number(next))}
     />
-    </Labeled>
   );
 }

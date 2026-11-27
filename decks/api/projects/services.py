@@ -57,8 +57,13 @@ class ProjectService:
     def _summary(self, repos: Repos) -> ProjectSummary:
         """Read the files of a project and build its summary."""
         deck = repos.deck.load()
+        info = repos.project.load_info()
+        if not info.name:
+            plan = repos.plan.load()
+            title = plan.slides[0].title.strip() if plan and plan.slides else ""
+            info = info.model_copy(update={"name": title})
         return ProjectSummary(
-            info=repos.project.load_info(),
+            info=info,
             phase=repos.project.load_state().phase,
             updated_at=self._repositories.modified_at(repos.project_id),
             slide_count=len(deck.slides) if deck is not None else 0,
