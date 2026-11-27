@@ -1,0 +1,50 @@
+/** User-facing text of the deck editor. Each string lives here. */
+export const EDITOR_TEXTS = {
+  loading: "Loading the deck",
+  empty: { title: "This deck has no slides yet", body: "Approve the plan and the assistant builds the slides." },
+  slides: "Slides",
+  slideLabel: (n: number, title: string | null): string => `Slide ${n}${title ? `: ${title}` : ""}`,
+  slideCount: (n: number, total: number): string => `Slide ${n} of ${total}`,
+  stageLabel: "Slide editor",
+  textEditor: "Text of the element",
+  locked: "The assistant is working on this deck. Editing is paused until it is done.",
+  stageHint: "Click an element to edit it. Double-click text to change the words.",
+  elementLabel: (type: string, id: string): string => `${type} ${id}`,
+  types: {
+    text: "Text", shape: "Shape", image: "Image", table: "Table", chart: "Chart",
+    polygon: "Polygon", line: "Line", group: "Group",
+  } as Readonly<Record<string, string>>,
+  bar: {
+    askAi: "Ask AI", undo: "Undo", redo: "Redo", saving: "Saving", saved: "Saved",
+    kinds: { text: "Text", image: "Image", table: "Table", shape: "Shape", chart: "Chart" },
+  },
+  toolbar: {
+    label: (type: string): string => `Edit ${type}`,
+    fontSize: "Font size", bold: "Bold", italic: "Italic", underline: "Underline",
+    alignLeft: "Align left", alignCenter: "Align center", alignRight: "Align right",
+    color: "Color", fill: "Fill", stroke: "Stroke", strokeWidth: "Stroke width", dash: "Dashed",
+    arrow: "Arrow", shape: "Shape", rect: "Rectangle", ellipse: "Ellipse", radius: "Corner radius",
+    fit: "Image fit", cover: "Cover", contain: "Contain", header: "Header row", editText: "Edit text",
+    editCells: "Edit cells", editData: "Edit data", editImage: "Image address", chartKind: "Chart type",
+    forward: "Bring forward", backward: "Send backward", duplicate: "Duplicate", delete: "Delete",
+    more: "More actions",
+    fontSizes: { display: "Display", title: "Title", heading: "Heading", lead: "Lead", body: "Body", caption: "Caption", custom: "Custom" },
+    none: "None", valign: "Vertical align",
+  },
+  dialog: {
+    cancel: "Cancel", save: "Save",
+    cellsTitle: "Edit table cells", cell: (r: number, c: number): string => `Row ${r}, column ${c}`,
+    addRow: "Add row", addColumn: "Add column", removeRow: "Remove last row", removeColumn: "Remove last column",
+    dataTitle: "Edit chart data", dataField: "Chart data (JSON)", dataInvalid: "This is not valid JSON.",
+    imageTitle: "Image address", imageField: "Image URL", imageHint: "Use an address that starts with https://",
+  },
+  issues: {
+    label: (n: number): string => (n === 1 ? "1 layout note" : `${n} layout notes`),
+  },
+  notice: {
+    stale: "The deck changed somewhere else. It was reloaded. Try the edit again.",
+    busy: "The assistant is working on this deck. Edit again when it is done.",
+    invalid: "That change is not allowed for this element.",
+    failed: "The edit was not saved. Try again.",
+  },
+} as const;

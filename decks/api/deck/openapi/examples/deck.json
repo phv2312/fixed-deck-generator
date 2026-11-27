@@ -1,0 +1,30 @@
+{
+  "revision": 7,
+  "width": 1280,
+  "height": 720,
+  "slides": [
+    {
+      "index": 0,
+      "id": "p1",
+      "kind": "title",
+      "title": "Q3 review",
+      "revision": "3f9a1c0b7e2d",
+      "elements": [
+        {
+          "id": "s1e1",
+          "type": "text",
+          "parent_id": null,
+          "z": 0,
+          "x": 80,
+          "y": 240,
+          "w": 900,
+          "h": 120,
+          "props": {"text": "Q3 review", "font_size": 64, "bold": true, "color": "primary"},
+          "editable": ["align", "bold", "color", "font_family", "font_size", "h", "italic", "mono", "text", "underline", "valign", "w", "x", "y"]
+        }
+      ]
+    }
+  ],
+  "can_undo": true,
+  "can_redo": false
+}

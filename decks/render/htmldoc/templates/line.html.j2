@@ -11,7 +11,7 @@
   </defs>
   {%- endif -%}
 {% endset %}
-<svg class="e" width="{{ deck.width }}" height="{{ deck.height }}">
+<svg class="e" data-element-id="{{ e.id|esc }}" width="{{ deck.width }}" height="{{ deck.height }}">
 {{ marker }}
 <line x1="{{ e.x1|g }}" y1="{{ e.y1|g }}" x2="{{ e.x2|g }}" y2="{{ e.y2|g }}" stroke="{{ color(e.color) }}" stroke-width="{{ e.width|g }}"{{ dash }}/>
 </svg>

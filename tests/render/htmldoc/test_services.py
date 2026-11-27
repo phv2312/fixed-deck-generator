@@ -77,7 +77,10 @@ def test_document_uses_the_bullet_markup() -> None:
         (Image(src="https://x/y.png", **BOX), 'src="https://x/y.png"'),
         (Table(rows=[["h"], ["c"]], **BOX), "<tr><th>h</th></tr><tr><td>c</td></tr>"),
         (Chart(kind="pie", **BOX), "chart: pie"),
-        (Group(name="g<1", children=[Shape(**BOX)]), '<div class="g" data-name="g&lt;1">'),
+        (
+            Group(name="g<1", children=[Shape(**BOX)]),
+            '<div class="g" data-element-id="" data-name="g&lt;1">',
+        ),
     ],
 )
 def test_each_element_type_has_its_markup(element: Element, expected: str) -> None:
@@ -125,3 +128,31 @@ def test_img_src_inlines_a_local_file(tmp_path: Path) -> None:
     path.write_bytes(b"png")
 
     assert img_src(str(path)) == "data:image/png;base64,cG5n"
+
+
+def test_slide_document_holds_only_the_chosen_slide() -> None:
+    """The page of one slide has its text and no other slide."""
+    deck = make_deck(Text(**BOX, text="first"))
+    second = deck.slides[0].model_copy(update={"elements": [Text(**BOX, text="second")]})
+    deck.slides.append(second)
+    page = HtmlRenderer(deck).slide_document(1)
+    assert "second" in page
+    assert "first" not in page
+
+
+def test_every_element_carries_its_id_for_the_editor_overlay() -> None:
+    """Each rendered element has ``data-element-id`` with the id of the model element."""
+    elements: list[Element] = [
+        Text(id="a", text="x", **BOX),
+        Shape(id="b", **BOX),
+        Image(id="c", src="https://x/y.png", **BOX),
+        Table(id="d", rows=[["h"]], **BOX),
+        Chart(id="e", **BOX),
+        Line(id="f", x1=0, y1=0, x2=5, y2=5),
+        Polygon(id="g", points=[(0, 0), (4, 4), (0, 4)]),
+        Group(id="h", children=[Shape(id="i", **BOX)]),
+    ]
+    html = HtmlRenderer(make_deck(*elements)).slides()[0]
+
+    for element_id in "abcdefghi":
+        assert f'data-element-id="{element_id}"' in html

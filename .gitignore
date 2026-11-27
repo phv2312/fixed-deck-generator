@@ -11,6 +11,6 @@ gallery.html
 args.json
 
 # local only
-scripts/
-examples/
-projects/
+/scripts/
+/examples/
+/projects/

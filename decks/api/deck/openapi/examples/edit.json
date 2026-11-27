@@ -1,0 +1,18 @@
+{
+  "revision": 8,
+  "element": {
+    "id": "s3e2",
+    "type": "text",
+    "parent_id": null,
+    "z": 1,
+    "x": 120,
+    "y": 80,
+    "w": 600,
+    "h": 60,
+    "props": {"text": "Churn fell in every segment", "font_size": 28, "bold": true, "color": "text"},
+    "editable": ["align", "bold", "color", "font_family", "font_size", "h", "italic", "mono", "text", "underline", "valign", "w", "x", "y"]
+  },
+  "issues": [],
+  "can_undo": true,
+  "can_redo": false
+}

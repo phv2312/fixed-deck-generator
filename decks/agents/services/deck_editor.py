@@ -7,6 +7,7 @@ from decks.agents.exceptions import (
 from decks.agents.models import (
     ElementChange,
     ElementView,
+    LayoutIssue,
     SlideLocation,
     SlideView,
     StylePatch,
@@ -87,6 +88,27 @@ class DeckEditor:
             issues=change.issues,
         )
 
+    def commit(self, deck: Deck, edited: Slide | None = None) -> int:
+        """Save ``deck`` with the next revision and record it in the build state.
+
+        ``edited`` is the slide that changed. Its build record is marked as edited. Return the
+        new revision.
+        """
+        revision = deck.revision + 1
+        self._repos.deck.save(deck.model_copy(update={"revision": revision}))
+        state = self._repos.project.load_state()
+        built = state.built.get(edited.id) if edited is not None else None
+        if edited is not None and built is not None:
+            marked = built.model_copy(update={"edited": True})
+            state = state.model_copy(update={"built": {**state.built, edited.id: marked}})
+        self._repos.project.save_state(state.model_copy(update={"deck_revision": revision}))
+        return revision
+
+    def check_slide(self, slide: Slide) -> list[LayoutIssue]:
+        """Return the layout issues of ``slide``. The number check reads the plan."""
+        plan = self._repos.plan.load()
+        return self._checker.check_slide(slide, plan.slide(slide.id) if plan else None)
+
     def _locate(self, slide_id: str) -> SlideLocation:
         deck = self._repos.deck.load()
         if deck is None:
@@ -102,14 +124,7 @@ class DeckEditor:
         updated = slide.updated(element_id, changes)
         slides = list(deck.slides)
         slides[index] = updated
-        revision = deck.revision + 1
-        self._repos.deck.save(deck.model_copy(update={"slides": slides, "revision": revision}))
-        state = self._repos.project.load_state()
-        built = state.built.get(slide.id)
-        if built is not None:
-            marked = built.model_copy(update={"edited": True})
-            state = state.model_copy(update={"built": {**state.built, slide.id: marked}})
-        self._repos.project.save_state(state.model_copy(update={"deck_revision": revision}))
+        self.commit(deck.model_copy(update={"slides": slides}), updated)
         element = updated.element(element_id)
         if element is None:
             raise ElementNotFoundError(slide.id, element_id)

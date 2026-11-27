@@ -5,14 +5,19 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.165.0",
     "jinja2>=3.1.6",
     "openai-agents>=0.25.0",
     "pydantic>=2.14.3",
     "pydantic-settings>=2.16.3",
+    "structlog>=26.1.0",
+    "uvicorn>=0.54.0",
 ]
 
 [dependency-groups]
 dev = [
+    "httpx>=0.28.1",
+    "import-linter>=2.17",
     "pre-commit>=4.0.0",
     "pytest>=9.2.0",
     "pytest-asyncio>=1.5.0",
@@ -55,3 +60,64 @@ pythonpath = ["."]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.importlinter]
+root_package = "decks"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "HTTP feature layers"
+type = "layers"
+containers = ["decks.api.projects", "decks.api.chat", "decks.api.plan", "decks.api.deck"]
+layers = [
+    "router",
+    "deps | openapi",
+    "payloads",
+    "services",
+    "models | exceptions",
+]
+
+[[tool.importlinter.contracts]]
+name = "Core code does not import the web layer"
+type = "forbidden"
+source_modules = [
+    "decks.exceptions",
+    "decks.models",
+    "decks.render",
+    "decks.agents",
+    "decks.api.projects.services",
+    "decks.api.projects.models",
+    "decks.api.projects.exceptions",
+    "decks.api.chat.services",
+    "decks.api.chat.models",
+    "decks.api.chat.exceptions",
+    "decks.api.plan.services",
+    "decks.api.plan.models",
+    "decks.api.plan.exceptions",
+    "decks.api.deck.services",
+    "decks.api.deck.models",
+    "decks.api.deck.exceptions",
+]
+forbidden_modules = [
+    "fastapi",
+    "starlette",
+    "decks.api.deps",
+    "decks.api.errors",
+    "decks.api.main",
+    "decks.api.middlewares",
+    "decks.api.openapi",
+    "decks.api.payloads",
+    "decks.api.routers",
+    "decks.api.projects.payloads",
+    "decks.api.projects.router",
+    "decks.api.projects.deps",
+    "decks.api.chat.payloads",
+    "decks.api.chat.router",
+    "decks.api.chat.deps",
+    "decks.api.plan.payloads",
+    "decks.api.plan.router",
+    "decks.api.plan.deps",
+    "decks.api.deck.payloads",
+    "decks.api.deck.router",
+    "decks.api.deck.deps",
+]

@@ -60,3 +60,17 @@ def test_lock_is_shared_per_project(tmp_path: Path) -> None:
     locks = ProjectLocks()
     assert locks.get("a") is locks.get("a")
     assert locks.get("a") is not locks.get("b")
+
+
+def test_ids_modified_at_and_delete(tmp_path: Path) -> None:
+    """The repositories list the projects, report a change time, and delete a folder."""
+    repositories = ProjectRepositories(tmp_path)
+    repositories.create("b", "B")
+    repositories.create("a", "A")
+    (tmp_path / "not-a-project").mkdir()
+    assert repositories.ids() == ["a", "b"]
+    assert repositories.modified_at("a").tzinfo is not None
+    repositories.delete("a")
+    assert repositories.ids() == ["b"]
+    with pytest.raises(ProjectNotFoundError):
+        repositories.delete("a")

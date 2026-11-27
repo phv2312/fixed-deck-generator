@@ -1,0 +1,3 @@
+/* Tailwind is for layout only. Load the theme and the utilities. Skip preflight: MUI CssBaseline resets the page. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
