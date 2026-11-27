@@ -28,7 +28,7 @@ export const EDITOR_TEXTS = {
     editCells: "Edit cells", editData: "Edit data", editImage: "Image address", chartKind: "Chart type",
     forward: "Bring forward", backward: "Send backward", duplicate: "Duplicate", delete: "Delete",
     more: "More actions",
-    fontSizes: { title: "Title", heading: "Heading", subheading: "Subheading", body: "Body", caption: "Caption", custom: "Custom" },
+    fontSizes: { display: "Display", title: "Title", heading: "Heading", lead: "Lead", body: "Body", caption: "Caption", custom: "Custom" },
     none: "None", valign: "Vertical align",
   },
   dialog: {

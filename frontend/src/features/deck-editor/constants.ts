@@ -9,12 +9,13 @@ export const PAGE_STEP = 16;
 /** Color tokens of a deck theme. See decks/models/theme.py. */
 export const COLOR_TOKENS = ["text", "muted", "primary", "accent", "light", "ink", "tint", "grid", "bg"] as const;
 
-/** Named text sizes. The names live in the texts file. */
+/** Named text sizes. They follow the type scale of the deck (`TYPE` in `decks/design.py`). The names live in the texts file. */
 export const FONT_SIZES = [
-  { key: "title", size: 64 },
-  { key: "heading", size: 40 },
-  { key: "subheading", size: 28 },
-  { key: "body", size: 20 },
+  { key: "display", size: 64 },
+  { key: "title", size: 36 },
+  { key: "heading", size: 28 },
+  { key: "lead", size: 22 },
+  { key: "body", size: 18 },
   { key: "caption", size: 14 },
 ] as const;
 

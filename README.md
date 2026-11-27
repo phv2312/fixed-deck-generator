@@ -83,6 +83,7 @@ frontend commands.
 |---|---|
 | [docs/architecture/](docs/architecture/README.md) | How the system is built. |
 | [docs/builder-authoring.md](docs/builder-authoring.md) | How to add or change a slide kind. |
+| [docs/scenarios/](docs/scenarios/README.md) | How to use the app, in steps. Also a light smoke test. |
 | [docs/slide-catalog/](docs/slide-catalog/README.md) | Every slide kind, with parameters and previews. |
 | [docs/rules/](docs/rules/) | Coding, testing, documentation, and commit rules. |
 | [AGENTS.md](AGENTS.md) | Entry point for humans and AI agents. |
