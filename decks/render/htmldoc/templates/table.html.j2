@@ -1,11 +1,43 @@
 {% import 'macros.j2' as m %}
-<table class="e" data-element-id="{{ e.id|esc }}" style="{{ m.box(e) }}font-size:{{ e.font_size|g }}px;">
-{%- for row in e.rows -%}
-{%- set tag = 'th' if (e.header and loop.first) else 'td' -%}
-<tr>
-{%- for cell in row -%}
-<{{ tag }}>{{ cell|esc }}</{{ tag }}>
-{%- endfor -%}
+{% set lines = e.rules == 'lines' %}
+{% set first_body = 1 if e.header else 0 %}
+{# The gap between the last row and the caption. It matches the 12 px note of the old layout. #}
+{% set caption_gap = 17 %}
+{% set css %}
+{{ m.box(e) }}
+font-size:{{ e.font_size|g }}px;
+{% if e.col_widths %}table-layout:fixed;{% endif %}
+{% endset %}
+<table class="e" data-element-id="{{ e.id|esc }}" style="{{ css|inline }}">
+{% if e.col_widths %}
+<colgroup>
+{% for width in e.col_widths %}
+<col style="width:{{ (width * 100)|g }}%">
+{% endfor %}
+</colgroup>
+{% endif %}
+{% if e.caption %}
+<caption style="caption-side:bottom;text-align:left;padding-top:{{ caption_gap }}px;font-size:{{ caption_size }}px;color:{{ color('muted') }}">{{ e.caption|esc }}</caption>
+{% endif %}
+{% for row in e.rows %}
+{% set is_head = e.header and loop.first %}
+{% set is_hot_row = e.highlight_row is not none and loop.index0 - first_body == e.highlight_row %}
+<tr{% if e.row_height %} style="height:{{ e.row_height|g }}px"{% endif %}>
+{% for cell in row %}
+{% set tag = 'th' if is_head else 'td' %}
+{% set cell_css %}
+{% if e.align %}text-align:{{ e.align[loop.index0] }};{% endif %}
+{% if e.highlight_col == loop.index0 or is_hot_row %}background:{{ color('tint') }};{% endif %}
+{% if lines %}
+padding:0 10px;vertical-align:middle;white-space:pre-line;line-height:{{ line_height }};border:none;
+border-bottom:{{ '2.5px solid ' ~ color('primary') if is_head else '1px solid ' ~ color('grid') }};
+color:{{ color('primary' if (is_head or is_hot_row) else 'text') }};
+{% if is_head or is_hot_row %}font-weight:{{ page.bold_weight }};{% endif %}
+{% endif %}
+{% endset %}
+{% set style = cell_css|inline %}
+<{{ tag }}{% if style %} style="{{ style }}"{% endif %}>{{ cell|esc }}</{{ tag }}>
+{% endfor %}
 </tr>
-{%- endfor -%}
+{% endfor %}
 </table>

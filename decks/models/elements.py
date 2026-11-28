@@ -1,9 +1,18 @@
 """Positioned elements. All coordinates are absolute slide pixels (top-left origin).
 Colors are theme tokens (e.g. "primary") or hex strings ("#RRGGBB")."""
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+
+from decks.models.exceptions import (
+    TableHighlightRangeError,
+    TableListLengthError,
+    TableRowWidthError,
+    TableSizeError,
+)
+
+MAX_TABLE_ROWS, MAX_TABLE_COLUMNS = 40, 12
 
 BULLET = "• "  # a text line that starts with this is a list item; the renderer hangs its wraps
 
@@ -48,10 +57,53 @@ class Image(_Box):
 
 
 class Table(_Box):
+    """A table. Every optional field keeps the plain grid look when it is left out.
+
+    ``col_widths`` are fractions of ``w``. ``row_height`` is in px. ``highlight_row`` counts the
+    rows after the header when ``header`` is true, else all rows. ``rules`` ``"lines"`` draws a
+    heavy rule under the header and a hairline under each row, with no vertical lines.
+    ``caption`` is a note under the table. It sits outside the box, so it follows the table.
+    """
+
     type: Literal["table"] = "table"
     rows: list[list[str]]
     header: bool = True
     font_size: float = 14
+    col_widths: list[float] | None = None
+    align: list[Literal["left", "center", "right"]] | None = None
+    row_height: float | None = None
+    highlight_row: int | None = None
+    highlight_col: int | None = None
+    rules: Literal["grid", "lines"] = "grid"
+    caption: str | None = None
+
+    @property
+    def columns(self) -> int:
+        """Return the number of columns, counted on the first row."""
+        return len(self.rows[0]) if self.rows else 0
+
+    @property
+    def body_rows(self) -> int:
+        """Return the number of rows below the header."""
+        return len(self.rows) - (1 if self.header and self.rows else 0)
+
+    @model_validator(mode="after")
+    def _check(self) -> Self:
+        n = self.columns
+        if not (1 <= len(self.rows) <= MAX_TABLE_ROWS and 1 <= n <= MAX_TABLE_COLUMNS):
+            raise TableSizeError(len(self.rows), n, MAX_TABLE_ROWS, MAX_TABLE_COLUMNS)
+        if any(len(row) != n for row in self.rows):
+            raise TableRowWidthError(n)
+        for field, value in (("col_widths", self.col_widths), ("align", self.align)):
+            if value is not None and len(value) != n:
+                raise TableListLengthError(field, n)
+        for field, index, size in (
+            ("highlight_row", self.highlight_row, self.body_rows),
+            ("highlight_col", self.highlight_col, n),
+        ):
+            if index is not None and not 0 <= index < size:
+                raise TableHighlightRangeError(field, index, size - 1)
+        return self
 
 
 class Chart(_Box):

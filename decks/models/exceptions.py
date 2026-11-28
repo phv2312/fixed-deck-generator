@@ -168,3 +168,35 @@ class ChartSeriesLengthError(ModelError):
     TEMPLATE = "chart: series '{series}' needs {expected} values"
     series: str
     expected: int
+
+
+@dataclass
+class TableSizeError(ModelError):
+    """Raised when a table element has no cell, or more rows or columns than the limit."""
+
+    TEMPLATE = (
+        "table: needs 1 to {max_rows} rows and 1 to {max_columns} columns, got {rows} by {columns}"
+    )
+    rows: int
+    columns: int
+    max_rows: int
+    max_columns: int
+
+
+@dataclass
+class TableListLengthError(ModelError):
+    """Raised when a per-column list of a table element does not match the column count."""
+
+    TEMPLATE = "table: {field} needs {columns} entries"
+    field: str
+    columns: int
+
+
+@dataclass
+class TableHighlightRangeError(ModelError):
+    """Raised when the highlighted row or column of a table element does not exist."""
+
+    TEMPLATE = "table: {field} {index} is outside 0..{last}"
+    field: str
+    index: int
+    last: int

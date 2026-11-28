@@ -4,9 +4,9 @@ from decks.agents.models import LayoutIssue
 from decks.models.elements import BULLET, Chart, Image, Line, Polygon, Shape, Table, Text
 from decks.models.plan import Plan, SlideDraft
 from decks.models.slides import Deck, Slide
-from decks.text_metrics import TextMetrics
+from decks.table_layout import TableLayout
+from decks.text_metrics import OVERFLOW_TOLERANCE, TextMetrics
 
-OVERFLOW_TOLERANCE = 1.02  # the height estimate is a heuristic: allow a little slack
 NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
 
 
@@ -19,6 +19,7 @@ class DeckChecker:
 
     def __init__(self, metrics: TextMetrics | None = None) -> None:
         self._metrics = metrics or TextMetrics()
+        self._tables = TableLayout(self._metrics)
 
     def check_slide(
         self, slide: Slide, draft: SlideDraft | None, *, width: int = 1280, height: int = 720
@@ -85,6 +86,8 @@ class DeckChecker:
     def _overflow(self, sid: str, slide: Slide) -> list[LayoutIssue]:
         issues = []
         for element in slide.flat:
+            if isinstance(element, Table):
+                issues += self._table_overflow(sid, element)
             if not isinstance(element, Text):
                 continue
             indent = element.font_size if BULLET in element.text else 0  # hanging bullet indent
@@ -105,15 +108,32 @@ class DeckChecker:
             )
         return issues
 
+    def _table_overflow(self, sid: str, table: Table) -> list[LayoutIssue]:
+        return [
+            LayoutIssue(
+                code="text_overflow",
+                severity="error",
+                slide_id=sid,
+                element_id=table.id,
+                message=f"table cell {cell.row},{cell.col} needs {cell.need:.0f}px of height",
+                suggestion="shorten the cell text or remove a row",
+            )
+            for cell in self._tables.overflow(table)
+        ]
+
     def _numbers(self, sid: str, slide: Slide, draft: SlideDraft | None) -> list[LayoutIssue]:
         if draft is None:
             return []
         known = {self._normal(n) for n in NUMBER.findall(draft.fingerprint)}
         issues = []
         for element in slide.flat:
-            if not isinstance(element, Text):
+            if isinstance(element, Table):
+                text = "\n".join(cell for row in element.rows for cell in row)
+            elif isinstance(element, Text):
+                text = element.text
+            else:
                 continue
-            for found in NUMBER.findall(element.text):
+            for found in NUMBER.findall(text):
                 number = self._normal(found)
                 if len(number) < 2 or number in known:
                     continue

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from decks.design import BOLD_CHAR_WIDTH, CHAR_WIDTH, LINE_HEIGHT, TYPE
 
 MIN_FONT = float(min(TYPE.values()))
+OVERFLOW_TOLERANCE = 1.02  # the height estimate is a heuristic: allow a little slack
 
 
 @dataclass(frozen=True)

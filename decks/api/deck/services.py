@@ -2,7 +2,7 @@ import asyncio
 from collections.abc import Callable
 from uuid import uuid4
 
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
 from decks.agents.exceptions import DeckMissingError, TurnInProgressError
 from decks.agents.repos import ProjectRepositories, Repos
@@ -28,15 +28,17 @@ from decks.api.deck.models import (
     SlideHtml,
     SlideInfo,
 )
-from decks.models.elements import Element, Image
+from decks.models.elements import Element, Image, Table
 from decks.models.history import DeckHistory
 from decks.models.slides import Deck, Slide, ZMove
 from decks.render.htmldoc.models import HtmlPageStyle
 from decks.render.htmldoc.services import HtmlRenderer
+from decks.table_layout import TableLayout
 
 # A slide page that sits in an iframe: no backdrop, no gap, and it scales to the frame width.
 EMBEDDED_PAGE = HtmlPageStyle(title="Slide", backdrop="transparent", gap=0, margin=0)
 SAFE_IMAGE_PREFIXES = ("http://", "https://", "data:image/")
+ROWS = TypeAdapter(list[list[str]])
 
 
 def new_element_id() -> str:
@@ -55,9 +57,11 @@ class DeckService:
         self,
         repositories: ProjectRepositories,
         new_id: Callable[[], str] = new_element_id,
+        table_layout: TableLayout | None = None,
     ) -> None:
         self._repositories = repositories
         self._new_id = new_id
+        self._tables = table_layout or TableLayout()
 
     async def get(self, project_id: str) -> DeckInfo:
         """Return the deck with the box and the fields of every element."""
@@ -291,9 +295,21 @@ class DeckService:
             raise InvalidElementChangeError(element_id, reason)
         self._check_source(element_id, changes, element.src if isinstance(element, Image) else None)
         try:
-            return slide.patched(element_id, changes)
+            return slide.patched(element_id, self._relaid(element, changes))
         except ValidationError as error:
             raise InvalidElementChangeError(element_id, self._reason(error)) from error
+
+    def _relaid(self, element: Element, changes: dict[str, object]) -> dict[str, object]:
+        """Add the layout of a table to ``changes`` when the rows get another shape."""
+        if not isinstance(element, Table) or "rows" not in changes:
+            return changes
+        try:
+            rows = ROWS.validate_python(changes["rows"])
+        except ValidationError:
+            return changes  # the validation of the whole element reports it
+        candidate = element.model_copy(update={**changes, "rows": rows})
+        # What the client sent wins over what the layout computed.
+        return {**self._tables.layout_changes(element, candidate), **changes}
 
     def _built(self, kind: NewKind, element_id: str, props: dict[str, object]) -> Element:
         model = NEW_TYPES[kind]

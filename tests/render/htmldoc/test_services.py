@@ -75,7 +75,7 @@ def test_document_uses_the_bullet_markup() -> None:
         (Line(x1=0, y1=0, x2=5, y2=5, dash=True), 'stroke-dasharray="6 5"'),
         (Polygon(points=[(0, 0), (4, 4), (0, 4)], dash=True), 'points="0,0 4,4 0,4"'),
         (Image(src="https://x/y.png", **BOX), 'src="https://x/y.png"'),
-        (Table(rows=[["h"], ["c"]], **BOX), "<tr><th>h</th></tr><tr><td>c</td></tr>"),
+        (Table(rows=[["h"], ["c"]], **BOX), "<th>h</th>"),
         (Chart(kind="pie", **BOX), "chart: pie"),
         (
             Group(name="g<1", children=[Shape(**BOX)]),
@@ -156,3 +156,45 @@ def test_every_element_carries_its_id_for_the_editor_overlay() -> None:
 
     for element_id in "abcdefghi":
         assert f'data-element-id="{element_id}"' in html
+
+
+def test_plain_table_keeps_the_grid_markup() -> None:
+    """A table with no layout field has no colgroup, no row height and no cell style."""
+    html = HtmlRenderer(make_deck(Table(rows=[["h"], ["c"]], **BOX))).slides()[0]
+
+    assert "<colgroup>" not in html
+    assert "<tr><th>h</th></tr>" in html.replace("\n", "")
+    assert "<td>c</td>" in html
+
+
+def test_laid_out_table_draws_widths_rules_and_highlights() -> None:
+    """Column widths, alignment, rules and highlights come out as CSS."""
+    table = Table(
+        rows=[["a", "b"], ["1", "2"], ["3", "4"]],
+        col_widths=[0.25, 0.75],
+        align=["left", "right"],
+        row_height=40,
+        highlight_row=1,
+        highlight_col=0,
+        rules="lines",
+        **BOX,
+    )
+    html = HtmlRenderer(make_deck(table)).slides()[0]
+
+    assert "table-layout:fixed;" in html
+    assert '<col style="width:25%">' in html
+    assert '<col style="width:75%">' in html
+    assert html.count('<tr style="height:40px">') == 3
+    assert "text-align:right;" in html
+    assert "border-bottom:2.5px solid" in html  # the header rule
+    # column 0 has 3 tinted cells; the highlighted row 1 adds its second cell
+    assert html.count("background:#") == 4
+
+
+def test_table_caption_is_escaped_and_sits_below_the_table() -> None:
+    """The caption is a ``<caption>`` below the rows and its text is escaped."""
+    table = Table(rows=[["h"], ["c"]], caption="a < b", **BOX)
+    html = HtmlRenderer(make_deck(table)).slides()[0]
+
+    assert "caption-side:bottom" in html
+    assert ">a &lt; b</caption>" in html

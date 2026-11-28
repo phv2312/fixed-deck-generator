@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from typing import Annotated, Literal
 
@@ -206,8 +207,16 @@ class ElementView(BaseModel):
             else None
         )
         text = element.text[:80] if isinstance(element, Text) else None
-        style = {k: str(v) for k, v in data.items() if v not in (None, "", [], {}, False)}
+        if isinstance(element, Table):
+            data.pop("rows")
+            text = json.dumps(element.rows, ensure_ascii=False)  # whole, so the agent can edit it
+        style = {k: str(v) for k, v in data.items() if cls._is_set(v)}
         return cls(id=element.id, type=element.type, text=text, bbox=box, style=style)
+
+    @staticmethod
+    def _is_set(value: object) -> bool:
+        """Return whether a style value is worth showing. ``0`` counts, ``False`` does not."""
+        return value is not False and value not in (None, "", [], {})
 
 
 class SlideView(BaseModel):

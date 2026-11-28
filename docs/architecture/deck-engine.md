@@ -42,6 +42,18 @@ A kind can have more than one look. A merged kind uses a field to choose the loo
 - `TextMetrics` is a heuristic, not a browser layout.
 - Colors are theme tokens (`primary`, `accent`, `tint`, and others). A builder never writes a color value.
 
+## Tables
+
+The `table` builder writes one `Table` element, not one text for each cell. A person can then select the whole table, and add or remove a row or a column.
+
+- A `Table` has `rows` (the header is the first row when `header` is true), `font_size`, `col_widths` (fractions of `w`), `align` (one value for each column), `row_height`, `highlight_row`, `highlight_col`, `rules` and `caption`. Each field after `font_size` is optional. With no field set, the table keeps the plain grid look.
+- `rules` `"lines"` draws a heavy rule under the header and a hairline under each row. `caption` is a note below the table. It is outside the box, so it follows the table when the table grows.
+- `highlight_row` counts the rows below the header.
+- The model refuses a table with no cell, one with more than 40 rows or 12 columns, uneven rows, a list that does not match the columns, and a highlight outside the table.
+- `TableLayout` (`decks/table_layout.py`) is the only code that sizes a table. The builder, the deck API, the checker, the fitter and the `set_table` tool all use it. `relaid` sets the row height, the column widths, the alignment and the table height. It only lowers the font size. It drops a highlight that left the table. `adapted` calls `relaid` only when the number of rows or columns changes, so a change of cell text keeps the layout.
+- The checker reports a cell that needs more height than its row (`text_overflow`) and checks the cell numbers against the plan. The fitter lowers the font size until each cell fits.
+- Decks that an older builder made have a table slide of many texts and lines. They still render. Run `uv run python -m scripts.migrate_tables <project folder>` to change them. The script shows the change first. Add `--write` to save it. It keeps `deck.json.bak`.
+
 ## Render
 
 A renderer turns a `Deck` into one output. Each backend is a subclass of `DeckRenderer[T]` in `decks/render/base.py`. The base class has one abstract method for each element type and one for a slide. Its `element` method sends each element to the method for its type. It raises `UnsupportedElementError` (`decks/render/exceptions.py`) for an unknown type.
