@@ -98,6 +98,29 @@ def test_builder_drops_a_highlight_that_is_out_of_range() -> None:
     assert table.highlight_row is None
 
 
+def test_table_takes_the_largest_size_that_the_limits_allow() -> None:
+    """Test the boundary: 40 rows by 12 columns is valid and gets a layout."""
+    table = Table(x=0, y=0, w=1152, h=0, rows=[["x"] * 12] * 40, font_size=18)
+
+    laid = TableLayout().relaid(table)
+
+    assert laid.font_size == 14
+    assert laid.row_height == pytest.approx(450 / 40)
+    assert len(laid.col_widths or []) == 12
+
+
+def test_relaid_counts_every_row_as_body_when_there_is_no_header() -> None:
+    """Test that without a header the highlight range and the font step use all the rows."""
+    table = make_table(header=False, highlight_row=2)
+
+    laid = TableLayout().relaid(table)
+    with_header = TableLayout().relaid(make_table())
+
+    assert laid.highlight_row == 2  # with a header the body has 2 rows and 2 would be refused
+    assert with_header.align == ["left", "right"]  # "Score" is a header, so the column is numbers
+    assert laid.align == ["left", "left"]  # "Score" is a body cell here, so the column is text
+
+
 def test_relaid_keeps_a_font_size_that_a_person_chose() -> None:
     """Test that the layout only lowers the font size and never raises it."""
     assert TableLayout().relaid(make_table(font_size=12)).font_size == 12

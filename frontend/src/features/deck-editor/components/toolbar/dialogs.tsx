@@ -12,6 +12,7 @@ import { Fragment, useState } from "react";
 import {
   canRemoveColumn, canRemoveRow, columnCount, insertColumnRight, insertRowBelow, removeColumn, removeRow, setCell, toChanges, toDraft,
 } from "@/features/deck-editor/table";
+import type { TableDraft } from "@/features/deck-editor/table";
 import { EDITOR_TEXTS } from "@/features/deck-editor/texts";
 import type { DeckElement } from "@/features/deck-editor/types";
 
@@ -33,6 +34,40 @@ function Actions({ onClose, onSave, disabled }: { onClose: () => void; onSave: (
   );
 }
 
+interface LineControlsProps {
+  draft: TableDraft;
+  index: number;
+  setDraft: React.Dispatch<React.SetStateAction<TableDraft>>;
+}
+
+/** The insert and remove buttons above one column. */
+function ColumnControls({ draft, index, setDraft }: LineControlsProps): React.JSX.Element {
+  return (
+    <div className="flex justify-end">
+      <IconButton size="small" aria-label={D.insertColumnAfter(index + 1)} onClick={() => setDraft((d) => insertColumnRight(d, index))}>
+        <AddOutlined fontSize="small" />
+      </IconButton>
+      <IconButton size="small" aria-label={D.removeColumnAt(index + 1)} disabled={!canRemoveColumn(draft)} onClick={() => setDraft((d) => removeColumn(d, index))}>
+        <DeleteOutlined fontSize="small" />
+      </IconButton>
+    </div>
+  );
+}
+
+/** The insert and remove buttons at the end of one row. */
+function RowControls({ draft, index, setDraft }: LineControlsProps): React.JSX.Element {
+  return (
+    <div className="flex">
+      <IconButton size="small" aria-label={D.insertRowBelow(index + 1)} onClick={() => setDraft((d) => insertRowBelow(d, index))}>
+        <AddOutlined fontSize="small" />
+      </IconButton>
+      <IconButton size="small" aria-label={D.removeRowAt(index + 1)} disabled={!canRemoveRow(draft, index)} onClick={() => setDraft((d) => removeRow(d, index))}>
+        <DeleteOutlined fontSize="small" />
+      </IconButton>
+    </div>
+  );
+}
+
 function CellsForm({ element, onClose, onSave }: Omit<DialogProps, "open">): React.JSX.Element {
   const [draft, setDraft] = useState(() => toDraft(element.props));
   const columns = columnCount(draft);
@@ -40,16 +75,10 @@ function CellsForm({ element, onClose, onSave }: Omit<DialogProps, "open">): Rea
   return (
     <>
       <DialogContent>
+        {/* Rows and columns have no id and the whole list is replaced on each edit, so the index is the key. */}
         <div className="grid items-center gap-2 pt-2" style={grid}>
           {Array.from({ length: columns }, (_, c) => (
-            <div key={`col-${c.toString()}`} className="flex justify-end">
-              <IconButton size="small" aria-label={D.insertColumnAfter(c + 1)} onClick={() => setDraft((d) => insertColumnRight(d, c))}>
-                <AddOutlined fontSize="small" />
-              </IconButton>
-              <IconButton size="small" aria-label={D.removeColumnAt(c + 1)} disabled={!canRemoveColumn(draft)} onClick={() => setDraft((d) => removeColumn(d, c))}>
-                <DeleteOutlined fontSize="small" />
-              </IconButton>
-            </div>
+            <ColumnControls key={`col-${c.toString()}`} draft={draft} index={c} setDraft={setDraft} />
           ))}
           <span />
           {draft.rows.map((row, r) => (
@@ -66,14 +95,7 @@ function CellsForm({ element, onClose, onSave }: Omit<DialogProps, "open">): Rea
                   slotProps={{ htmlInput: { "aria-label": D.cell(r + 1, c + 1) } }}
                 />
               ))}
-              <div className="flex">
-                <IconButton size="small" aria-label={D.insertRowBelow(r + 1)} onClick={() => setDraft((d) => insertRowBelow(d, r))}>
-                  <AddOutlined fontSize="small" />
-                </IconButton>
-                <IconButton size="small" aria-label={D.removeRowAt(r + 1)} disabled={!canRemoveRow(draft, r)} onClick={() => setDraft((d) => removeRow(d, r))}>
-                  <DeleteOutlined fontSize="small" />
-                </IconButton>
-              </div>
+              <RowControls draft={draft} index={r} setDraft={setDraft} />
             </Fragment>
           ))}
         </div>

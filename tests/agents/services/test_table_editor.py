@@ -89,3 +89,17 @@ def test_set_table_refuses_rows_that_are_not_a_table(saved: Repos, rows: list[li
         editor.set_table("p1", "tb1", rows)
 
     assert saved.deck.load().revision == 1
+
+
+def test_view_shows_a_highlight_on_the_first_row_and_column(saved: Repos) -> None:
+    """Test that a highlight index of 0 reaches the agent: 0 is a real value, not False."""
+    deck = saved.deck.load()
+    slide = deck.slides[0].patched("tb1", {"highlight_row": 0, "highlight_col": 0, "header": False})
+    saved.deck.save(deck.model_copy(update={"slides": [slide]}))
+    editor = make_context(saved, ScriptedModel([])).editor
+
+    view = next(e for e in editor.read_slide("p1").elements if e.id == "tb1")
+
+    assert view.style["highlight_row"] == "0"
+    assert view.style["highlight_col"] == "0"
+    assert "header" not in view.style  # False stays hidden

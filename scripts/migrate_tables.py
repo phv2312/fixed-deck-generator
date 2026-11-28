@@ -22,6 +22,7 @@ from decks.design import BODY_TOP, CONTENT_W, TYPE
 from decks.models.body import TableSlide
 from decks.models.elements import Shape, Table, Text
 from decks.models.slides import Slide
+from decks.table_layout import CELL_PAD
 
 
 @dataclass(frozen=True)
@@ -84,7 +85,8 @@ class TableMigrator:
                 row = round((shape.y - BODY_TOP) / row_height) - 1
             else:
                 col = next(
-                    (j for j, cell in enumerate(header) if abs(cell.x - 10 - shape.x) < 1), None
+                    (j for j, cell in enumerate(header) if abs(cell.x - CELL_PAD - shape.x) < 1),
+                    None,
                 )
         return row, col
 

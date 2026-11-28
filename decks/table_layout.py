@@ -95,8 +95,8 @@ class TableLayout:
             return table
         columns = len(rows[0])
         row_h = self.row_height(len(rows))
-        widths = table.col_widths if table.col_widths and len(table.col_widths) == columns else None
-        align = table.align if table.align and len(table.align) == columns else None
+        widths = self._matching(table.col_widths, columns)
+        align = self._matching(table.align, columns)
         body = rows[1:] if table.header else rows
         return table.model_copy(
             update={
@@ -114,8 +114,7 @@ class TableLayout:
         """Return the cells that need more height than their row has."""
         if not table.rows:
             return []
-        row_h = table.row_height or table.h / len(table.rows)
-        widths = table.col_widths or [1 / table.columns] * table.columns
+        row_h, widths = self._row_height(table), self._widths(table)
         found = []
         for i, row in enumerate(table.rows):
             bold = table.header and i == 0
@@ -129,8 +128,7 @@ class TableLayout:
         """Return ``table`` with the largest font size at which every cell fits its row."""
         if not table.rows:
             return table
-        row_h = table.row_height or table.h / len(table.rows)
-        widths = table.col_widths or [1 / table.columns] * table.columns
+        row_h, widths = self._row_height(table), self._widths(table)
         size = table.font_size
         for i, row in enumerate(table.rows):
             for j, cell in enumerate(row):
@@ -141,6 +139,19 @@ class TableLayout:
 
     def _need(self, text: str, font_size: float, width: float, *, bold: bool) -> float:
         return self._metrics.height(text, font_size, max(1.0, width - 2 * CELL_PAD), bold=bold)
+
+    @staticmethod
+    def _row_height(table: Table) -> float:
+        return table.row_height or table.h / len(table.rows)
+
+    @staticmethod
+    def _widths(table: Table) -> list[float]:
+        return table.col_widths or [1 / table.columns] * table.columns
+
+    @staticmethod
+    def _matching[T](values: list[T] | None, columns: int) -> list[T] | None:
+        """Return ``values`` when it has one entry for each column, else ``None``."""
+        return values if values and len(values) == columns else None
 
     @staticmethod
     def _kept(index: int | None, size: int) -> int | None:
