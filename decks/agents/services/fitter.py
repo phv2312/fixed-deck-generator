@@ -1,7 +1,8 @@
-"""Shrink overflowing text so that a layout error needs no new LLM call."""
+"""Shrink overflowing text and table cells so that a layout error needs no new LLM call."""
 
-from decks.models.elements import BULLET, Element, Group, Text
+from decks.models.elements import BULLET, Element, Group, Table, Text
 from decks.models.slides import Slide
+from decks.table_layout import TableLayout
 from decks.text_metrics import TextMetrics
 
 
@@ -10,6 +11,7 @@ class LayoutFitter:
 
     def __init__(self, metrics: TextMetrics | None = None) -> None:
         self._metrics = metrics or TextMetrics()
+        self._tables = TableLayout(self._metrics)
 
     def fit(self, slide: Slide) -> Slide:
         """Return a copy of ``slide`` in which every text fits its box when the scale allows."""
@@ -22,6 +24,8 @@ class LayoutFitter:
             )
         if isinstance(element, Text):
             return self._text(element)
+        if isinstance(element, Table):
+            return self._tables.fitted(element)
         return element
 
     def _text(self, text: Text) -> Text:

@@ -168,3 +168,22 @@ class ChartSeriesLengthError(ModelError):
     TEMPLATE = "chart: series '{series}' needs {expected} values"
     series: str
     expected: int
+
+
+@dataclass
+class TableListLengthError(ModelError):
+    """Raised when a per-column list of a table element does not match the column count."""
+
+    TEMPLATE = "table: {field} needs {columns} entries"
+    field: str
+    columns: int
+
+
+@dataclass
+class TableHighlightRangeError(ModelError):
+    """Raised when the highlighted row or column of a table element does not exist."""
+
+    TEMPLATE = "table: {field} {index} is outside 0..{last}"
+    field: str
+    index: int
+    last: int

@@ -75,7 +75,7 @@ The `deck` feature (`decks/api/deck/`) reads the built deck and edits its elemen
 |---|---|
 | `GET` | `{revision, width, height, slides, can_undo, can_redo}`. Each slide has `index`, `id`, `kind`, `title`, `revision` and `elements`. Each element has `id`, `type`, `parent_id`, `z`, `x`, `y`, `w`, `h`, `props` and `editable`. |
 | `GET /slides/{i}/html` | `text/html` of one slide. The `ETag` is the slide `revision`. With `If-None-Match` that holds it, the answer is 304 without a body. 404 for no deck or a bad index. |
-| `PATCH /slides/{i}/elements/{eid}` `{base_revision?, changes}` | Change fields that are in `editable`. Returns `{revision, element, issues, can_undo, can_redo}`. |
+| `PATCH /slides/{i}/elements/{eid}` `{base_revision?, changes}` | Change fields that are in `editable`. Returns `{revision, element, issues, can_undo, can_redo}`. For a table, a change of `rows` that adds or removes a row or a column also sets `h`, `row_height`, `col_widths`, `align` and `font_size` again, and drops a highlight that left the table. A change of cell text alone keeps them. Send the whole `rows` list and the new `highlight_row` and `highlight_col`. |
 | `POST /slides/{i}/elements` `{base_revision?, kind, props}` | 201. Add a `text`, `image`, `table`, `shape` or `chart` on top. An image needs `props.src`. |
 | `DELETE /slides/{i}/elements/{eid}?base_revision` | Remove an element, also from inside a group. |
 | `POST /slides/{i}/elements/{eid}/duplicate` | 201. Copy a top-level element, 16 units down and right, above the original. |

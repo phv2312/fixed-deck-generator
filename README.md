@@ -73,7 +73,8 @@ frontend commands.
 - **Deck editor.** Click an element on a slide to edit it. A short dark toolbar floats over the
   element. It has the text size (a named list), bold, italic, underline, align, color, and a
   **More** menu for order, duplicate, and delete. Drag the handles to move or resize. Double-click
-  text to change the words.
+  text to change the words. For a table, **Edit cells** opens a dialog. It changes the cell text,
+  inserts or removes a row or a column at any place, and edits the note under the table.
 - **Bottom bar.** Add text, an image, a table, a shape, or a chart. Undo and redo. Every edit
   saves at once. The assistant locks the editor while it works on the deck.
 

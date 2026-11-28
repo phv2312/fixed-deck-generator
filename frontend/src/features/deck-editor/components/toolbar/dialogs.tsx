@@ -1,11 +1,17 @@
+import AddOutlined from "@mui/icons-material/AddOutlined";
+import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
+import {
+  canRemoveColumn, canRemoveRow, columnCount, insertColumnRight, insertRowBelow, removeColumn, removeRow, setCell, toChanges, toDraft,
+} from "@/features/deck-editor/table";
 import { EDITOR_TEXTS } from "@/features/deck-editor/texts";
 import type { DeckElement } from "@/features/deck-editor/types";
 
@@ -27,41 +33,57 @@ function Actions({ onClose, onSave, disabled }: { onClose: () => void; onSave: (
   );
 }
 
-function toRows(value: unknown): string[][] {
-  return Array.isArray(value) ? (value as string[][]).map((row) => [...row]) : [];
-}
-
 function CellsForm({ element, onClose, onSave }: Omit<DialogProps, "open">): React.JSX.Element {
-  const [rows, setRows] = useState(() => toRows(element.props.rows));
-  const columns = rows[0]?.length ?? 0;
-  const setCell = (r: number, c: number, text: string): void =>
-    setRows((prev) => prev.map((row, ri) => (ri === r ? row.map((cell, ci) => (ci === c ? text : cell)) : row)));
+  const [draft, setDraft] = useState(() => toDraft(element.props));
+  const columns = columnCount(draft);
+  const grid = { gridTemplateColumns: `repeat(${columns.toString()}, minmax(0, 1fr)) auto` };
   return (
     <>
       <DialogContent>
-        <div className="flex flex-col gap-2 pt-2">
-          {rows.map((row, r) => (
-            <div key={`row-${r.toString()}`} className="flex gap-2">
+        <div className="grid items-center gap-2 pt-2" style={grid}>
+          {Array.from({ length: columns }, (_, c) => (
+            <div key={`col-${c.toString()}`} className="flex justify-end">
+              <IconButton size="small" aria-label={D.insertColumnAfter(c + 1)} onClick={() => setDraft(insertColumnRight(draft, c))}>
+                <AddOutlined fontSize="small" />
+              </IconButton>
+              <IconButton size="small" aria-label={D.removeColumnAt(c + 1)} disabled={!canRemoveColumn(draft)} onClick={() => setDraft(removeColumn(draft, c))}>
+                <DeleteOutlined fontSize="small" />
+              </IconButton>
+            </div>
+          ))}
+          <span />
+          {draft.rows.map((row, r) => (
+            <Fragment key={`row-${r.toString()}`}>
               {row.map((cell, c) => (
                 <TextField
                   key={`cell-${r.toString()}-${c.toString()}`}
                   size="small"
                   value={cell}
-                  onChange={(event) => setCell(r, c, event.target.value)}
+                  onChange={(event) => setDraft(setCell(draft, r, c, event.target.value))}
                   slotProps={{ htmlInput: { "aria-label": D.cell(r + 1, c + 1) } }}
                 />
               ))}
-            </div>
+              <div className="flex">
+                <IconButton size="small" aria-label={D.insertRowBelow(r + 1)} onClick={() => setDraft(insertRowBelow(draft, r))}>
+                  <AddOutlined fontSize="small" />
+                </IconButton>
+                <IconButton size="small" aria-label={D.removeRowAt(r + 1)} disabled={!canRemoveRow(draft, r)} onClick={() => setDraft(removeRow(draft, r))}>
+                  <DeleteOutlined fontSize="small" />
+                </IconButton>
+              </div>
+            </Fragment>
           ))}
         </div>
-        <div className="flex flex-wrap gap-2 pt-3">
-          <Button size="small" onClick={() => setRows((p) => [...p, Array.from({ length: columns }, () => "")])}>{D.addRow}</Button>
-          <Button size="small" onClick={() => setRows((p) => p.map((row) => [...row, ""]))}>{D.addColumn}</Button>
-          <Button size="small" disabled={rows.length < 2} onClick={() => setRows((p) => p.slice(0, -1))}>{D.removeRow}</Button>
-          <Button size="small" disabled={columns < 2} onClick={() => setRows((p) => p.map((row) => row.slice(0, -1)))}>{D.removeColumn}</Button>
-        </div>
+        <TextField
+          label={D.caption}
+          size="small"
+          fullWidth
+          value={draft.caption}
+          onChange={(event) => setDraft({ ...draft, caption: event.target.value })}
+          sx={{ mt: 2 }}
+        />
       </DialogContent>
-      <Actions onClose={onClose} onSave={() => onSave({ rows })} />
+      <Actions onClose={onClose} onSave={() => onSave(toChanges(draft))} />
     </>
   );
 }

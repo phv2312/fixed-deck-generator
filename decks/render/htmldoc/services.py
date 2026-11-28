@@ -5,7 +5,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-from decks.design import LINE_HEIGHT, MONO_FONT
+from decks.design import LINE_HEIGHT, MONO_FONT, TYPE
 from decks.models.elements import BULLET, Chart, Group, Image, Line, Polygon, Shape, Table, Text
 from decks.models.slides import Deck, Slide
 from decks.render.base import DeckRenderer
@@ -76,7 +76,7 @@ class HtmlRenderer(DeckRenderer[str]):
 
     def table(self, e: Table) -> str:
         """Render a table. The first row is a header when ``e.header`` is true."""
-        return self._render("table", e=e)
+        return self._render("table", e=e, caption_size=TYPE["caption"])
 
     def group(self, e: Group, children: list[str]) -> str:
         """Render a group as a wrapper that keeps the child coordinates."""

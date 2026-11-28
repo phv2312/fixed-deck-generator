@@ -15,8 +15,9 @@ from decks.agents.models import (
 )
 from decks.agents.repos import Repos
 from decks.agents.services.checker import DeckChecker, TextMetrics
-from decks.models.elements import Polygon, Shape, Text
+from decks.models.elements import Polygon, Shape, Table, Text
 from decks.models.slides import Deck, Slide
+from decks.table_layout import LAYOUT_FIELDS, TableLayout
 
 TEXT_FIELDS = frozenset(
     {"font_size", "bold", "italic", "underline", "color", "font_family", "align", "valign"}
@@ -33,6 +34,7 @@ class DeckEditor:
         self._repos = repos
         self._checker = checker
         self._metrics = metrics or TextMetrics()
+        self._tables = TableLayout(self._metrics)
 
     def read_slide(self, slide_id: str) -> SlideView:
         """Return a short view of every element of a slide."""
@@ -86,6 +88,22 @@ class DeckEditor:
             font_size=float(final) if isinstance(final, int | float) else size,
             suggested_font_size=fitted if overflow else None,
             issues=change.issues,
+        )
+
+    def set_table(self, slide_id: str, element_id: str, rows: list[list[str]]) -> ElementChange:
+        """Replace the rows of a table. Rows and columns can be added or removed.
+
+        The first row is the header when the table has one. The widths, the row height and the
+        font are made again when the number of rows or columns changes.
+        """
+        location = self._locate(slide_id)
+        deck, slide, index = location.deck, location.slide, location.index
+        element = slide.element(element_id)
+        if not isinstance(element, Table):
+            raise ElementNotFoundError(slide_id, element_id)
+        laid = self._tables.adapted(element, element.model_copy(update={"rows": rows}))
+        return self._save(
+            deck, slide, index, element_id, laid.model_dump(include={"rows", *LAYOUT_FIELDS})
         )
 
     def commit(self, deck: Deck, edited: Slide | None = None) -> int:

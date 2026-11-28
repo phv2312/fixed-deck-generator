@@ -34,7 +34,11 @@ export const EDITOR_TEXTS = {
   dialog: {
     cancel: "Cancel", save: "Save",
     cellsTitle: "Edit table cells", cell: (r: number, c: number): string => `Row ${r}, column ${c}`,
-    addRow: "Add row", addColumn: "Add column", removeRow: "Remove last row", removeColumn: "Remove last column",
+    caption: "Note under the table",
+    insertRowBelow: (r: number): string => `Insert a row below row ${r.toString()}`,
+    removeRowAt: (r: number): string => `Remove row ${r.toString()}`,
+    insertColumnAfter: (c: number): string => `Insert a column after column ${c.toString()}`,
+    removeColumnAt: (c: number): string => `Remove column ${c.toString()}`,
     dataTitle: "Edit chart data", dataField: "Chart data (JSON)", dataInvalid: "This is not valid JSON.",
     imageTitle: "Image address", imageField: "Image URL", imageHint: "Use an address that starts with https://",
   },

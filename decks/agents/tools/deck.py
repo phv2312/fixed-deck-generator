@@ -74,4 +74,19 @@ def set_text(
     return ctx.context.editor.set_text(slide_id, element_id, text, autofit=autofit)
 
 
-DECK_TOOLS = [generate_deck, check_deck, fix_slide, read_slide, update_element, set_text]
+@function_tool(failure_error_function=tool_error)
+def set_table(
+    ctx: RunContextWrapper[ProjectContext],
+    slide_id: str,
+    element_id: str,
+    rows: list[list[str]],
+) -> ElementChange:
+    """Replace all rows of a table. Add or remove a row or a column by sending the new rows.
+
+    Read the slide first: the table text lists every row. Send every row again, the header
+    first, with the same number of cells in each row.
+    """
+    return ctx.context.editor.set_table(slide_id, element_id, rows)
+
+
+DECK_TOOLS = [generate_deck, check_deck, fix_slide, read_slide, update_element, set_text, set_table]
