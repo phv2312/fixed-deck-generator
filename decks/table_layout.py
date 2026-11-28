@@ -10,14 +10,13 @@ from typing import Literal
 
 from decks.design import TYPE
 from decks.models.elements import Table
-from decks.text_metrics import TextMetrics
+from decks.text_metrics import OVERFLOW_TOLERANCE, TextMetrics
 
 NUM = re.compile(r"^[\s\-+−]?[\d.,'’ ]+\s*(%|[A-Za-z]{0,4})?$")
 CELL_PAD = 10  # horizontal padding of a cell, each side
 MAX_ROW_H = 54
 TABLE_H = 450  # the height that the rows share
 MIN_WEIGHT, MAX_WEIGHT = 6, 40  # clamp of the character count that sets a column width
-OVERFLOW_TOLERANCE = 1.02  # same slack as the checker: the height estimate is a heuristic
 
 # The fields that ``relaid`` can change.
 LAYOUT_FIELDS = frozenset(
@@ -78,6 +77,11 @@ class TableLayout:
         if (len(after.rows), after.columns) == (len(before.rows), before.columns):
             return after
         return self.relaid(after)
+
+    def layout_changes(self, before: Table, after: Table) -> dict[str, object]:
+        """Return the layout fields that ``after`` needs, or none when the shape is as before."""
+        laid = self.adapted(before, after)
+        return {} if laid is after else laid.model_dump(include=set(LAYOUT_FIELDS))
 
     def relaid(self, table: Table) -> Table:
         """Return ``table`` with the layout that its rows need.

@@ -5,9 +5,8 @@ from decks.models.elements import BULLET, Chart, Image, Line, Polygon, Shape, Ta
 from decks.models.plan import Plan, SlideDraft
 from decks.models.slides import Deck, Slide
 from decks.table_layout import TableLayout
-from decks.text_metrics import TextMetrics
+from decks.text_metrics import OVERFLOW_TOLERANCE, TextMetrics
 
-OVERFLOW_TOLERANCE = 1.02  # the height estimate is a heuristic: allow a little slack
 NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
 
 

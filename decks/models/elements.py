@@ -9,7 +9,10 @@ from decks.models.exceptions import (
     TableHighlightRangeError,
     TableListLengthError,
     TableRowWidthError,
+    TableSizeError,
 )
+
+MAX_TABLE_ROWS, MAX_TABLE_COLUMNS = 40, 12
 
 BULLET = "• "  # a text line that starts with this is a list item; the renderer hangs its wraps
 
@@ -87,6 +90,8 @@ class Table(_Box):
     @model_validator(mode="after")
     def _check(self) -> Self:
         n = self.columns
+        if not (1 <= len(self.rows) <= MAX_TABLE_ROWS and 1 <= n <= MAX_TABLE_COLUMNS):
+            raise TableSizeError(len(self.rows), n, MAX_TABLE_ROWS, MAX_TABLE_COLUMNS)
         if any(len(row) != n for row in self.rows):
             raise TableRowWidthError(n)
         for field, value in (("col_widths", self.col_widths), ("align", self.align)):

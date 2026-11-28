@@ -33,7 +33,7 @@ from decks.models.history import DeckHistory
 from decks.models.slides import Deck, Slide, ZMove
 from decks.render.htmldoc.models import HtmlPageStyle
 from decks.render.htmldoc.services import HtmlRenderer
-from decks.table_layout import LAYOUT_FIELDS, TableLayout
+from decks.table_layout import TableLayout
 
 # A slide page that sits in an iframe: no backdrop, no gap, and it scales to the frame width.
 EMBEDDED_PAGE = HtmlPageStyle(title="Slide", backdrop="transparent", gap=0, margin=0)
@@ -308,10 +308,8 @@ class DeckService:
         except ValidationError:
             return changes  # the validation of the whole element reports it
         candidate = element.model_copy(update={**changes, "rows": rows})
-        laid = self._tables.adapted(element, candidate)
-        if laid is candidate:
-            return changes
-        return {**changes, **laid.model_dump(include=set(LAYOUT_FIELDS))}
+        # What the client sent wins over what the layout computed.
+        return {**self._tables.layout_changes(element, candidate), **changes}
 
     def _built(self, kind: NewKind, element_id: str, props: dict[str, object]) -> Element:
         model = NEW_TYPES[kind]

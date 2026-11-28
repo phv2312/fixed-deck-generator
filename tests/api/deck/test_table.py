@@ -103,6 +103,8 @@ async def test_removed_row_and_column_drop_the_highlight(client: AsyncClient, pr
     [
         {"rows": [["a", "b"], ["c"]]},
         {"rows": "not rows"},
+        {"rows": [[]]},
+        {"rows": [["a"]] * 41},
         {"col_widths": [1.0]},
         {"highlight_row": 5},
     ],
@@ -123,3 +125,13 @@ async def test_cell_overflow_is_reported(client: AsyncClient, project: str) -> N
     body = await patch(client, project, {"rows": [["Head", "Score"], [long, "1"], ["a", "2"]]})
 
     assert any(i["code"] == "text_overflow" and i["element_id"] == "tb1" for i in body["issues"])
+
+
+async def test_client_values_win_over_the_computed_layout(
+    client: AsyncClient, project: str
+) -> None:
+    """Test that an explicit height in the same patch is kept when the rows change shape."""
+    props = (await patch(client, project, {"rows": rows(4), "h": 300}))["element"]["props"]
+
+    assert props["h"] == 300
+    assert props["row_height"] == 54

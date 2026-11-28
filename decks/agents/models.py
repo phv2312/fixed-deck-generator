@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from typing import Annotated, Literal
 
@@ -187,9 +188,6 @@ class StylePatch(BaseModel):
     opacity: float | None = None
 
 
-TABLE_TEXT_LIMIT = 1500  # a table view keeps its cells, so the agent can edit them
-
-
 class ElementView(BaseModel):
     """Short view of one element: id, type, text, box and style."""
 
@@ -211,7 +209,7 @@ class ElementView(BaseModel):
         text = element.text[:80] if isinstance(element, Text) else None
         if isinstance(element, Table):
             data.pop("rows")
-            text = "\n".join(" | ".join(row) for row in element.rows)[:TABLE_TEXT_LIMIT]
+            text = json.dumps(element.rows, ensure_ascii=False)  # whole, so the agent can edit it
         style = {k: str(v) for k, v in data.items() if v not in (None, "", [], {}, False)}
         return cls(id=element.id, type=element.type, text=text, bbox=box, style=style)
 

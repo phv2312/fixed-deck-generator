@@ -50,6 +50,15 @@ def test_table_refuses_lists_and_highlights_that_do_not_fit(
 
 
 @pytest.mark.parametrize(
+    "rows", [[], [[]], [["a"]] * 41, [["a"] * 13]], ids=["none", "no cell", "41 rows", "13 columns"]
+)
+def test_table_refuses_a_size_that_the_layout_cannot_handle(rows: list[list[str]]) -> None:
+    """Test that a table with no cell, or one that is too big, fails validation."""
+    with pytest.raises(ValueError, match="table: needs 1 to 40 rows"):
+        Table(x=0, y=0, w=100, h=10, rows=rows)
+
+
+@pytest.mark.parametrize(
     ("body_rows", "font"), [(1, 18), (8, 18), (9, 16), (12, 16), (13, 14), (16, 14)]
 )
 def test_font_step_follows_the_row_count(body_rows: int, font: float) -> None:

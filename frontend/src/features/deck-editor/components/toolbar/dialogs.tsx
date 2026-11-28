@@ -43,10 +43,10 @@ function CellsForm({ element, onClose, onSave }: Omit<DialogProps, "open">): Rea
         <div className="grid items-center gap-2 pt-2" style={grid}>
           {Array.from({ length: columns }, (_, c) => (
             <div key={`col-${c.toString()}`} className="flex justify-end">
-              <IconButton size="small" aria-label={D.insertColumnAfter(c + 1)} onClick={() => setDraft(insertColumnRight(draft, c))}>
+              <IconButton size="small" aria-label={D.insertColumnAfter(c + 1)} onClick={() => setDraft((d) => insertColumnRight(d, c))}>
                 <AddOutlined fontSize="small" />
               </IconButton>
-              <IconButton size="small" aria-label={D.removeColumnAt(c + 1)} disabled={!canRemoveColumn(draft)} onClick={() => setDraft(removeColumn(draft, c))}>
+              <IconButton size="small" aria-label={D.removeColumnAt(c + 1)} disabled={!canRemoveColumn(draft)} onClick={() => setDraft((d) => removeColumn(d, c))}>
                 <DeleteOutlined fontSize="small" />
               </IconButton>
             </div>
@@ -59,15 +59,18 @@ function CellsForm({ element, onClose, onSave }: Omit<DialogProps, "open">): Rea
                   key={`cell-${r.toString()}-${c.toString()}`}
                   size="small"
                   value={cell}
-                  onChange={(event) => setDraft(setCell(draft, r, c, event.target.value))}
+                  onChange={(event) => {
+                    const { value } = event.target;
+                    setDraft((d) => setCell(d, r, c, value));
+                  }}
                   slotProps={{ htmlInput: { "aria-label": D.cell(r + 1, c + 1) } }}
                 />
               ))}
               <div className="flex">
-                <IconButton size="small" aria-label={D.insertRowBelow(r + 1)} onClick={() => setDraft(insertRowBelow(draft, r))}>
+                <IconButton size="small" aria-label={D.insertRowBelow(r + 1)} onClick={() => setDraft((d) => insertRowBelow(d, r))}>
                   <AddOutlined fontSize="small" />
                 </IconButton>
-                <IconButton size="small" aria-label={D.removeRowAt(r + 1)} disabled={!canRemoveRow(draft, r)} onClick={() => setDraft(removeRow(draft, r))}>
+                <IconButton size="small" aria-label={D.removeRowAt(r + 1)} disabled={!canRemoveRow(draft, r)} onClick={() => setDraft((d) => removeRow(d, r))}>
                   <DeleteOutlined fontSize="small" />
                 </IconButton>
               </div>
@@ -79,7 +82,10 @@ function CellsForm({ element, onClose, onSave }: Omit<DialogProps, "open">): Rea
           size="small"
           fullWidth
           value={draft.caption}
-          onChange={(event) => setDraft({ ...draft, caption: event.target.value })}
+          onChange={(event) => {
+            const { value } = event.target;
+            setDraft((d) => ({ ...d, caption: value }));
+          }}
           sx={{ mt: 2 }}
         />
       </DialogContent>

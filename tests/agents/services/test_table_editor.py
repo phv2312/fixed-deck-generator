@@ -1,5 +1,6 @@
 import pytest
 from agents.testing import ScriptedModel
+from pydantic import ValidationError
 
 from decks.agents.exceptions import ElementNotFoundError
 from decks.agents.repos import Repos
@@ -38,7 +39,7 @@ def test_agent_reads_every_cell_of_a_table(saved: Repos) -> None:
 
     view = next(e for e in editor.read_slide("p1").elements if e.id == "tb1")
 
-    assert view.text == "Head | Score\nCTC | 12\nRNN-T | 14"
+    assert view.text == '[["Head", "Score"], ["CTC", "12"], ["RNN-T", "14"]]'
     assert "rows" not in view.style
 
 
@@ -64,3 +65,27 @@ def test_agent_cannot_set_rows_of_a_text(saved: Repos) -> None:
 
     with pytest.raises(ElementNotFoundError):
         editor.set_table("p1", "t1", [["a"]])
+
+
+def test_view_keeps_every_row_of_a_long_table(saved: Repos) -> None:
+    """Test that a big table is not cut, so a set_table call never drops a row it did not see."""
+    editor = make_context(saved, ScriptedModel([])).editor
+    rows = [["Head", "Score"], *([[f"row {i} " + "x" * 40, "1"] for i in range(30)])]
+    editor.set_table("p1", "tb1", rows)
+
+    view = next(e for e in editor.read_slide("p1").elements if e.id == "tb1")
+
+    assert view.text is not None
+    assert len(view.text) > 1500
+    assert view.text.count("row ") == 30
+
+
+@pytest.mark.parametrize("rows", [[["a", "b"], ["c"]], [[]], []])
+def test_set_table_refuses_rows_that_are_not_a_table(saved: Repos, rows: list[list[str]]) -> None:
+    """Test that uneven or empty rows raise and leave the saved deck as it was."""
+    editor = make_context(saved, ScriptedModel([])).editor
+
+    with pytest.raises(ValidationError):
+        editor.set_table("p1", "tb1", rows)
+
+    assert saved.deck.load().revision == 1

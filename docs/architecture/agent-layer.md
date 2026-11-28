@@ -43,7 +43,7 @@ draft ─► interviewing ─► review ─► approved ─► generating ─►
 - `agents/interview.py` builds the interview agent. A question to the user ends its run. The system prompt comes from `AgentPrompts.interview` in `decks/agents/prompts.py`. It renders the template `decks/agents/templates/interview.j2` with the slide catalog and the plan state.
 - `agents/deck.py` builds the deck agent.
 - `tools/interview.py` has the plan tools: `ask_user_question`, `set_meta`, `remove_meta`, `add_plan_slide`, `add_plan_slides`, `update_plan_slide`, `remove_plan_slide`, `move_plan_slide` and `final_check`. Every plan tool returns a `next_action`.
-- `tools/deck.py` has the deck tools: `generate_deck`, `check_deck`, `fix_slide`, `read_slide`, `update_element`, `set_text` and `set_table`. Each `fix_slide` call uses one of `MAX_REPAIRS` repairs of the project. `set_table` replaces the rows of a table. It adds or removes a row or a column, and `TableLayout` sizes the table again. `read_slide` lists the cells of a table in its `text` (up to 1500 characters). The tool keeps the highlights as they are.
+- `tools/deck.py` has the deck tools: `generate_deck`, `check_deck`, `fix_slide`, `read_slide`, `update_element`, `set_text` and `set_table`. Each `fix_slide` call uses one of `MAX_REPAIRS` repairs of the project. `set_table` replaces the rows of a table. It adds or removes a row or a column, and `TableLayout` sizes the table again. `read_slide` lists the cells of a table in its `text` as a JSON list of rows, with no cut. The tool checks the rows before it saves them. It refuses uneven or empty rows. It keeps the highlights as they are.
 - `tools/visual.py` has the visual tools. See [visual-agent.md](visual-agent.md).
 
 ## Services
